@@ -1,9 +1,10 @@
 <html>
 <head>
-  <title>Create a Map</title>
+  <title>Campus Shuttle Tracking</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/widget/ColorPicker/ColorPicker.css">
   <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
   <style>
     html, body, #mapDiv{
@@ -15,13 +16,56 @@
   
   <script src="http://js.arcgis.com/3.8/"></script>
   <script>
-    var map;
-    require(["esri/map", "dojo/domReady!"], function(Map) {
-      map = new Map("mapDiv", {
-        center: [-123.280, 44.562],
-        zoom: 16,
-        basemap: "streets"
-      });
+    var map, pt, symbol;
+    require([
+    	"esri/map", "esri/geometry/Point",
+    	"esri/symbols/SimpleMarkerSymbol", "esri/graphic",
+    	"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", 
+    	"dojo/domReady!"], 
+    	function(Map, Point, SimpleMarkerSymbol, Graphic, domStyle) {
+      		map = new Map("mapDiv", {
+        		center: [-123.280, 44.562],
+        		zoom: 16,
+        		basemap: "streets"
+        		//maxZoom?
+        		//minZoom
+       		});
+       		
+        //symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
+        
+        map.on("load", mapLoaded);
+        
+        function mapLoaded(){
+        Shuttle1 = new esri.geometry.Point({
+  				latitude: 44.562,
+  				longitude: -123.280
+				});
+				
+		Shuttle2 = new esri.geometry.Point({
+  				latitude: 44.562,
+  				longitude: -123.281
+				});
+				
+		Shuttle3 = new esri.geometry.Point({
+  				latitude: 44.562,
+  				longitude: -123.282
+				});
+				
+		User = new esri.geometry.Point({
+  				latitude: 44.562,
+  				longitude: -123.283
+				});
+				
+				
+   		var markerSymbol = new esri.symbol.SimpleMarkerSymbol();
+         markerSymbol.setColor(new dojo.Color("#ce641d"));
+         markerSymbol.setOutline(null);
+   					
+        map.graphics.add(new Graphic(Shuttle1, markerSymbol));
+        map.graphics.add(new Graphic(Shuttle2, markerSymbol));
+        map.graphics.add(new Graphic(Shuttle3, markerSymbol));
+        map.graphics.add(new Graphic(User, markerSymbol));
+        }
     });
   </script>
 
