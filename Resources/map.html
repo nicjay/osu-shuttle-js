@@ -1,84 +1,99 @@
 <html>
 <head>
-  <title>Campus Shuttle Tracking</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
-  <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/widget/ColorPicker/ColorPicker.css">
-  <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <style>
-    html, body, #mapDiv{
-      padding: 0;
-      margin: 0;
-      height: 100%;
-    }
-  </style>
+	<title>Campus Shuttle Tracking</title>
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
+  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/widget/ColorPicker/ColorPicker.css">
+  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+  	<style>
+    	html, body, #mapDiv{
+      		padding: 0;
+      		margin: 0;
+      		height: 100%;
+    	}
+  	</style>
   
-  <script src="http://js.arcgis.com/3.8/"></script>
-  <script>
-	Ti.App.addEventListener("web:data", function (event) {
-  		var data = event.data;
-  		
-    var map, pt, symbol;
-    require([
-    	"esri/map", "esri/geometry/Point",
-    	"esri/symbols/SimpleMarkerSymbol", "esri/graphic",
-    	"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", 
-    	"dojo/domReady!"], 
-    	function(Map, Point, SimpleMarkerSymbol, Graphic, domStyle) {
-      		map = new Map("mapDiv", {
-        		center: [-123.280, 44.562],
-        		zoom: 16,
-        		basemap: "streets"
-        		//maxZoom?
-        		//minZoom
+  	<script src="http://js.arcgis.com/3.8/"></script>
+  	<script>
+  
+  	//When event occurs, do things
+   	Ti.App.addEventListener("web:data", function (event) {
+  		var data = event.data[0];
+		var UserGPS = event.data[1];
+
+    	var map, pt, symbol;
+    	
+    	require([
+    		"esri/map", "esri/geometry/Point",
+    		"esri/symbols/SimpleMarkerSymbol", "esri/graphic",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", 
+    		"dojo/domReady!"], 
+    		function(Map, Point, SimpleMarkerSymbol, Graphic, domStyle) {
+      			map = new Map("mapDiv", {
+        			center: [-123.280, 44.562],
+        			zoom: 16,
+        			basemap: "streets",
+        			minZoom: 12,
+        			sliderStyle:"large"
        		});
        		
-        //symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
+        		
         
-        map.on("load", mapLoaded);
+        		//When map loads, call mapLoaded function
+      			map.on("load", mapLoaded);
         
-        function mapLoaded(){
-        	  	
+        		function mapLoaded(){
+        		
+        		//Set up the point coordinates
+				Shuttle1 = new esri.geometry.Point({
+  								latitude: data[0][1],
+  								longitude: data[0][2]
+								});
 				
-        			Shuttle1 = new esri.geometry.Point({
-  						latitude: data[0][1],
-  						longitude: data[0][2]
-					});
+				Shuttle2 = new esri.geometry.Point({
+  								latitude: 44.562,
+  								longitude: -123.281
+								});
 				
-					Shuttle2 = new esri.geometry.Point({
-  						latitude: 44.562,
-  						longitude: -123.281
-					});
+				Shuttle3 = new esri.geometry.Point({
+  								latitude: 44.562,
+  								longitude: -123.282
+								});
 				
-					Shuttle3 = new esri.geometry.Point({
-  						latitude: 44.562,
-  						longitude: -123.282
-					});
-				
-					User = new esri.geometry.Point({
-  						latitude: 44.562,
-  						longitude: -123.283
-					});
+				User = new esri.geometry.Point({
+  								latitude: UserGPS[1],
+  								longitude: UserGPS[2]
+								});
 					
 				
-				
-   		var markerSymbol = new esri.symbol.SimpleMarkerSymbol();
-         markerSymbol.setColor(new dojo.Color("#ce641d"));
-         markerSymbol.setOutline(null);
+				//A default marker
+   				var markerSymbol = new esri.symbol.SimpleMarkerSymbol();
+         		markerSymbol.setColor(new dojo.Color("#ce641d"));
+         		markerSymbol.setOutline(null);
    					
-        map.graphics.add(new Graphic(Shuttle1, markerSymbol));
-        map.graphics.add(new Graphic(Shuttle2, markerSymbol));
-        map.graphics.add(new Graphic(Shuttle3, markerSymbol));
-        map.graphics.add(new Graphic(User, markerSymbol));
-        }
-    });
-    
-  });
-  </script>
+   				//A marker for user location
+   				var usermarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
+        		usermarkerSymbol.setColor(new dojo.Color("#1d87ce"));
+        		usermarkerSymbol.setOutline(null);
+        		
+        		//Cusom picture for marker
+        		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
+        
+        		map.graphics.add(new Graphic(Shuttle1, markerSymbol));
+        		map.graphics.add(new Graphic(Shuttle2, markerSymbol));
+        		map.graphics.add(new Graphic(Shuttle3, markerSymbol));
+        		map.graphics.add(new Graphic(User, usermarkerSymbol));
+        		}
+        
+        	});
+        
+     });
+  		
+	</script>
 
 </head>
 <body class="claro">
-  <div id="mapDiv"></div>
+	<div id="mapDiv"></div>
 </body>
 </html>
