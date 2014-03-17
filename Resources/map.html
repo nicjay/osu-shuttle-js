@@ -16,6 +16,9 @@
   
   <script src="http://js.arcgis.com/3.8/"></script>
   <script>
+	Ti.App.addEventListener("web:data", function (event) {
+  		var data = event.data;
+  		
     var map, pt, symbol;
     require([
     	"esri/map", "esri/geometry/Point",
@@ -36,25 +39,28 @@
         map.on("load", mapLoaded);
         
         function mapLoaded(){
-        Shuttle1 = new esri.geometry.Point({
-  				latitude: 44.562,
-  				longitude: -123.280
-				});
+        	  	
 				
-		Shuttle2 = new esri.geometry.Point({
-  				latitude: 44.562,
-  				longitude: -123.281
-				});
+        			Shuttle1 = new esri.geometry.Point({
+  						latitude: data[0][1],
+  						longitude: data[0][2]
+					});
 				
-		Shuttle3 = new esri.geometry.Point({
-  				latitude: 44.562,
-  				longitude: -123.282
-				});
+					Shuttle2 = new esri.geometry.Point({
+  						latitude: 44.562,
+  						longitude: -123.281
+					});
 				
-		User = new esri.geometry.Point({
-  				latitude: 44.562,
-  				longitude: -123.283
-				});
+					Shuttle3 = new esri.geometry.Point({
+  						latitude: 44.562,
+  						longitude: -123.282
+					});
+				
+					User = new esri.geometry.Point({
+  						latitude: 44.562,
+  						longitude: -123.283
+					});
+					
 				
 				
    		var markerSymbol = new esri.symbol.SimpleMarkerSymbol();
@@ -67,6 +73,8 @@
         map.graphics.add(new Graphic(User, markerSymbol));
         }
     });
+    
+  });
   </script>
 
 </head>

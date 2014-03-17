@@ -9,7 +9,7 @@ var tabGroup = Titanium.UI.createTabGroup();
 
 
 var url = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimates";
-
+var url2 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetRoutesForMapWithSchedule";
 
 var win = Ti.UI.createWindow({
     backgroundColor:'#fff'
@@ -108,6 +108,27 @@ userGPS.add(labelgps);
 var table = Ti.UI.createTableView();
 var tableData = [];
 var shuttles, shuttle, i, j, row, nameLabel, idLabel, stopsText;
+var shuttles2, route;
+var stops = new Array(7);
+for (var i=0;i<7;i++){
+	stops[i]=new Array(3);
+}
+
+var xhr2 = Ti.Network.createHTTPClient({
+	onload: function() {
+		
+		shuttles2 = JSON.parse(this.responseText);
+		
+		for (i=0;i<shuttles2[0].Landmarks.length;i++){
+			stops[i][0]=shuttles2[0].Landmarks[i].Label;
+			stops[i][1]=shuttles2[0].Landmarks[i].Latitude;
+			stops[i][2]=shuttles2[0].Landmarks[i].Longitude;
+		}
+		
+		alert("STUFF!"+ shuttles2[0].Landmarks[0].Latitude);
+		
+	}
+});
 
 var xhr = Ti.Network.createHTTPClient({
     onload: function() {
@@ -199,6 +220,9 @@ var xhr = Ti.Network.createHTTPClient({
 xhr.open("GET", url);
 xhr.send();
 
+xhr2.open("GET", url2);
+xhr2.send();
+
 //win.add(table);
 //win.open();
 
@@ -206,3 +230,8 @@ tabGroup.addTab(tab1);
 tabGroup.addTab(tab2);
 tabGroup.addTab(tab3);
 tabGroup.open();
+
+localWebview.addEventListener('load',function(){
+	Ti.App.fireEvent("web:data", {data: stops});
+});
+
