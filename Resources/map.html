@@ -16,80 +16,161 @@
   
   	<script src="http://js.arcgis.com/3.8/"></script>
   	<script>
+  	
+//===================================================================
+  	//Set up variables and event listeners
+  	
+  	var data, UserGPS, map, pt, symbol;
+  	var GS1, GS2, GS3;
+  	var shuttlecoords;
   
-  	//When event occurs, do things
-   	Ti.App.addEventListener("web:data", function (event) {
-  		var data = event.data[0];
-		var UserGPS = event.data[1];
+  	//When this event occurs, fill up variables and create map.
+   	Ti.App.addEventListener("startmap", function (event) {
+  		data = event.data[0]; //Hold stop info -- not used currently
+		UserGPS = event.data[1]; //Holds user GPS data
+    	createMap();
+    });
+    
+    //When this event occurs, fill up shuttle coords and update map.
+    Ti.App.addEventListener('updatemap', function(event){
+    	shuttlecoords = [];
+		shuttlecoords = event.data;
+		updateMap();
+		});
 
-    	var map, pt, symbol;
-    	
+//===================================================================
+
+    function createMap(){
     	require([
     		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", 
+    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color",
     		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, Graphic, domStyle) {
+    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
       			map = new Map("mapDiv", {
         			center: [-123.280, 44.562],
-        			zoom: 16,
+        			zoom: 15,
         			basemap: "streets",
         			minZoom: 12,
         			sliderStyle:"large"
-       		});
+       			});
        		
+   				var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
+        		UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
+        		UserMarkerSymbol.setOutline(null);
+
+        		var StopMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
+        		StopMarkerSymbol.setColor(new dojo.Color("#FF0000"));
+        		StopMarkerSymbol.setOutline(null);
+				StopMarkerSymbol.setSize("10");
         		
+        		//Cusom picture example for marker
+        		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
+        			
+        		//Hardcoded stops for one route
+        		var StopPts = [
+					[44.55832,-123.28162],
+					[44.560524,-123.282411],
+					[44.56344,-123.27964],
+					[44.564578,-123.279934],
+					[44.56675,-123.27719],
+					[44.56673,-123.273],
+					[44.55901,-123.27962]];
         
-        		//When map loads, call mapLoaded function
-      			map.on("load", mapLoaded);
-        
-        		function mapLoaded(){
-        		
-        		//Set up the point coordinates
-				Shuttle1 = new esri.geometry.Point({
-  								latitude: data[0][1],
-  								longitude: data[0][2]
-								});
-				
-				Shuttle2 = new esri.geometry.Point({
-  								latitude: 44.562,
-  								longitude: -123.281
-								});
-				
-				Shuttle3 = new esri.geometry.Point({
-  								latitude: 44.562,
-  								longitude: -123.282
-								});
-				
-				User = new esri.geometry.Point({
+        		//When the map loads, load in user and stops graphics
+        		map.on("load", loadUserAndStops);
+
+        		function loadUserAndStops(){
+        			User = new esri.geometry.Point({
   								latitude: UserGPS[1],
   								longitude: UserGPS[2]
 								});
-					
-				
-				//A default marker
-   				var markerSymbol = new esri.symbol.SimpleMarkerSymbol();
-         		markerSymbol.setColor(new dojo.Color("#ce641d"));
-         		markerSymbol.setOutline(null);
-   					
-   				//A marker for user location
-   				var usermarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
-        		usermarkerSymbol.setColor(new dojo.Color("#1d87ce"));
-        		usermarkerSymbol.setOutline(null);
-        		
-        		//Cusom picture for marker
-        		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
-        
-        		map.graphics.add(new Graphic(Shuttle1, markerSymbol));
-        		map.graphics.add(new Graphic(Shuttle2, markerSymbol));
-        		map.graphics.add(new Graphic(Shuttle3, markerSymbol));
-        		map.graphics.add(new Graphic(User, usermarkerSymbol));
+								
+        			map.graphics.add(new Graphic(User, UserMarkerSymbol));
+        			
+        			arrayUtils.forEach(StopPts, function(StopPt) {
+            			map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
+          			});
         		}
-        
+        		
         	});
-        
-     });
-  		
+       }
+       
+       
+//===================================================================
+
+       function updateMap(){
+       	require([
+    		"esri/map", "esri/geometry/Point",
+    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color",
+    		"dojo/domReady!"], 
+    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
+
+    				//Clear the outdated positions
+					map.graphics.remove(GS1);
+        			map.graphics.remove(GS2);
+   					map.graphics.remove(GS3);
+
+					/*
+					alert('S1: ' + shuttlecoords[0]);
+					alert('S2: ' + shuttlecoords[1]);
+					alert('S3: ' + shuttlecoords[2]);
+    				*/
+    				
+    				//Set up the point coordinates
+       				Shuttle1 = new esri.geometry.Point({
+  								latitude: shuttlecoords[0][0],
+  								longitude: shuttlecoords[0][1]
+								});
+										
+
+					Shuttle2 = new esri.geometry.Point({
+  								latitude: shuttlecoords[1][0],
+  								longitude: shuttlecoords[1][1]
+								});
+				
+					Shuttle3 = new esri.geometry.Point({
+  								latitude: shuttlecoords[2][0],
+  								longitude: shuttlecoords[2][1]
+								});
+								
+					//Some test coordinates
+					/*
+					Shuttle1 = new esri.geometry.Point({
+  								latitude: 44.56,
+  								longitude: -123.30
+								});
+										
+
+					Shuttle2 = new esri.geometry.Point({
+  								latitude: 44.57,
+  								longitude: -123.31
+								});
+				
+					Shuttle3 = new esri.geometry.Point({
+  								latitude: 44.58,
+  								longitude: -123.32
+								});		
+					*/	
+
+					var ShuttleMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
+        				ShuttleMarkerSymbol.setColor(new dojo.Color("#9B30FF"));
+        				ShuttleMarkerSymbol.setOutline(null);
+
+       				GS1 = new Graphic(Shuttle1, ShuttleMarkerSymbol);
+       				GS2 = new Graphic(Shuttle2, ShuttleMarkerSymbol);
+					GS3 = new Graphic(Shuttle3, ShuttleMarkerSymbol);
+  
+       				map.graphics.add(GS1);
+       				map.graphics.add(GS2);
+       				map.graphics.add(GS3);
+
+      		});
+       }
+       
+//===================================================================
+
 	</script>
 
 </head>
