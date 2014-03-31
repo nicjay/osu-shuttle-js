@@ -293,6 +293,11 @@ localWebview.addEventListener('load',function(){
 	//Start the create map event
 	Ti.App.fireEvent("startmap", {data: [stops, dummyUser]});
 
+	setTimeout(function() {
+		ShuttleLocRequest();
+		Ti.App.fireEvent("updatemap", {data: shuttlecoords});
+	}, 1500);
+	
 	//Request the shuttle data, and start the update event, repeats every 5 seconds
 	setInterval(function() {
 		ShuttleLocRequest();
