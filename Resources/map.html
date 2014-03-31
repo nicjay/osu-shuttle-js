@@ -58,17 +58,13 @@
    				var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
         		UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
         		UserMarkerSymbol.setOutline(null);
-
-        		var StopMarkerSymbolNC = new esri.symbol.SimpleMarkerSymbol();
-        		StopMarkerSymbolNC.setColor(new dojo.Color("#00FF00"));
-        		StopMarkerSymbolNC.setOutline(null);
-				StopMarkerSymbolNC.setSize("10");
         		
-				var StopMarkerSymbolE = new esri.symbol.SimpleMarkerSymbol();
-				StopMarkerSymbolE.setColor(new dojo.Color("#FF0000"));
-				StopMarkerSymbolE.setOutline(null);
-				StopMarkerSymbolE.setSize("10");
+        		var StopMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
+        		StopMarkerSymbol.setColor(new dojo.Color("#FF0000"));
+        		StopMarkerSymbol.setOutline(null);
+				StopMarkerSymbol.setSize("10");
 
+        
         		//Cusom picture example for marker
         		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
         			
@@ -81,6 +77,7 @@
 					[44.56675, -123.27719],
 					[44.56673, -123.273],
 					[44.55901, -123.27962]];
+					
         		var StopPtsNorthCentral = [
                     [44.564578, -123.279934],
                     [44.56344, -123.27964],
@@ -90,6 +87,7 @@
                     [44.56675, -123.27719],
                     [44.56673, -123.273],
                     [44.562588, -123.274155]];
+                    
         		var StopPtsExpress = [
                     [44.564578, -123.279934],
                     [44.568107, -123.279461],
@@ -110,11 +108,15 @@
         			map.graphics.add(new Graphic(User, UserMarkerSymbol));
         			
         			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({ latitude: StopPt[0], longitude: StopPt[1] }), StopMarkerSymbolSC));
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({ latitude: StopPt[0], longitude: StopPt[1] }), StopMarkerSymbol));
+        			});
+        			
         			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbolNC));
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
+        			});
+        			
         			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbolE));
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
           			});
         		}
         		
