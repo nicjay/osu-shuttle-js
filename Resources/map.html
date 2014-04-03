@@ -23,6 +23,7 @@
   	var data, UserGPS, map, pt, symbol;
   	var GS1, GS2, GS3;
   	var shuttlecoords;
+  	var heading = new Array(3);
   
   	//When this event occurs, fill up variables and create map.
    	Ti.App.addEventListener("startmap", function (event) {
@@ -34,7 +35,8 @@
     //When this event occurs, fill up shuttle coords and update map.
     Ti.App.addEventListener('updatemap', function(event){
     	shuttlecoords = [];
-		shuttlecoords = event.data;
+		shuttlecoords = event.data[0];
+		heading = event.data[1];
 		updateMap();
 		});
 
@@ -186,13 +188,19 @@
         				ShuttleMarkerSymbol.setOutline(null);
         				ShuttleMarkerSymbol.setStyle(STYLE_DIAMOND);
         				*/
-        		var ShuttleMarkerSymbol = new PictureMarkerSymbol("http://www.clker.com/cliparts/d/e/d/2/13140637481464283876orange%20triangle.png", 20, 20);
+        		var ShuttleMarkerSymbol1 = new PictureMarkerSymbol("http://www.clker.com/cliparts/d/e/d/2/13140637481464283876orange%20triangle.png", 20, 20);
+        			ShuttleMarkerSymbol1.setAngle(heading[0]);
+        			
+        			var ShuttleMarkerSymbol2 = new PictureMarkerSymbol("http://www.clker.com/cliparts/d/e/d/2/13140637481464283876orange%20triangle.png", 20, 20);
+        			ShuttleMarkerSymbol2.setAngle(heading[1]);
         			
         			
+        			var ShuttleMarkerSymbol3 = new PictureMarkerSymbol("http://www.clker.com/cliparts/d/e/d/2/13140637481464283876orange%20triangle.png", 20, 20);
+        			ShuttleMarkerSymbol3.setAngle(heading[2]);
         			
-       				GS1 = new Graphic(Shuttle1, ShuttleMarkerSymbol);
-       				GS2 = new Graphic(Shuttle2, ShuttleMarkerSymbol);
-					GS3 = new Graphic(Shuttle3, ShuttleMarkerSymbol);
+       				GS1 = new Graphic(Shuttle1, ShuttleMarkerSymbol1);
+       				GS2 = new Graphic(Shuttle2, ShuttleMarkerSymbol2);
+					GS3 = new Graphic(Shuttle3, ShuttleMarkerSymbol3);
   
        				map.graphics.add(GS1);
        				map.graphics.add(GS2);

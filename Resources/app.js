@@ -259,6 +259,7 @@ var shuttlecoords = new Array(3); //Hold all shuttle data
 for (var i=0;i<3;i++){
 	shuttlecoords[i]=new Array(2); //Hold latitude, longitude
 }
+var heading = new Array(3);
 
 function ShuttleLocRequest(){
 	var xhr3 = Ti.Network.createHTTPClient({
@@ -271,6 +272,8 @@ function ShuttleLocRequest(){
 				shuttleloc = shuttlelocs[x];
 				shuttlecoords[x][0] = shuttleloc.Latitude;
 				shuttlecoords[x][1] = shuttleloc.Longitude;
+				
+				heading[x] = shuttleloc.Heading;
 			}
 	}
 	
@@ -295,13 +298,13 @@ localWebview.addEventListener('load',function(){
 
 	setTimeout(function() {
 		ShuttleLocRequest();
-		Ti.App.fireEvent("updatemap", {data: shuttlecoords});
+		Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
 	}, 1500);
 	
 	//Request the shuttle data, and start the update event, repeats every 5 seconds
 	setInterval(function() {
 		ShuttleLocRequest();
-		Ti.App.fireEvent("updatemap", {data: shuttlecoords});
+		Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
 	}, 5000);
 	
 });
