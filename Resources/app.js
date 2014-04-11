@@ -136,7 +136,7 @@ function dataRequest(){
     	Ti.API.debug("STATUS: " + this.status);
     	Ti.API.debug("TEXT:   " + this.responseText);
     	Ti.API.debug("ERROR:  " + e.error);
-    	alert('There was an error retrieving the remote data. Try again.');
+    	//alert('There was an error retrieving the remote data. Try again.');
     },
     timeout:5000
 });
@@ -154,7 +154,7 @@ dataRequest();
 //repeat every 5 seconds
 setInterval(function() {
 	dataRequest();
-}, 5000);
+}, 3000);
 
 
 //===================================================================
