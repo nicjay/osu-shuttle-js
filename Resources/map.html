@@ -108,9 +108,29 @@
                     [44.56344, -123.27964]];
         
         
-        		var routydoody = [
-        			[-123.279934,44.564578],
-        			[-123.279461,44.568107]
+        		var ExpressRoute = [
+	        		[-123.279941,44.567899],
+        			[-123.279925,44.568082],
+        			[-123.278972,44.568080],
+        			[-123.278948,44.567910],
+        			[-123.278970,44.567910],
+        			[-123.279941,44.567899],
+        			[-123.279925,44.566813],
+        			[-123.279927,44.564193],
+        			[-123.279619,44.563330],
+        			[-123.279600,44.562070],
+        			[-123.279630,44.561896],
+        			[-123.279624,44.560423],
+        			[-123.279691,44.560283],
+        			[-123.279697,44.558999],
+        			[-123.280711,44.558405],
+        			[-123.281620,44.558320],
+        			[-123.282811,44.558928],
+        			[-123.283133,44.559555],
+        			[-123.282934,44.560071],
+        			[-123.282411,44.560524],
+        			[-123.281993,44.560645],
+        			[-123.279631,44.560708]
         		];
         		//When the map loads, load in user and stops graphics
         		map.on("load", loadUserAndStops);
@@ -139,8 +159,8 @@
         			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol3));
           			});
           			
-          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([102,0,51]), 4); 
-          			var runningRoute = new esri.geometry.Polyline(routydoody);
+          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#0000FF"), 4); 
+          			var runningRoute = new esri.geometry.Polyline(ExpressRoute);
           			map.graphics.add(new esri.Graphic(runningRoute,polylineSymbol));
         		}
         		
