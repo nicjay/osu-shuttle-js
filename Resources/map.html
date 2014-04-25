@@ -107,6 +107,11 @@
                     [44.560524, -123.282411],
                     [44.56344, -123.27964]];
         
+        
+        		var routydoody = [
+        			[-123.279934,44.564578],
+        			[-123.279461,44.568107]
+        		];
         		//When the map loads, load in user and stops graphics
         		map.on("load", loadUserAndStops);
 
@@ -114,8 +119,12 @@
         			User = new esri.geometry.Point({
   								latitude: UserGPS[1],
   								longitude: UserGPS[2]
-								});
+					});
 								
+					//var sym = new esri.symbol.SimpleLinesymbol();
+					//sym.setColor(new dojo.Color("#FF0000"));
+					//sym.setWidth("10");
+					
         			map.graphics.add(new Graphic(User, UserMarkerSymbol));
         			
         			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
@@ -129,6 +138,10 @@
         			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
         			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol3));
           			});
+          			
+          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([102,0,51]), 4); 
+          			var runningRoute = new esri.geometry.Polyline(routydoody);
+          			map.graphics.add(new esri.Graphic(runningRoute,polylineSymbol));
         		}
         		
         	});
