@@ -65,6 +65,16 @@
         		StopMarkerSymbol.setColor(new dojo.Color("#0000FF"));
         		StopMarkerSymbol.setOutline(null);
 				StopMarkerSymbol.setSize("9");
+				
+				var StopMarkerSymbol2 = new esri.symbol.SimpleMarkerSymbol();
+        		StopMarkerSymbol2.setColor(new dojo.Color("#00FF00"));
+        		StopMarkerSymbol2.setOutline(null);
+				StopMarkerSymbol2.setSize("9");
+				
+				var StopMarkerSymbol3 = new esri.symbol.SimpleMarkerSymbol();
+        		StopMarkerSymbol3.setColor(new dojo.Color("#FF0000"));
+        		StopMarkerSymbol3.setOutline(null);
+				StopMarkerSymbol3.setSize("9");
         		
         		//Cusom picture example for marker
         		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
@@ -113,11 +123,11 @@
         			});
         			
         			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol2));
         			});
         			
         			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol3));
           			});
         		}
         		
