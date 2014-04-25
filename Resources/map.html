@@ -62,11 +62,10 @@
         		UserMarkerSymbol.setOutline(null);
         		
         		var StopMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
-        		StopMarkerSymbol.setColor(new dojo.Color("#FF0000"));
+        		StopMarkerSymbol.setColor(new dojo.Color("#0000FF"));
         		StopMarkerSymbol.setOutline(null);
-				StopMarkerSymbol.setSize("10");
-
-        
+				StopMarkerSymbol.setSize("9");
+        		
         		//Cusom picture example for marker
         		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
         			
@@ -188,14 +187,14 @@
         				ShuttleMarkerSymbol.setOutline(null);
         				ShuttleMarkerSymbol.setStyle(STYLE_DIAMOND);
         				*/
-        		var ShuttleMarkerSymbol1 = new PictureMarkerSymbol("http://www.clker.com/cliparts/d/e/d/2/13140637481464283876orange%20triangle.png", 20, 20);
+        			var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('bluetriangle.png', 20, 20); /*south central*/
         			ShuttleMarkerSymbol1.setAngle(heading[0]);
         			
-        			var ShuttleMarkerSymbol2 = new PictureMarkerSymbol("http://www.clker.com/cliparts/d/e/d/2/13140637481464283876orange%20triangle.png", 20, 20);
+        			var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('greentriangle.png', 20, 20); /*north central*/
         			ShuttleMarkerSymbol2.setAngle(heading[1]);
         			
         			
-        			var ShuttleMarkerSymbol3 = new PictureMarkerSymbol("http://www.clker.com/cliparts/d/e/d/2/13140637481464283876orange%20triangle.png", 20, 20);
+        			var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('orangetriangle.png', 20, 20); /*express*/
         			ShuttleMarkerSymbol3.setAngle(heading[2]);
         			
        				GS1 = new Graphic(Shuttle1, ShuttleMarkerSymbol1);
