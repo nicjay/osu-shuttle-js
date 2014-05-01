@@ -166,13 +166,117 @@ var localWebview = Titanium.UI.createWebView({
     left:10,
     right:10,
     //html:textContent,
-    height:'auto',
+    height:'100%',
     width:'auto',
     backgroundColor:'transparent',
     touchEnabled:true
 });
-win2.add(localWebview);
 
+//===================================================================
+
+//Slide menu
+var bottomMenu = Ti.UI.createView({
+    width:'100%',
+    height:100,
+    bottom:-100,
+    backgroundColor:'#334C61'
+});
+
+var slideLabel = Titanium.UI.createLabel({
+	color:'#999',
+	text:'Toggle Map Settings',
+	font:{fontSize:20,fontFamily:'Helvetica Neue'},
+	textAlign:'center',
+	bottom: 0,
+	width:'auto'
+});
+
+var slideMenuUp = false;
+slideLabel.addEventListener('click', function(e){
+    if (slideMenuUp == true) {
+        bottomMenu.animate({bottom:-100,duration:500});
+        slideLabel.animate({bottom:0, duration:500});
+        slideMenuUp = false;
+    } else {
+        bottomMenu.animate({bottom:0,duration:500});
+        slideLabel.animate({bottom:100, duration:500});
+        slideMenuUp = true;
+    }
+});
+
+
+var routeCheckboxA = Ti.UI.createSwitch({
+  style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
+  title:'Route A',
+  value:true,
+  left: 10,
+  top: 0,
+  width: 100
+});
+
+var routeCheckboxB = Ti.UI.createSwitch({
+  style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
+  title:'Route B',
+  value:true,
+  left: 10,
+  width: 100
+});
+
+var routeCheckboxC = Ti.UI.createSwitch({
+  style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
+  title:'Route C',
+  value:true,
+  left: 10,
+  bottom: 0,
+  width: 100
+});
+
+
+var routeEstTableData = [ {title: '6:08 : Reser Stadium'}, {title: '8:08 : Ralph Miller Way'}, {title: '10:08 : Dixon Rec Center'}, {title: '12:08 : 26th & Jefferson'}, {title: '0:08 : Campus Way at Gilkey'} ];
+
+var routeEstTable = Ti.UI.createTableView({
+  left: 120,
+  maxRowHeight: 40,
+  data: routeEstTableData,
+  scrollable: true,
+  
+});
+
+/*var picker = Ti.UI.createPicker({ 
+	left: 0,
+	bottom:0, 
+	width: '30%',
+	height: 'auto' 
+	
+}); 
+
+
+var pickerData = []; 
+pickerData.push(Titanium.UI.createPickerRow({title:'Route A'})); 
+pickerData.push(Titanium.UI.createPickerRow({title:'Route B'})); 
+pickerData.push(Titanium.UI.createPickerRow({title:'Route C'})); 
+pickerData.push(Titanium.UI.createPickerRow({title:'Route D'})); 
+picker.add(pickerData);
+
+
+var pickerTextField = Ti.UI.createTextField({
+  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+  color: '#336699',
+  bottom: 0, left: '30%',
+  width: '70%', height: '30%'
+}); */
+
+
+
+//bottomMenu.add(picker);
+//bottomMenu.add(pickerTextField);
+bottomMenu.add(routeCheckboxA);
+bottomMenu.add(routeCheckboxB);
+bottomMenu.add(routeCheckboxC);
+bottomMenu.add(routeEstTable);
+win2.add(localWebview);
+win2.add(bottomMenu);
+win2.add(slideLabel);
 
 //===================================================================
 
