@@ -132,6 +132,44 @@
         			[-123.281993,44.560645],
         			[-123.279631,44.560708]
         		];
+        		
+        		var NorthRoute = [
+        			[-123.279962,44.567940],
+					[-123.279919,44.566794],
+					[-123.272396,44.566737],
+					[-123.274016,44.564612],
+					[-123.275786,44.564558],
+					[-123.275850,44.561952],
+					[-123.279601,44.561970],
+					[-123.279612,44.563323],
+					[-123.279955,44.564179],
+					[-123.279955,44.564561],
+					[-123.289707,44.564592],
+					[-123.289718,44.567855],
+					[-123.279962,44.567940]
+        		];
+        		
+        		var SouthRoute = [
+        			[-123.279565,44.560802],
+					[-123.281916,44.560664],
+					[-123.282957,44.560014],
+					[-123.283054,44.559303],
+					[-123.282260,44.558722],
+					[-123.282013,44.558478],
+					[-123.280511,44.558478],
+					[-123.279663,44.559013],
+					[-123.279631,44.561420],
+					[-123.279556,44.563347],
+					[-123.279867,44.564020],
+					[-123.279899,44.564547],
+					[-123.279889,44.566741],
+					[-123.272507,44.566718],
+					[-123.274095,44.564669],
+					[-123.274068,44.564511],
+					[-123.275731,44.564511],
+					[-123.275844,44.561887],
+					[-123.279567,44.561956]
+        		];
         		//When the map loads, load in user and stops graphics
         		map.on("load", loadUserAndStops);
 
@@ -159,8 +197,16 @@
         			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol3));
           			});
           			
-          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#0000FF"), 4); 
+          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#0000FF"), 3); 
           			var runningRoute = new esri.geometry.Polyline(ExpressRoute);
+          			map.graphics.add(new esri.Graphic(runningRoute,polylineSymbol));
+          			
+          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#FF6600"), 3); 
+          			var runningRoute = new esri.geometry.Polyline(NorthRoute);
+          			map.graphics.add(new esri.Graphic(runningRoute,polylineSymbol));
+          			
+          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#00FF00"), 3); 
+          			var runningRoute = new esri.geometry.Polyline(SouthRoute);
           			map.graphics.add(new esri.Graphic(runningRoute,polylineSymbol));
         		}
         		

@@ -232,7 +232,13 @@ var routeCheckboxC = Ti.UI.createSwitch({
 });
 
 
-var routeEstTableData = [ {title: '6:08 : Reser Stadium'}, {title: '8:08 : Ralph Miller Way'}, {title: '10:08 : Dixon Rec Center'}, {title: '12:08 : 26th & Jefferson'}, {title: '0:08 : Campus Way at Gilkey'} ];
+var routeEstTableData = [ 
+	{title: '6:08 : Reser Stadium'}, 
+	{title: '8:08 : Ralph Miller Way'}, 
+	{title: '10:08 : Dixon Rec Center'}, 
+	{title: '12:08 : 26th & Jefferson'}, 
+	{title: '0:08 : Campus Way at Gilkey'} 
+];
 
 var routeEstTable = Ti.UI.createTableView({
   left: 120,
