@@ -23,8 +23,7 @@ var tab1 = Titanium.UI.createTab({
 
 //Tab 2/Window 2: contains webview w/ map
 var win2 = Ti.UI.createWindow({
-    backgroundColor:'#fff',
-    navBarHidden:true
+    backgroundColor:'#fff'
 });
 var tab2 = Titanium.UI.createTab({  
     icon:'KS_nav_views.png',
@@ -393,7 +392,7 @@ xhr3.send();
 
 //===================================================================
 
-var dummyUser = ["dummy User GPS data", 44.567135, -123.278918];
+var dummyUser = ["dummy User GPS data", 44.5657, -123.2789];
 
 //Event listener to start when webview loads
 localWebview.addEventListener('load',function(){
@@ -414,18 +413,6 @@ localWebview.addEventListener('load',function(){
 	
 });
 
-routeCheckboxA.addEventListener('change',function(){
-	Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
-});
-
-routeCheckboxB.addEventListener('change',function(){
-	Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
-});
-
-routeCheckboxC.addEventListener('change',function(){
-	Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
-});
-
 //===================================================================
 
 
@@ -433,6 +420,5 @@ routeCheckboxC.addEventListener('change',function(){
 tabGroup.addTab(tab1);  
 tabGroup.addTab(tab2);
 tabGroup.addTab(tab3);
-//tabGroup.open();
-win2.open();
+tabGroup.open();
 
