@@ -1,5 +1,9 @@
 //Campus Shuttle Tracking 
 
+//NOTE: OFFICAL ROAD-LIKE COMMENT BLOCK
+//===================================================================
+//-------------------------------------------------------------------
+//===================================================================
 
 Titanium.UI.setBackgroundColor('#fff');
 
@@ -12,7 +16,7 @@ var url3 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapVehiclePoin
 
 
 //Tab 1/Window 1: contains table for stops
-var win1 = Ti.UI.createWindow({
+/*var win1 = Ti.UI.createWindow({
     backgroundColor:'#fff'
 });
 var tab1 = Titanium.UI.createTab({  
@@ -20,12 +24,13 @@ var tab1 = Titanium.UI.createTab({
     title:'Shuttle Stops',
     window:win1
 });
-
+*/
 //Tab 2/Window 2: contains webview w/ map
 var win2 = Ti.UI.createWindow({
-    backgroundColor:'#fff'
+    backgroundColor:'#fff',
+    navBarHidden:true
 });
-var tab2 = Titanium.UI.createTab({  
+/*var tab2 = Titanium.UI.createTab({  
     icon:'KS_nav_views.png',
     title:'Map',
     window:win2
@@ -40,8 +45,10 @@ var tab3 = Titanium.UI.createTab({
     title:'user GPS test',
     window:win3
 });
+*/
 
-
+//===================================================================
+//-------------------------------------------------------------------
 //===================================================================
 
 //Variables and function for filling the table with route and arrival info
@@ -129,8 +136,9 @@ function dataRequest(){
     		}
  
     		table.setData(tableData);
+    		//Ti.API.info("TABLE DATA: " + tableData);
     
-    },
+    	},
     
     onerror: function(e) {
     	Ti.API.debug("STATUS: " + this.status);
@@ -139,24 +147,27 @@ function dataRequest(){
     	//alert('There was an error retrieving the remote data. Try again.');
     },
     timeout:5000
-});
+	});
 
-xhr.open("GET", url);
-xhr.send();
+	xhr.open("GET", url);
+	xhr.send();
 
 }
 
-win1.add(table);
+//win1.add(table);
 
 //initial request to fill table
-dataRequest();
+//-----------------Moved to Update functions below----------------
+/*dataRequest();
  
 //repeat every 5 seconds
 setInterval(function() {
 	dataRequest();
 }, 3000);
+*/
 
-
+//===================================================================
+//-------------------------------------------------------------------
 //===================================================================
 
 //Create webview of map.html
@@ -173,33 +184,36 @@ var localWebview = Titanium.UI.createWebView({
 });
 
 //===================================================================
-
+//-------------------------------------------------------------------
+//===================================================================
 //Slide menu
+
 var bottomMenu = Ti.UI.createView({
     width:'100%',
-    height:100,
-    bottom:-100,
+    height:150,
+    bottom:-150,
     backgroundColor:'#334C61'
 });
 
 var slideLabel = Titanium.UI.createLabel({
-	color:'#999',
-	text:'Toggle Map Settings',
+	color:'#334C61',
+	text: 'View Details',
 	font:{fontSize:20,fontFamily:'Helvetica Neue'},
 	textAlign:'center',
 	bottom: 0,
-	width:'auto'
+	width:'auto',
+	height:'auto'
 });
 
 var slideMenuUp = false;
 slideLabel.addEventListener('click', function(e){
     if (slideMenuUp == true) {
-        bottomMenu.animate({bottom:-100,duration:500});
-        slideLabel.animate({bottom:0, duration:500});
+        bottomMenu.animate({bottom:-150,duration:250});
+        slideLabel.animate({bottom:0, duration:250});
         slideMenuUp = false;
     } else {
-        bottomMenu.animate({bottom:0,duration:500});
-        slideLabel.animate({bottom:100, duration:500});
+        bottomMenu.animate({bottom:0,duration:250});
+        slideLabel.animate({bottom:150, duration:250});
         slideMenuUp = true;
     }
 });
@@ -232,12 +246,13 @@ var routeCheckboxC = Ti.UI.createSwitch({
 });
 
 
-var routeEstTableData = [ {title: '6:08 : Reser Stadium'}, {title: '8:08 : Ralph Miller Way'}, {title: '10:08 : Dixon Rec Center'}, {title: '12:08 : 26th & Jefferson'}, {title: '0:08 : Campus Way at Gilkey'} ];
+//var routeEstTableData = [ {title: 'Test:'}, {title: '8:08 : Ralph Miller Way'}, {title: '10:08 : Dixon Rec Center'}, {title: '12:08 : 26th & Jefferson'}, {title: '0:08 : Campus Way at Gilkey'} ];
+var nearestArray = [];
 
 var routeEstTable = Ti.UI.createTableView({
   left: 120,
   maxRowHeight: 40,
-  data: routeEstTableData,
+  data: nearestArray,
   scrollable: true,
   
 });
@@ -278,6 +293,9 @@ win2.add(localWebview);
 win2.add(bottomMenu);
 win2.add(slideLabel);
 
+
+//===================================================================
+//-------------------------------------------------------------------
 //===================================================================
 
 //Set up label to hold User GPS test
@@ -316,34 +334,140 @@ Titanium.Geolocation.getCurrentPosition(function(e)
 			});
 			
 //Place in label	
-win3.add(labelgps);
+//win3.add(labelgps);
 
 
 //===================================================================
+//-------------------------------------------------------------------
+//===================================================================
 
 //Variables and function for stop positions data
-var routes, route;
+/*var routes, route;
 var stops = new Array(7); //Hold list of stops
 for (var i=0;i<7;i++){
 	stops[i]=new Array(3); //Hold stop info: label, latitude, longitude
+}*/
+var tmpGPSData = [44.5657, -123.2789];
+var stopsArray = [];
+var nearestArray = [];
+function findNearest(userLocation){
+	var diffArray = [];
+	nearestArray = [];
+	
+	updateRouteEstimates();
+	for(var i = 0; i < stopsArray.length; i++){
+		var tmpStop = stopsArray[i];
+		var latitude = tmpStop[1];
+		var longitude = tmpStop[2];
+		var diff = Math.sqrt(Math.pow(Math.abs(userLocation[0] - latitude),2) + Math.pow(Math.abs(userLocation[1] - longitude),2));
+		//var diff = Math.sqrt(Math.abs(userLocation[0] - latitude)^2 + Math.abs(userLocation[1] - longitude)^2);
+		diffArray.push([diff, i]);
+	}
+	
+	diffArray.sort(function(a,b){
+		return a[0] - b[0];
+	});
+	
+	
+	for(var j = 0; j < diffArray.length; j++){
+		var index = diffArray[j][1];
+		//Ti.API.info("SORTED DIFF ARRAY: " + diffArray[j]);
+		//Ti.API.info("diffArray index:" + index);
+		var baseString = "   ";
+		for(var i = 0; i < 3; i++){
+			//Ti.API.info("made it 1 " + index + " , " + stopsArray[index][i+3]);
+			if(stopsArray[index][i+3] != -1){
+				baseString += "  " + stopsArray[index][i+3].toString() + "  ";
+			}
+			else{
+				baseString += "       ";
+			}
+		}
+		//Ti.API.info("baseString: " + baseString);
+		nearestArray.push({title: stopsArray[index][0]});
+		nearestArray.push({title: baseString});
+		
+	}
+	routeEstTable.setData(nearestArray);
 }
 
 var xhr2 = Ti.Network.createHTTPClient({
 	onload: function() {
+		var routesArray = [];
+
 		
-		//Get all route info
+		//Retrieve initial route info
 		routes = JSON.parse(this.responseText);
-		
-		//Single route
-		route = routes[0];
-		
-		var x;
-		for (x=0;x<route.Landmarks.length;x++){
-			stops[x][0]=route.Landmarks[x].Label;
-			stops[x][1]=route.Landmarks[x].Latitude;
-			stops[x][2]=route.Landmarks[x].Longitude;
+		for(var i = 0; i < routes.length; i++){
+			var routeArray = [];
+			var route = routes[i];
+	
+			for (var j = 0; j < route.Landmarks.length; j++){
+				var landmarkArray = [];
+				var data = route.Landmarks[j];
+				landmarkArray.push(data.Label, data.Latitude, data.Longitude);
+				routeArray.push(landmarkArray);
+				
+			}
+			routesArray.push(routeArray);
 		}
+		Ti.API.info("ROUTES ARRAY: " + routesArray.toString());
+
+		//Sort and remove duplicates. Add flags for which shuttles stop at each stop.
+		for(var k = 0; k < routesArray.length; k++){
+			for(var l = 0; l < routesArray[k].length; l++){
+				var cur = routesArray[k][l];
+				var skip = 0;
+				
+				
+				for(var i = 0; i < stopsArray.length; i++){
+					if(stopsArray[i][0] == cur[0]){
+						skip = 1;
+						flag.push(i, k);
+						break;
+					}	
+				}
+				
+			
+
+				if(!skip){
+					var tmpArray = [];
+					tmpArray.push(cur[0], cur[1], cur[2], -1, -1, -1);
+					stopsArray.push(tmpArray);
+					//Ti.API.info("stops array status: " + stopsArray.toString());
+				}
+				/*else {
+					Ti.API.info("FLAG Status: " + flag[0] + ", " + flag[1]);
+					switch(flag[1]){
+						case 0:
+							stopsArray[flag[0]][3] = 1;
+							break;
+						case 1:
+							stopsArray[flag[0]][4] = 1;
+							break;
+						case 2: 
+							stopsArray[flag[0]][5] = 1;
+							break;
+						
+					}
+					
+				}*/
+			}
+			
+		}
+		/* ----------------ARRAY INFO-----------------------
+		 * 
+		 * stopsArray STRUCTURE
+		 * 		[Stop Name, Latitude, Longitude, SouthCentralBusFlag, NorthCentralBusFlag, ExpressBusFlag]
+		 * 		
+		 * 		Example
+		 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]
+		 * 
+		 * 
+		 */
 		
+		//Ti.API.info("FINAL STOPS ARRAY: " + stopsArray.toString());
+		//Ti.API.info("Newly stopsArray: " + stopsArray.toString());
 	}
 	
 	//Should include onerror here
@@ -353,7 +477,40 @@ var xhr2 = Ti.Network.createHTTPClient({
 xhr2.open("GET", url2);
 xhr2.send();
 
+function updateRouteEstimates(){
+	//Ti.API.info("Starting updateRouteEst function");
+	var shuttles = [];
+	var xhr4 = Ti.Network.createHTTPClient({
+		onload: function() {
+			shuttles = JSON.parse(this.responseText);
+			for(var i = 0; i < shuttles.length; i++){
+				var shuttle = shuttles[i];
+				for(var j = 0; j < stopsArray.length; j++){
+					for(var k = 0; k < shuttle.RouteStops.length; k++){
+						if(shuttle.RouteStops[k].Description == stopsArray[j][0]){
+							stopsArray[j][i+3] = shuttle.RouteStops[k].Estimates[0].SecondsToStop;
+						}
+					}
+				}
+			}
+		},
+		onerror: function(e){
+			Ti.API.info("UPDATE ROUTE EST ERROR: "+e);
+		},
+		timeout : 5000
+		
+	});
+	
+	xhr4.open("GET", url);
+	xhr4.send();
 
+	
+
+}
+
+
+//===================================================================
+//-------------------------------------------------------------------
 //===================================================================
 
 //Variables and function for shuttle coordinates data
@@ -379,46 +536,71 @@ function ShuttleLocRequest(){
 				
 				heading[x] = shuttleloc.Heading;
 			}
-	}
-	
-	//Should include onerror here
-});
-
-xhr3.open("GET", url3);
-xhr3.send();
-
+		},
+		onerror : function(e) {
+         	try{
+         		Ti.API.info("Get Object from backup");
+         		shuttlecoords = Ti.App.Properties.getObject('backupShuttleCoords');
+         		heading = Ti.App.Properties.getObject('backupHeading');
+         		
+         	}catch(err){
+         		Ti.API.info("Failed to retrieve backup shuttle data: " + err);
+         	}
+         	
+     	}
+		
+	});
+	xhr3.open("GET", url3);
+	xhr3.send();
 }
 
-
+//===================================================================
+//-------------------------------------------------------------------
 //===================================================================
 
 var dummyUser = ["dummy User GPS data", 44.5657, -123.2789];
 
 //Event listener to start when webview loads
 localWebview.addEventListener('load',function(){
-	
+	var stops = [];
 	//Start the create map event
+
+	
 	Ti.App.fireEvent("startmap", {data: [stops, dummyUser]});
 
 	setTimeout(function() {
+		dataRequest();
 		ShuttleLocRequest();
+		setBackupShuttleData();
 		Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
 	}, 1500);
 	
+
 	//Request the shuttle data, and start the update event, repeats every 5 seconds
 	setInterval(function() {
+		dataRequest();
 		ShuttleLocRequest();
+		findNearest(tmpGPSData);
 		Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
 	}, 5000);
 	
 });
 
 //===================================================================
+//-------------------------------------------------------------------
+//===================================================================
+
+function setBackupShuttleData(){
+	Ti.App.Properties.setObject('backupShuttleCoords', shuttlecoords);
+	Ti.App.Properties.setObject('backupHeading', heading);
+	
+}
 
 
+win2.open();
 //Start the tabs
-tabGroup.addTab(tab1);  
+/*tabGroup.addTab(tab1);  
 tabGroup.addTab(tab2);
 tabGroup.addTab(tab3);
-tabGroup.open();
+tabGroup.open();*/
 
