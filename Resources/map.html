@@ -65,12 +65,12 @@
 		
 		});
 		
+
 	Ti.App.addEventListener('cbox', function(event){
 		Ti.API.info('Switch value: ' + event.data[0]);
 		enableExpress = event.data[0]; 
 		updateMap();
 		ShowExpress();
-		
 		});
 
 //===================================================================
@@ -90,9 +90,11 @@
         			sliderStyle:"large"
        			});
        		
-   				var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
-        		UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
-        		UserMarkerSymbol.setOutline(null);
+   				
+   				var UserMarkerSymbol = new esri.symbol.PictureMarkerSymbol('userMarker.png', 18, 32);
+   				//var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
+        		//UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
+        		//UserMarkerSymbol.setOutline(null);
         		
         		var StopMarkerSymbol = new esri.symbol.SimpleMarkerSymbol(); 
         		StopMarkerSymbol.setColor(new dojo.Color("#FF0000"));
@@ -240,7 +242,8 @@
           			NorthRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
           			map.graphics.add(NorthRouteGraphic);
           			
-          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#00FF00"), 3); 
+          			//00FF00
+          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#36c636"), 3); 
           			var runningRoute = new esri.geometry.Polyline(SouthRoute);
           			SouthRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
           			map.graphics.add(SouthRouteGraphic);

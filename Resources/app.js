@@ -27,7 +27,7 @@ var tab1 = Titanium.UI.createTab({
 */
 //Tab 2/Window 2: contains webview w/ map
 var win2 = Ti.UI.createWindow({
-    backgroundColor:'#fff',
+    backgroundColor:'#373737',
     navBarHidden:true
 });
 /*var tab2 = Titanium.UI.createTab({  
@@ -181,6 +181,8 @@ var localWebview = Titanium.UI.createWebView({
     width:'auto',
     backgroundColor:'transparent',
     touchEnabled:true
+    //borderColor: '#080808',
+    //borderWidth: '8px'
 });
 
 //===================================================================
@@ -190,81 +192,111 @@ var localWebview = Titanium.UI.createWebView({
 
 var bottomMenu = Ti.UI.createView({
     width:'100%',
-    height:150,
-    bottom:-150,
-    backgroundColor:'#334C61'
+    height:175,
+    bottom:-175,
+    //backgroundColor:'#334C61'
+    backgroundColor:'#373737'
 });
 
 var slideLabel = Titanium.UI.createLabel({
 	color:'#334C61',
-	text: 'View Details',
+	text: '',
 	font:{fontSize:20,fontFamily:'Helvetica Neue'},
 	textAlign:'center',
 	bottom: 0,
-	width:'auto',
-	height:'auto'
+	width: 720,
+	height:'auto',
+	backgroundImage: 'slideBar.png'
 });
 
 var slideMenuUp = false;
 slideLabel.addEventListener('click', function(e){
     if (slideMenuUp == true) {
-        bottomMenu.animate({bottom:-150,duration:250});
+        bottomMenu.animate({bottom:-175,duration:250});
         slideLabel.animate({bottom:0, duration:250});
         slideMenuUp = false;
     } else {
         bottomMenu.animate({bottom:0,duration:250});
-        slideLabel.animate({bottom:150, duration:250});
+        slideLabel.animate({bottom:175, duration:250});
         slideMenuUp = true;
     }
 });
 
 
 var routeCheckboxA = Ti.UI.createSwitch({
-  style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
-  title:'Route A',
+  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
   value:true,
   left: 10,
-  top: 0,
-  width: 100
+  top: 5,
+  width: 55,
+  height: 50,
+  backgroundImage: 'orange_on.png',
+  titleOff: '',
+  titleOn: ''
 });
 
 var routeCheckboxB = Ti.UI.createSwitch({
-  style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
-  title:'Route B',
+  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
   value:true,
   left: 10,
-  width: 100
+  width: 55,
+  height: 50,
+  backgroundImage: 'green_on.png',
+  titleOff: '',
+  titleOn: ''
 });
 
 var routeCheckboxC = Ti.UI.createSwitch({
-  style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
-  title:'Route C',
+  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
   value:true,
   left: 10,
-  bottom: 0,
-  width: 100
+  bottom: 5,
+  width: 55,
+  height: 50,
+  backgroundImage: 'blue_on.png',
+  titleOff: '',
+  titleOn: ''
 });
 
 routeCheckboxA.addEventListener('change',function(){
 	Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
+	if(routeCheckboxA.value == true){
+		routeCheckboxA.setBackgroundImage('orange_on.png');
+	}
+	else{
+		routeCheckboxA.setBackgroundImage('orange_off.png');
+	}
 });
 
 routeCheckboxB.addEventListener('change',function(){
 	Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
+	if(routeCheckboxB.value == true){
+		routeCheckboxB.setBackgroundImage('green_on.png');
+	}
+	else{
+		routeCheckboxB.setBackgroundImage('green_off.png');
+	}
 });
 
 routeCheckboxC.addEventListener('change',function(){
 	Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
+	if(routeCheckboxC.value == true){
+		routeCheckboxC.setBackgroundImage('blue_on.png');
+	}
+	else{
+		routeCheckboxC.setBackgroundImage('blue_off.png');
+	}
 });
 
 //var routeEstTableData = [ {title: 'Test:'}, {title: '8:08 : Ralph Miller Way'}, {title: '10:08 : Dixon Rec Center'}, {title: '12:08 : 26th & Jefferson'}, {title: '0:08 : Campus Way at Gilkey'} ];
 var nearestArray = [];
 
 var routeEstTable = Ti.UI.createTableView({
-  left: 120,
+  left: 80,
   maxRowHeight: 40,
   data: nearestArray,
   scrollable: true,
+  color: '#c34500'
   
 });
 
@@ -358,7 +390,7 @@ var stops = new Array(7); //Hold list of stops
 for (var i=0;i<7;i++){
 	stops[i]=new Array(3); //Hold stop info: label, latitude, longitude
 }*/
-var tmpGPSData = [44.5657, -123.2789];
+var tmpGPSData = [44.567635, -123.278518];
 var stopsArray = [];
 var nearestArray = [];
 function findNearest(userLocation){
@@ -570,8 +602,8 @@ function ShuttleLocRequest(){
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
-
-var dummyUser = ["dummy User GPS data", 44.567135, -123.278918];
+//23
+var dummyUser = ["dummy User GPS data", 44.567635, -123.278518];
 
 //Event listener to start when webview loads
 localWebview.addEventListener('load',function(){
