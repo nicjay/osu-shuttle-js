@@ -14,7 +14,6 @@ var url = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimate
 var url2 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetRoutesForMapWithSchedule";
 var url3 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapVehiclePoints";
 
-
 //Tab 1/Window 1: contains table for stops
 /*var win1 = Ti.UI.createWindow({
     backgroundColor:'#fff'
@@ -222,12 +221,22 @@ slideLabel.addEventListener('click', function(e){
     }
 });
 
+var routeCheckboxB = Ti.UI.createSwitch({
+  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+  value:true,
+  left: 10,
+  top: 5,
+  width: 55,
+  height: 50,
+  backgroundImage: 'green_on.png',
+  titleOff: '',
+  titleOn: ''
+});
 
 var routeCheckboxA = Ti.UI.createSwitch({
   style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
   value:true,
   left: 10,
-  top: 5,
   width: 55,
   height: 50,
   backgroundImage: 'orange_on.png',
@@ -235,16 +244,6 @@ var routeCheckboxA = Ti.UI.createSwitch({
   titleOn: ''
 });
 
-var routeCheckboxB = Ti.UI.createSwitch({
-  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-  value:true,
-  left: 10,
-  width: 55,
-  height: 50,
-  backgroundImage: 'green_on.png',
-  titleOff: '',
-  titleOn: ''
-});
 
 var routeCheckboxC = Ti.UI.createSwitch({
   style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
@@ -383,7 +382,8 @@ Titanium.Geolocation.getCurrentPosition(function(e)
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
-
+win2.addEventListener('android:back',function(e) {
+});
 //Variables and function for stop positions data
 /*var routes, route;
 var stops = new Array(7); //Hold list of stops
@@ -416,23 +416,76 @@ function findNearest(userLocation){
 		var index = diffArray[j][1];
 		//Ti.API.info("SORTED DIFF ARRAY: " + diffArray[j]);
 		//Ti.API.info("diffArray index:" + index);
-		var baseString = "   ";
+		var baseRow = Ti.UI.createTableViewRow({
+	    	height:'auto',
+	    });
+	    var labelArray = [];
+	    var routeColor;
+	    var baseLeft = 30;
+	    var leftIncrement = 80;
 		for(var i = 0; i < 3; i++){
 			//Ti.API.info("made it 1 " + index + " , " + stopsArray[index][i+3]);
 			if(stopsArray[index][i+3] != -1){
-				baseString += "  " + stopsArray[index][i+3].toString() + "  ";
+				switch(i+3){
+					case 3:
+						routeColor = '#576fff';
+						break;
+					case 4:
+						routeColor = '#36c636';
+						break;
+					case 5:
+						routeColor = '#ff6600';
+						break;
+					default:
+						routeColor = '#ffffff';
+				}
+				var eta = stopsArray[index][i+3].toString();
+				if(eta > 59){
+					var minutes = Math.round(eta % 60);
+					var hours = Math.round(eta / 60);
+					var hFlag = 1;
+					if(minutes < 10)
+						eta = hours + ":0" + minutes;
+					else
+						eta = hours + ":" + minutes;
+				}
+				else{
+					if(eta < 10)
+						eta = "0:0"+eta;
+					else
+						eta = "0:"+eta;
+				}
+				if(eta == '0:0'){
+					eta = 'Arrived';
+				}
+				var stopTiming = Ti.UI.createLabel({
+					text: eta,
+					color: routeColor,
+					left: baseLeft+(leftIncrement*i)
+				});
+				labelArray.push(stopTiming);
+				//baseString += "  " + stopsArray[index][i+3].toString() + "  ";
 			}
 			else{
-				baseString += "       ";
+				var emptyStop = Ti.UI.createLabel({
+					text: '',
+					width: 80
+				});
+				labelArray.push(emptyStop);
 			}
 		}
+		for(var i = 0; i < labelArray.length; i++){
+			baseRow.add(labelArray[i]);
+		}
+
 		//Ti.API.info("baseString: " + baseString);
 		nearestArray.push({title: stopsArray[index][0]});
-		nearestArray.push({title: baseString});
+		nearestArray.push(baseRow);
 		
 	}
 	routeEstTable.setData(nearestArray);
 }
+
 
 var xhr2 = Ti.Network.createHTTPClient({
 	onload: function() {
@@ -498,6 +551,7 @@ var xhr2 = Ti.Network.createHTTPClient({
 			}
 			
 		}
+
 		/* ----------------ARRAY INFO-----------------------
 		 * 
 		 * stopsArray STRUCTURE
