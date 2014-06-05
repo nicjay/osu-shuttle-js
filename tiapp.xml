@@ -8,7 +8,7 @@
     <description>not specified</description>
     <copyright>2014 by Nick</copyright>
     <icon>osicon.png</icon>
-    <fullscreen>false</fullscreen>
+    <fullscreen>true</fullscreen>
     <navbar-hidden>true</navbar-hidden>
     <analytics>true</analytics>
     <guid>43a51ea2-c681-4c22-8e6b-5aa950c363fa</guid>

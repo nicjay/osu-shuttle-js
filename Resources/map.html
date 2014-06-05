@@ -3,9 +3,9 @@
 	<title>Campus Shuttle Tracking</title>
   	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
-  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/widget/ColorPicker/ColorPicker.css">
-  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+  	<link rel="stylesheet" href="claro.css">
+  	<link rel="stylesheet" href="ColorPicker.css">
+  	<link rel="stylesheet" href="esri.css">
   	<style>
     	html, body, #mapDiv{
       		padding: 0;
@@ -14,12 +14,17 @@
     	}
   	</style>
   
-  	<script src="http://js.arcgis.com/3.8/"></script>
+  	<script src="arcInit.js"></script>
   	<script>
   	
 //===================================================================
   	//Set up variables and event listeners
-  	
+/*
+  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
+  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/widget/ColorPicker/ColorPicker.css">
+  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+ */
+	
   	var data, UserGPS, map, pt, symbol;
   	var GS1, GS2, GS3;
   	var shuttlecoords;
@@ -38,6 +43,12 @@
   		data = event.data[0]; //Hold stop info -- not used currently
 		UserGPS = event.data[1]; //Holds user GPS data
     	createMap();
+    });
+    
+    Ti.App.addEventListener('centerMap', function(event){
+		var pointArray = [event.latitude, event.longitude];
+		centerMap(pointArray);
+    	
     });
     
     //When this event occurs, fill up shuttle coords and update map.
@@ -79,9 +90,10 @@
     	require([
     		"esri/map", "esri/geometry/Point",
     		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/Deferred", "dojo/_base/Color",
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
+      			
       			map = new Map("mapDiv", {
         			center: [-123.280, 44.562],
         			zoom: 15,
@@ -91,16 +103,12 @@
        			});
        		
    				
-   				var UserMarkerSymbol = new esri.symbol.PictureMarkerSymbol('userMarker.png', 18, 32);
+   				var UserMarkerSymbol = new esri.symbol.PictureMarkerSymbol('userMarker2.png', 22, 22);
    				//var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
         		//UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
         		//UserMarkerSymbol.setOutline(null);
         		
-        		var StopMarkerSymbol = new esri.symbol.SimpleMarkerSymbol(); 
-        		StopMarkerSymbol.setColor(new dojo.Color("#FF0000"));
-        		StopMarkerSymbol.setOutline(null);
-				StopMarkerSymbol.setSize("9");
-        		
+        		var StopMarkerSymbol = new esri.symbol.PictureMarkerSymbol('stopSign.png', 15, 15);
         		//Cusom picture example for marker
         		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
         			
@@ -137,31 +145,6 @@
         		map.on("load", loadUserAndStops);
 
         		function loadUserAndStops(){
-        			User = new esri.geometry.Point({
-  								latitude: UserGPS[1],
-  								longitude: UserGPS[2]
-					});
-								
-					//var sym = new esri.symbol.SimpleLinesymbol();
-					//sym.setColor(new dojo.Color("#FF0000"));
-					//sym.setWidth("10");
-					
-        			map.graphics.add(new Graphic(User, UserMarkerSymbol));
-        			
-        			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({ latitude: StopPt[0], longitude: StopPt[1] }), StopMarkerSymbol));
-        			});
-        			
-        			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
-        			});
-        			
-        			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
-          			});
-          			
-          			
-    
 	        		var ExpressRoute = [
 			        		[-123.279941,44.567899],
 		        			[-123.279925,44.568082],
@@ -249,7 +232,25 @@
           			map.graphics.add(SouthRouteGraphic);
           			
           			
-          			
+          			if(UserGPS[0] != 0 && UserGPS[1] != 0){
+        			    User = new esri.geometry.Point({
+  								latitude: UserGPS[0],
+  								longitude: UserGPS[1]
+						});
+						map.graphics.add(new Graphic(User, UserMarkerSymbol));		
+        			}
+        			
+        			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({ latitude: StopPt[0], longitude: StopPt[1] }), StopMarkerSymbol));
+        			});
+        			
+        			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
+        			});
+        			
+        			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
+          			});
           			
         		}
         		
@@ -263,7 +264,7 @@
        	require([
     		"esri/map", "esri/geometry/Point",
     		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color", "dojo/Deferred",
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Graphic, arrayUtils, domStyle, Color) {
 
@@ -271,8 +272,11 @@
 					map.graphics.remove(GS1);
         			map.graphics.remove(GS2);
    					map.graphics.remove(GS3);
-
-				
+					
+					var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('bluetriangle.png', 20, 20); //south central
+					var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('greentriangle.png', 20, 20); //*north central
+					var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('orangetriangle.png', 20, 20); //express
+    				
     				//Set up the point coordinates
        				Shuttle1 = new esri.geometry.Point({
   								latitude: shuttlecoords[0][0],
@@ -290,39 +294,10 @@
   								longitude: shuttlecoords[2][1]
 								});
 								
-					//Some test coordinates
-					/*
-					Shuttle1 = new esri.geometry.Point({
-  								latitude: 44.56,
-  								longitude: -123.30
-								});
-										
-
-					Shuttle2 = new esri.geometry.Point({
-  								latitude: 44.57,
-  								longitude: -123.31
-								});
-				
-					Shuttle3 = new esri.geometry.Point({
-  								latitude: 44.58,
-  								longitude: -123.32
-								});		
-					*/	
-
-					/*var ShuttleMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
-        				ShuttleMarkerSymbol.setColor(new dojo.Color("#9B30FF"));
-        				ShuttleMarkerSymbol.setOutline(null);
-        				ShuttleMarkerSymbol.setStyle(STYLE_DIAMOND);
-        				*/
         				
-        			var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('bluetriangle.png', 20, 20); /*south central*/
+        
         			ShuttleMarkerSymbol1.setAngle(heading[0]);
-        			
-        			var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('greentriangle.png', 20, 20); /*north central*/
         			ShuttleMarkerSymbol2.setAngle(heading[1]);
-        			
-        			
-        			var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('orangetriangle.png', 20, 20); /*express*/
         			ShuttleMarkerSymbol3.setAngle(heading[2]);
         			
        				GS3 = new Graphic(Shuttle1, ShuttleMarkerSymbol1);
@@ -375,11 +350,9 @@
     	require([
     		"esri/map", "esri/geometry/Point",
     		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
-      			
-   				//test
    				if (enableNorth == true){
 	      			
 	          		NorthRouteGraphic.show();
@@ -389,9 +362,7 @@
 	      			//map.graphics.remove(ExprRouteGraphic);
 	      			
 	      		}
-   				
-   				
-   					
+   			
    				
         	});
        }
@@ -399,7 +370,7 @@
     	require([
     		"esri/map", "esri/geometry/Point",
     		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
       			
@@ -421,7 +392,26 @@
        }
        
        
+       function centerMap(data){
+       	 require([
+    		"esri/map", "esri/geometry/Point",
+    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
+    		"dojo/domReady!"], 
+    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
+      			var centerPoint = new esri.geometry.Point({
+					latitude: data[0],
+					longitude: data[1]
+				});
+      			
+      			map.centerAt(centerPoint);
+   				
+        	});
+       }
+       
+       
 //===================================================================
+
 
 	</script>
 

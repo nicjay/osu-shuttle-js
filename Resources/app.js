@@ -14,187 +14,67 @@ var url = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimate
 var url2 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetRoutesForMapWithSchedule";
 var url3 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapVehiclePoints";
 
-//Tab 1/Window 1: contains table for stops
-/*var win1 = Ti.UI.createWindow({
-    backgroundColor:'#fff'
-});
-var tab1 = Titanium.UI.createTab({  
-    icon:'KS_nav_views.png',
-    title:'Shuttle Stops',
-    window:win1
-});
-*/
-//Tab 2/Window 2: contains webview w/ map
+var userGPS = [0, 0];
+var deviceGPSOn = false;
+var gpsOffPhrase = "GPS: Off";
+var gpsOnPhrase = "GPS: On";
+
 var win2 = Ti.UI.createWindow({
-    backgroundColor:'#373737',
-    navBarHidden:true
+    backgroundColor:'#c34500',
+    navBarHidden:true,
+    softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
 });
-/*var tab2 = Titanium.UI.createTab({  
-    icon:'KS_nav_views.png',
-    title:'Map',
-    window:win2
-});
-
-//Tab 3/Window 3: contains User GPS test
-var win3 = Ti.UI.createWindow({
-    backgroundColor:'#fff'
-});
-var tab3 = Titanium.UI.createTab({  
-    icon:'KS_nav_views.png',
-    title:'user GPS test',
-    window:win3
-});
-*/
 
 //===================================================================
-//-------------------------------------------------------------------
-//===================================================================
-
-//Variables and function for filling the table with route and arrival info
-
-var table = Ti.UI.createTableView();
-var tableData = [];
-var shuttles, shuttle, i, j, row, nameLabel, idLabel, stopsText;
-
-function dataRequest(){
-	var xhr = Ti.Network.createHTTPClient({
-    	onload: function() {
-     
-     		//Clear the table at start of new request
-    		tableData = [];
-			table.setData(tableData);
-     
-    		shuttles = JSON.parse(this.responseText);
-    
-    		for (i = 0; i < shuttles.length; i++) {
-        
-	        	shuttle = shuttles[i]; //an individual route
-	        
-	        	row = Ti.UI.createTableViewRow({
-	            	height:'60dp'
-	        	});
-	        
-	        	nameLabel = Ti.UI.createLabel({ //name of route
-	            				text:shuttle.Description,
-	            				font:{
-	                				fontSize:'24dp',
-	                				fontWeight:'bold'
-	            				},
-	        					height:'auto',
-	        					left:'10dp',
-	        					top:'5dp',
-	        					color:'#000',
-	        					touchEnabled:true
-	        					});
-	        
-	        	idLabel = Ti.UI.createLabel({ // ID of route
-	            				text:'Route ID: ' + shuttle.RouteID,
-	            				font:{
-	                			fontSize:'16dp'
-	            				},
-	        					height:'auto',
-	        					left:'15dp',
-	        					top:'30dp',
-	        					color:'#000',
-	        					touchEnabled:false
-	        					});
-	        
-	        	row.add(nameLabel);
-	        	row.add(idLabel);
-	        
-	        	tableData.push(row);
-	        
-	        	//Look at locations along route
-	        	for (j = 0; j < shuttle.RouteStops.length; j++) {
-	        
-	            	var innerRow = Ti.UI.createTableViewRow({
-	                	height:'16dp'
-	            	});
-	            
-	            	var eta = shuttle.RouteStops[j].Estimates[0].SecondsToStop;
-	            
-	            	if (eta == 0) {
-	               		eta = '>>>Arrived<<<';
-	            	}
-	            	else eta = eta + ' seconds';
-	            
-	            	stopsText = Ti.UI.createLabel({ 
-	                				text:'Location: ' + shuttle.RouteStops[j].Description + ', ETA: ' + eta,
-	                				font:{
-	                    				fontSize:'14dp'
-	                				},
-	            					height:'auto',
-	            					left:'15dp',
-	            					color:'#000',
-	            					touchEnabled:false  
-	            					});
-	            
-	            	innerRow.add(stopsText);
-	            	tableData.push(innerRow);
-	        	}
-    		}
- 
-    		table.setData(tableData);
-    		//Ti.API.info("TABLE DATA: " + tableData);
-    
-    	},
-    
-    onerror: function(e) {
-    	Ti.API.debug("STATUS: " + this.status);
-    	Ti.API.debug("TEXT:   " + this.responseText);
-    	Ti.API.debug("ERROR:  " + e.error);
-    	//alert('There was an error retrieving the remote data. Try again.');
-    },
-    timeout:5000
-	});
-
-	xhr.open("GET", url);
-	xhr.send();
-
-}
-
-//win1.add(table);
-
-//initial request to fill table
-//-----------------Moved to Update functions below----------------
-/*dataRequest();
- 
-//repeat every 5 seconds
-setInterval(function() {
-	dataRequest();
-}, 3000);
-*/
-
-//===================================================================
-//-------------------------------------------------------------------
+//------------------------------------------------------------------- 
 //===================================================================
 
 //Create webview of map.html
+
 var localWebview = Titanium.UI.createWebView({
 	url:'map.html',
     top:0,
-    left:10,
-    right:10,
+    left:0,
+    right:0,
     //html:textContent,
-    height:'100%',
+    height:'71%',
     width:'auto',
-    backgroundColor:'transparent',
-    touchEnabled:true
+    backgroundColor:'#373737',
+    touchEnabled:true,
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
     //borderColor: '#080808',
     //borderWidth: '8px'
 });
 
+
+var userGPSStatusLabel = Titanium.UI.createLabel({
+	color:'#334C61',
+	text: '',
+	font:{fontSize:15,fontFamily:'Helvetica Neue', fontWeight: 'bold'},
+	textAlign:'left',
+	top: 3,
+	left: 10,
+	backgroundColor: 'transparent',
+});
+
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
-//Slide menu
 
+//Slide menu
+var bottomMenuHeight = '28%';
 var bottomMenu = Ti.UI.createView({
-    width:'100%',
-    height:175,
-    bottom:-175,
-    //backgroundColor:'#334C61'
-    backgroundColor:'#373737'
+    width:'auto',
+    height:bottomMenuHeight,
+    bottom:3,
+    left: 3,
+    right: 3,
+    backgroundColor:'#373737',
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
 });
 
 var slideLabel = Titanium.UI.createLabel({
@@ -203,154 +83,55 @@ var slideLabel = Titanium.UI.createLabel({
 	font:{fontSize:20,fontFamily:'Helvetica Neue'},
 	textAlign:'center',
 	bottom: 0,
-	width: 720,
+	width: 'auto',
 	height:'auto',
 	backgroundImage: 'slideBar.png'
 });
 
-var slideMenuUp = false;
-slideLabel.addEventListener('click', function(e){
+/*var slideMenuUp = true;
+slideLabel.addEventListener('touchend', function(e){
     if (slideMenuUp == true) {
-        bottomMenu.animate({bottom:-175,duration:250});
+        bottomMenu.animate({bottom:-bottomMenuHeight,duration:250});
         slideLabel.animate({bottom:0, duration:250});
         slideMenuUp = false;
     } else {
         bottomMenu.animate({bottom:0,duration:250});
-        slideLabel.animate({bottom:175, duration:250});
+        slideLabel.animate({bottom:bottomMenuHeight, duration:250});
         slideMenuUp = true;
     }
-});
+});*/
 
-var routeCheckboxB = Ti.UI.createSwitch({
-  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-  value:true,
-  left: 10,
-  top: 5,
-  width: 55,
-  height: 50,
-  backgroundImage: 'green_on.png',
-  titleOff: '',
-  titleOn: ''
-});
-
-var routeCheckboxA = Ti.UI.createSwitch({
-  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-  value:true,
-  left: 10,
-  width: 55,
-  height: 50,
-  backgroundImage: 'orange_on.png',
-  titleOff: '',
-  titleOn: ''
-});
-
-
-var routeCheckboxC = Ti.UI.createSwitch({
-  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-  value:true,
-  left: 10,
-  bottom: 5,
-  width: 55,
-  height: 50,
-  backgroundImage: 'blue_on.png',
-  titleOff: '',
-  titleOn: ''
-});
-
-routeCheckboxA.addEventListener('change',function(){
-	Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
-	if(routeCheckboxA.value == true){
-		routeCheckboxA.setBackgroundImage('orange_on.png');
-	}
-	else{
-		routeCheckboxA.setBackgroundImage('orange_off.png');
-	}
-});
-
-routeCheckboxB.addEventListener('change',function(){
-	Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
-	if(routeCheckboxB.value == true){
-		routeCheckboxB.setBackgroundImage('green_on.png');
-	}
-	else{
-		routeCheckboxB.setBackgroundImage('green_off.png');
-	}
-});
-
-routeCheckboxC.addEventListener('change',function(){
-	Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
-	if(routeCheckboxC.value == true){
-		routeCheckboxC.setBackgroundImage('blue_on.png');
-	}
-	else{
-		routeCheckboxC.setBackgroundImage('blue_off.png');
-	}
-});
-
-//var routeEstTableData = [ {title: 'Test:'}, {title: '8:08 : Ralph Miller Way'}, {title: '10:08 : Dixon Rec Center'}, {title: '12:08 : 26th & Jefferson'}, {title: '0:08 : Campus Way at Gilkey'} ];
+//Array of nearest stops
 var nearestArray = [];
-
 var routeEstTable = Ti.UI.createTableView({
-  left: 80,
-  maxRowHeight: 40,
+  left: 70,
+  maxRowHeight: 50,
   data: nearestArray,
   scrollable: true,
-  color: '#c34500'
+  color: '#ffffff',
+  separatorColor: 'transparent',
   
 });
 
-/*var picker = Ti.UI.createPicker({ 
-	left: 0,
-	bottom:0, 
-	width: '30%',
-	height: 'auto' 
-	
-}); 
+//Route visibility toggle checkboxes
+var routeCheckboxA, routeCheckBoxB, routeCheckboxC;
 
+createRouteCheckBox();
 
-var pickerData = []; 
-pickerData.push(Titanium.UI.createPickerRow({title:'Route A'})); 
-pickerData.push(Titanium.UI.createPickerRow({title:'Route B'})); 
-pickerData.push(Titanium.UI.createPickerRow({title:'Route C'})); 
-pickerData.push(Titanium.UI.createPickerRow({title:'Route D'})); 
-picker.add(pickerData);
-
-
-var pickerTextField = Ti.UI.createTextField({
-  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
-  color: '#336699',
-  bottom: 0, left: '30%',
-  width: '70%', height: '30%'
-}); */
-
-
-
-//bottomMenu.add(picker);
-//bottomMenu.add(pickerTextField);
-bottomMenu.add(routeCheckboxA);
-bottomMenu.add(routeCheckboxB);
-bottomMenu.add(routeCheckboxC);
+//Add objects to window
 bottomMenu.add(routeEstTable);
 win2.add(localWebview);
 win2.add(bottomMenu);
 win2.add(slideLabel);
+win2.add(userGPSStatusLabel);
 
 
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
 
-//Set up label to hold User GPS test
-var labelgps = Titanium.UI.createLabel({
-	color:'#999',
-	text:'test',
-	font:{fontSize:20,fontFamily:'Helvetica Neue'},
-	textAlign:'center',
-	width:'auto'
-});
-
-//Get User GPS, place in label
 Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
+
 Titanium.Geolocation.getCurrentPosition(function(e)
 			{
 				if (!e.success || e.error)
@@ -360,6 +141,9 @@ Titanium.Geolocation.getCurrentPosition(function(e)
 					//alert('error ' + JSON.stringify(e.error));
 					//alert('Could not find mobile GPS unit');
 					return;
+				}
+				else{
+					
 				}
 				var longitude = e.coords.longitude;
 				var latitude = e.coords.latitude;
@@ -374,61 +158,84 @@ Titanium.Geolocation.getCurrentPosition(function(e)
 
 				Titanium.API.info('geo - current location: ' + new Date(timestamp) + ' long ' + longitude + ' lat ' + latitude + ' accuracy ' + accuracy);
 			});
-			
-//Place in label	
-//win3.add(labelgps);
 
 
+function getUserGPS(){
+	Titanium.Geolocation.getCurrentPosition(function(e)
+		{
+			if (!e.success || e.error)
+			{
+				Ti.API.info("Failed to get UserGPS, error: " + e);
+				deviceGPSOn = false;
+				userGPSStatusLabel.text = gpsOffPhrase;
+				return;
+			}
+			else{
+				userGPS[0] = e.coords.latitude;
+				userGPS[1] = e.coords.longitude;
+				userGPS[2] = e.coords.timestamp;
+				deviceGPSOn = true;
+				userGPSStatusLabel.text = gpsOnPhrase;
+			}
+
+		});
+}
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
-win2.addEventListener('android:back',function(e) {
-});
-//Variables and function for stop positions data
-/*var routes, route;
-var stops = new Array(7); //Hold list of stops
-for (var i=0;i<7;i++){
-	stops[i]=new Array(3); //Hold stop info: label, latitude, longitude
-}*/
+
+
 var tmpGPSData = [44.567635, -123.278518];
 var stopsArray = [];
-var nearestArray = [];
 function findNearest(userLocation){
 	var diffArray = [];
 	nearestArray = [];
 	
 	updateRouteEstimates();
+	
+	//Calculate differences between stops and UserGPS
 	for(var i = 0; i < stopsArray.length; i++){
 		var tmpStop = stopsArray[i];
 		var latitude = tmpStop[1];
 		var longitude = tmpStop[2];
-		var diff = Math.sqrt(Math.pow(Math.abs(userLocation[0] - latitude),2) + Math.pow(Math.abs(userLocation[1] - longitude),2));
+		//var diff = Math.sqrt(Math.pow(Math.abs(userLocation[0] - latitude),2) + Math.pow(Math.abs(userLocation[1] - longitude),2));
+		var diff = getDistanceFromLatLonInKm(userLocation[0],userLocation[1],latitude,longitude);
+		
 		//var diff = Math.sqrt(Math.abs(userLocation[0] - latitude)^2 + Math.abs(userLocation[1] - longitude)^2);
 		diffArray.push([diff, i]);
 	}
 	
+	//Sort the new array by distance, with [0] being the smallest
 	diffArray.sort(function(a,b){
 		return a[0] - b[0];
 	});
 	
-	
+	var routeColor, baseLeft = 70, labelArray = [];
 	for(var j = 0; j < diffArray.length; j++){
-		var index = diffArray[j][1];
-		//Ti.API.info("SORTED DIFF ARRAY: " + diffArray[j]);
-		//Ti.API.info("diffArray index:" + index);
+		var index = diffArray[j][1], distance = diffArray[j][0];
 		var baseRow = Ti.UI.createTableViewRow({
 	    	height:'auto',
 	    });
-	    var labelArray = [];
-	    var routeColor;
-	    var baseLeft = 30;
-	    var leftIncrement = 80;
+	    
+	    labelArray = [];
+	    var leftIncrement = 70;
 		for(var i = 0; i < 3; i++){
-			//Ti.API.info("made it 1 " + index + " , " + stopsArray[index][i+3]);
+			if(i==0){
+				var distanceLabel = Ti.UI.createLabel({
+					font: { fontSize:14 },
+					text: distance.toFixed(2.2) + " mi",
+					color: '#C0C0C0',
+					left: 10,
+					top: 28,
+				});
+				labelArray.push(distanceLabel);
+			}
+			
 			if(stopsArray[index][i+3] != -1){
 				switch(i+3){
 					case 3:
-						routeColor = '#576fff';
+						//routeColor = '#576fff';
+						routeColor = '#7084ff';
 						break;
 					case 4:
 						routeColor = '#36c636';
@@ -437,13 +244,12 @@ function findNearest(userLocation){
 						routeColor = '#ff6600';
 						break;
 					default:
-						routeColor = '#ffffff';
+						Ti.API.info("ALERT, wrong index Stops Array");
 				}
 				var eta = stopsArray[index][i+3].toString();
 				if(eta > 59){
 					var minutes = Math.round(eta % 60);
 					var hours = Math.round(eta / 60);
-					var hFlag = 1;
 					if(minutes < 10)
 						eta = hours + ":0" + minutes;
 					else
@@ -455,38 +261,55 @@ function findNearest(userLocation){
 					else
 						eta = "0:"+eta;
 				}
-				if(eta == '0:0'){
+				if(eta == '0:00'){
 					eta = 'Arrived';
 				}
 				var stopTiming = Ti.UI.createLabel({
+					font: { fontSize:20 },
 					text: eta,
 					color: routeColor,
+					top: 25,
 					left: baseLeft+(leftIncrement*i)
 				});
 				labelArray.push(stopTiming);
-				//baseString += "  " + stopsArray[index][i+3].toString() + "  ";
-			}
-			else{
-				var emptyStop = Ti.UI.createLabel({
-					text: '',
-					width: 80
-				});
-				labelArray.push(emptyStop);
 			}
 		}
-		for(var i = 0; i < labelArray.length; i++){
-			baseRow.add(labelArray[i]);
+		
+		var secondaryRow = Ti.UI.createTableViewRow({
+	    	height:'auto',
+	    	textAlign: 'left',
+	    });
+	    
+	    for(var i = 0; i < labelArray.length; i++){
+			secondaryRow.add(labelArray[i]);
 		}
-
-		//Ti.API.info("baseString: " + baseString);
-		nearestArray.push({title: stopsArray[index][0]});
-		nearestArray.push(baseRow);
+		var stopNameLabel = Ti.UI.createLabel({
+			font: { fontSize:16 },
+			text: stopsArray[index][0],
+			color: '#FFFFFF',
+			left: 0,
+			top: 6,
+		
+		});
+		secondaryRow.add(stopNameLabel);
+		//1D1D1D
+	
+		secondaryRow.addEventListener('touchend', function(e){
+			Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
+			var index = diffArray[e.index][1];
+			var val1 = stopsArray[index][1];
+			var val2 = stopsArray[index][2];
+			Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
+		});
+		nearestArray.push(secondaryRow);
+		//nearestArray.push(baseRow);
 		
 	}
 	routeEstTable.setData(nearestArray);
 }
 
 
+//set stopsArray
 var xhr2 = Ti.Network.createHTTPClient({
 	onload: function() {
 		var routesArray = [];
@@ -519,56 +342,28 @@ var xhr2 = Ti.Network.createHTTPClient({
 				for(var i = 0; i < stopsArray.length; i++){
 					if(stopsArray[i][0] == cur[0]){
 						skip = 1;
-						flag.push(i, k);
 						break;
 					}	
 				}
-				
-			
-
+		
 				if(!skip){
 					var tmpArray = [];
 					tmpArray.push(cur[0], cur[1], cur[2], -1, -1, -1);
 					stopsArray.push(tmpArray);
 					//Ti.API.info("stops array status: " + stopsArray.toString());
 				}
-				/*else {
-					Ti.API.info("FLAG Status: " + flag[0] + ", " + flag[1]);
-					switch(flag[1]){
-						case 0:
-							stopsArray[flag[0]][3] = 1;
-							break;
-						case 1:
-							stopsArray[flag[0]][4] = 1;
-							break;
-						case 2: 
-							stopsArray[flag[0]][5] = 1;
-							break;
-						
-					}
-					
-				}*/
 			}
 			
 		}
 
 		/* ----------------ARRAY INFO-----------------------
-		 * 
 		 * stopsArray STRUCTURE
 		 * 		[Stop Name, Latitude, Longitude, SouthCentralBusFlag, NorthCentralBusFlag, ExpressBusFlag]
-		 * 		
+		 * 	
 		 * 		Example
-		 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]
-		 * 
-		 * 
-		 */
-		
-		//Ti.API.info("FINAL STOPS ARRAY: " + stopsArray.toString());
-		//Ti.API.info("Newly stopsArray: " + stopsArray.toString());
+		 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
+
 	}
-	
-	//Should include onerror here
-	
 });
 
 xhr2.open("GET", url2);
@@ -600,9 +395,6 @@ function updateRouteEstimates(){
 	
 	xhr4.open("GET", url);
 	xhr4.send();
-
-	
-
 }
 
 
@@ -656,19 +448,18 @@ function ShuttleLocRequest(){
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
-//23
-var dummyUser = ["dummy User GPS data", 44.567635, -123.278518];
+//
+
 
 //Event listener to start when webview loads
 localWebview.addEventListener('load',function(){
+	var gpsCounter = 0;
 	var stops = [];
 	//Start the create map event
 
-	
-	Ti.App.fireEvent("startmap", {data: [stops, dummyUser]});
-
+	getUserGPS();
+	Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
 	setTimeout(function() {
-		dataRequest();
 		ShuttleLocRequest();
 		setBackupShuttleData();
 		Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
@@ -677,13 +468,29 @@ localWebview.addEventListener('load',function(){
 
 	//Request the shuttle data, and start the update event, repeats every 5 seconds
 	setInterval(function() {
-		dataRequest();
+		if(deviceGPSOn){
+			gpsCounter++;
+			if(gpsCounter === 10){
+				userGPS.length = 0;
+				getUserGPS();
+				gpsCounter = 0;
+			}
+		}
 		ShuttleLocRequest();
-		findNearest(tmpGPSData);
+		findNearest(userGPS);
 		Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
-	}, 5000);
+	}, 4000);
 	
 });
+
+//===================================================================
+//-------------------------------------------------------------------
+//===================================================================
+win2.addEventListener('android:back',function(e) {
+});
+
+Ti.UI.Android.hideSoftKeyboard();
+win2.open();
 
 //===================================================================
 //-------------------------------------------------------------------
@@ -695,11 +502,96 @@ function setBackupShuttleData(){
 	
 }
 
+function createRouteCheckBox(){
+	routeCheckboxB = Ti.UI.createSwitch({
+	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  value:true,
+	  left: 10,
+	  top: 5,
+	  width: 55,
+	  height: 50,
+	  backgroundImage: 'green_on.png',
+	  titleOff: '',
+	  titleOn: ''
+	});
+	
+	routeCheckboxA = Ti.UI.createSwitch({
+	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  value:true,
+	  left: 10,
+	  width: 55,
+	  height: 50,
+	  backgroundImage: 'orange_on.png',
+	  titleOff: '',
+	  titleOn: ''
+	});
+	
+	
+	routeCheckboxC = Ti.UI.createSwitch({
+	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  value:true,
+	  left: 10,
+	  bottom: 5,
+	  width: 55,
+	  height: 50,
+	  backgroundImage: 'blue_on.png',
+	  titleOff: '',
+	  titleOn: ''
+	});
+	
+	bottomMenu.add(routeCheckboxA);
+	bottomMenu.add(routeCheckboxB);
+	bottomMenu.add(routeCheckboxC);
+	
+	setCheckBoxEventListeners();
+}
 
-win2.open();
-//Start the tabs
-/*tabGroup.addTab(tab1);  
-tabGroup.addTab(tab2);
-tabGroup.addTab(tab3);
-tabGroup.open();*/
+function setCheckBoxEventListeners(){
+	routeCheckboxA.addEventListener('change',function(){
+		Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
+		if(routeCheckboxA.value == true){
+			routeCheckboxA.setBackgroundImage('orange_on.png');
+		}
+		else{
+			routeCheckboxA.setBackgroundImage('orange_off.png');
+		}
+	});
+	
+	routeCheckboxB.addEventListener('change',function(){
+		Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
+		if(routeCheckboxB.value == true){
+			routeCheckboxB.setBackgroundImage('green_on.png');
+		}
+		else{
+			routeCheckboxB.setBackgroundImage('green_off.png');
+		}
+	});
+	
+	routeCheckboxC.addEventListener('change',function(){
+		Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
+		if(routeCheckboxC.value == true){
+			routeCheckboxC.setBackgroundImage('blue_on.png');
+		}
+		else{
+			routeCheckboxC.setBackgroundImage('blue_off.png');
+		}
+	});
+}
 
+function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1); 
+  var a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  var d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180);
+}
