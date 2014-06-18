@@ -38,7 +38,7 @@ var localWebview = Titanium.UI.createWebView({
     right:0,
     //html:textContent,
     height:'71%',
-    width:'auto',
+    width:'100%',
     backgroundColor:'#373737',
     touchEnabled:true,
     borderColor: '#111111',
@@ -85,7 +85,7 @@ var slideLabel = Titanium.UI.createLabel({
 	bottom: 0,
 	width: 'auto',
 	height:'auto',
-	backgroundImage: 'slideBar.png'
+	backgroundImage: 'GeneralUI/slideBar.png'
 });
 
 /*var slideMenuUp = true;
@@ -510,7 +510,7 @@ function createRouteCheckBox(){
 	  top: 5,
 	  width: 55,
 	  height: 50,
-	  backgroundImage: 'green_on.png',
+	  backgroundImage: 'Checkbox/green_on.png',
 	  titleOff: '',
 	  titleOn: ''
 	});
@@ -521,7 +521,7 @@ function createRouteCheckBox(){
 	  left: 10,
 	  width: 55,
 	  height: 50,
-	  backgroundImage: 'orange_on.png',
+	  backgroundImage: 'Checkbox/orange_on.png',
 	  titleOff: '',
 	  titleOn: ''
 	});
@@ -534,7 +534,7 @@ function createRouteCheckBox(){
 	  bottom: 5,
 	  width: 55,
 	  height: 50,
-	  backgroundImage: 'blue_on.png',
+	  backgroundImage: 'Checkbox/blue_on.png',
 	  titleOff: '',
 	  titleOn: ''
 	});
@@ -550,30 +550,30 @@ function setCheckBoxEventListeners(){
 	routeCheckboxA.addEventListener('change',function(){
 		Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
 		if(routeCheckboxA.value == true){
-			routeCheckboxA.setBackgroundImage('orange_on.png');
+			routeCheckboxA.setBackgroundImage('Checkbox/orange_on.png');
 		}
 		else{
-			routeCheckboxA.setBackgroundImage('orange_off.png');
+			routeCheckboxA.setBackgroundImage('Checkbox/orange_off.png');
 		}
 	});
 	
 	routeCheckboxB.addEventListener('change',function(){
 		Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
 		if(routeCheckboxB.value == true){
-			routeCheckboxB.setBackgroundImage('green_on.png');
+			routeCheckboxB.setBackgroundImage('Checkbox/green_on.png');
 		}
 		else{
-			routeCheckboxB.setBackgroundImage('green_off.png');
+			routeCheckboxB.setBackgroundImage('Checkbox/green_off.png');
 		}
 	});
 	
 	routeCheckboxC.addEventListener('change',function(){
 		Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
 		if(routeCheckboxC.value == true){
-			routeCheckboxC.setBackgroundImage('blue_on.png');
+			routeCheckboxC.setBackgroundImage('Checkbox/blue_on.png');
 		}
 		else{
-			routeCheckboxC.setBackgroundImage('blue_off.png');
+			routeCheckboxC.setBackgroundImage('Checkbox/blue_off.png');
 		}
 	});
 }
