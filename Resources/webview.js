@@ -6,7 +6,7 @@
   	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/widget/ColorPicker/ColorPicker.css">
   	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
  */
-	
+
   	var data, UserGPS, map, pt, symbol;
   	var GS1, GS2, GS3;
   	var shuttlecoords;
@@ -25,6 +25,7 @@
   		data = event.data[0]; //Hold stop info -- not used currently
 		UserGPS = event.data[1]; //Holds user GPS data
     	createMap();
+    	init();
     });
     
     Ti.App.addEventListener('centerMap', function(event){
@@ -65,7 +66,13 @@
 		updateMap();
 		ShowExpress();
 		});
-
+	//===================================================================	
+	
+	dojo.connect(map.graphics, "onClick", identifyFeatures);
+	
+	function identifyFeatures(){
+		Ti.API.info("Map Clicked!!!");
+	}
 //===================================================================
 
     function createMap(){
@@ -81,7 +88,8 @@
         			zoom: 15,
         			basemap: "osm",
         			minZoom: 12,
-        			sliderStyle:"large"
+        			sliderStyle:"large",
+        			logo: false
        			});
        		
    				

@@ -294,18 +294,27 @@ function findNearest(userLocation){
 		secondaryRow.add(stopNameLabel);
 		//1D1D1D
 	
-		secondaryRow.addEventListener('touchend', function(e){
+		/*secondaryRow.addEventListener('click', function(e){
 			Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
 			var index = diffArray[e.index][1];
 			var val1 = stopsArray[index][1];
 			var val2 = stopsArray[index][2];
 			Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
-		});
+		});*/
 		nearestArray.push(secondaryRow);
 		//nearestArray.push(baseRow);
 		
 	}
+	
+	
 	routeEstTable.setData(nearestArray);
+	routeEstTable.addEventListener('touchend', function(e){
+		Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
+		var index = diffArray[e.index][1];
+		var val1 = stopsArray[index][1];
+		var val2 = stopsArray[index][2];
+		Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
+	});
 }
 
 
