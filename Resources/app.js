@@ -279,19 +279,19 @@ function findNearest(userLocation){
 	    	height:'auto',
 	    	textAlign: 'left',
 	    });
-	    
-	    for(var i = 0; i < labelArray.length; i++){
-			secondaryRow.add(labelArray[i]);
-		}
-		var stopNameLabel = Ti.UI.createLabel({
+	   	
+	   	var stopNameLabel = Ti.UI.createLabel({
 			font: { fontSize:16 },
 			text: stopsArray[index][0],
 			color: '#FFFFFF',
 			left: 0,
-			top: 6,
-		
+			top: 6
 		});
 		secondaryRow.add(stopNameLabel);
+	    
+	    for(var i = 0; i < labelArray.length; i++){
+			secondaryRow.add(labelArray[i]);
+		}
 		//1D1D1D
 	
 		/*secondaryRow.addEventListener('click', function(e){
@@ -319,7 +319,7 @@ function findNearest(userLocation){
 			
 	Ti.App.addEventListener('adjustTable', function(event){
 		Ti.API.info('Adjust got to App.js: ' + event.data[0]);
-				
+		adjustTable(event);		
 	});
 }
 
@@ -439,7 +439,6 @@ function updateRouteEstimates(){
 	
 	xhr4.open("GET", url);
 	xhr4.send();
-	Ti.API.info("ROUTES ARRAY v3: " + stopsArray.toString());
 }
 
 
@@ -621,6 +620,40 @@ function setCheckBoxEventListeners(){
 			routeCheckboxC.setBackgroundImage('Checkbox/blue_off.png');
 		}
 	});
+}
+
+function adjustTable(e){
+	var stopId = e.data[0];
+	var stop = JSON.parse(stopId);
+	Ti.API.info("STOP ID: " + stopId);
+	var dataToChange = routeEstTable.getData();
+	dataToChange = dataToChange[0].getRows();
+	var chosenStop;
+	//Ti.API.info("DATA TO CHANGE: "  + dataToChange[0].children[0].text + "Row Count: " + dataToChange.length);
+	var i;
+	for(i = 0; i < stopsArray.length; i++){
+		Ti.API.info("Checking if ------  " + stopsArray[i][6] + " = " + stop[0]);
+		if(stopsArray[i][6] == stopId){
+			chosenStop = stopsArray[i][0];
+			break;
+		}
+	}
+	Ti.API.info("Stop Clicked: " + chosenStop);
+	var stopName, j;
+	for(i = 0; i < dataToChange.length; i++){
+		stopName = dataToChange[i].children[0].text;
+		//Ti.API.info("Stop Clicked: " + stopName);
+		if(stopName == chosenStop){
+			Ti.API.info("-------Stop Match--------");
+			var row = dataToChange[i];
+			routeEstTable.scrollToIndex(i);
+			row.backgroundColor = "#000000";
+			break;
+		}
+		
+		
+	}
+	
 }
 
 function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
