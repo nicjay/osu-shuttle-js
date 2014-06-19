@@ -99,31 +99,31 @@
         			
         		//Hardcoded stops for one route
         		var StopPtsSouthCentral = [
-					[44.55832, -123.28162],
-					[44.560524, -123.282411],
-					[44.56344, -123.27964],
-					[44.564578, -123.279934],
-					[44.56675, -123.27719],
-					[44.56673, -123.273],
-					[44.55901, -123.27962]];
+					[44.55832, -123.28162, 1],
+					[44.560524, -123.282411, 2],
+					[44.56344, -123.27964, 3],
+					[44.564578, -123.279934, 4],
+					[44.56675, -123.27719, 5],
+					[44.56673, -123.273, 6],
+					[44.55901, -123.27962, 7]];
 					
         		var StopPtsNorthCentral = [
-                    [44.564578, -123.279934],
-                    [44.56344, -123.27964],
-                    [44.56458, -123.28654],
-                    [44.56785, -123.28934],
-                    [44.56792, -123.28146],
-                    [44.56675, -123.27719],
-                    [44.56673, -123.273],
-                    [44.562588, -123.274155]];
+                    [44.564578, -123.279934, 4],
+                    [44.56344, -123.27964, 3],
+                    [44.56458, -123.28654, 8],
+                    [44.56785, -123.28934, 9],
+                    [44.56792, -123.28146, 10],
+                    [44.56675, -123.27719, 5],
+                    [44.56673, -123.273, 6],
+                    [44.562588, -123.274155, 11]];
                     
         		var StopPtsExpress = [
-                    [44.564578, -123.279934],
-                    [44.568107, -123.279461],
-                    [44.55901, -123.27962],
-                    [44.55832, -123.28162],
-                    [44.560524, -123.282411],
-                    [44.56344, -123.27964]];
+                    [44.564578, -123.279934, 4],
+                    [44.568107, -123.279461, 12],
+                    [44.55901, -123.27962, 7],
+                    [44.55832, -123.28162, 1],
+                    [44.560524, -123.282411, 2],
+                    [44.56344, -123.27964, 3]];
         
        
         		//When the map loads, load in user and stops graphics
@@ -131,11 +131,11 @@
         		
         		
         		
-        		map.on("click", myClickHandler);
+        		/*map.on("click", myClickHandler);
   
   				function myClickHandler(evt) {
     				Ti.API.info("Map Clicked!!!");
-  				}
+  				}*/
         		
         		
         		function loadUserAndStops(){
@@ -235,22 +235,26 @@
         			}
         			
         			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({ latitude: StopPt[0], longitude: StopPt[1] }), StopMarkerSymbol));
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({ latitude: StopPt[0], longitude: StopPt[1] }), StopMarkerSymbol, {"StopId":StopPt[2]} , null));
         			});
         			
         			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null));
         			});
         			
         			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
+        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null));
           			});
           			
           			
           			map.graphics.on("click", myGraphicsClickHandler);
         		
 	        		function myGraphicsClickHandler(evt) {
-	    				Ti.API.info("User clicked on " + evt.graphic);
+	    				var obj = evt.graphic.attributes;
+	    				var str = JSON.stringify(obj);
+	    				Ti.API.info("User clicked on " + str);
+	    				Ti.App.fireEvent("adjustTable", {data: [str]});
+	    			
 	  				}
           			
           			

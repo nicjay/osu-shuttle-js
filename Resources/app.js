@@ -315,6 +315,12 @@ function findNearest(userLocation){
 		var val2 = stopsArray[index][2];
 		Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
 	});
+	
+			
+	Ti.App.addEventListener('adjustTable', function(event){
+		Ti.API.info('Adjust got to App.js: ' + event.data[0]);
+				
+	});
 }
 
 
@@ -322,7 +328,7 @@ function findNearest(userLocation){
 var xhr2 = Ti.Network.createHTTPClient({
 	onload: function() {
 		var routesArray = [];
-
+		var id = 0;
 		
 		//Retrieve initial route info
 		routes = JSON.parse(this.responseText);
@@ -357,13 +363,42 @@ var xhr2 = Ti.Network.createHTTPClient({
 		
 				if(!skip){
 					var tmpArray = [];
-					tmpArray.push(cur[0], cur[1], cur[2], -1, -1, -1);
+					tmpArray.push(cur[0], cur[1], cur[2], -1, -1, -1, id++);
 					stopsArray.push(tmpArray);
-					//Ti.API.info("stops array status: " + stopsArray.toString());
+					Ti.API.info("stops array status: " + stopsArray.toString());
 				}
 			}
 			
 		}
+		//Ti.API.info("ROUTES ARRAY v2: " + stopsArray.toString());
+		
+		  /*      		var StopPtsSouthCentral = [
+					[44.55832, -123.28162, 1],
+					[44.560524, -123.282411, 2],
+					[44.56344, -123.27964, 3],
+					[44.564578, -123.279934, 4],
+					[44.56675, -123.27719, 5],
+					[44.56673, -123.273, 6],
+					[44.55901, -123.27962, 7]];
+					
+        		var StopPtsNorthCentral = [
+                    [44.564578, -123.279934, 4],
+                    [44.56344, -123.27964, 3],
+                    [44.56458, -123.28654, 8],
+                    [44.56785, -123.28934, 9],
+                    [44.56792, -123.28146, 10],
+                    [44.56675, -123.27719, 5],
+                    [44.56673, -123.273, 6],
+                    [44.562588, -123.274155, 11]];
+                    
+        		var StopPtsExpress = [
+                    [44.564578, -123.279934, 4],
+                    [44.568107, -123.279461, 12],
+                    [44.55901, -123.27962, 7],
+                    [44.55832, -123.28162, 1],
+                    [44.560524, -123.282411, 2],
+                    [44.56344, -123.27964, 3]];
+				*/        
 
 		/* ----------------ARRAY INFO-----------------------
 		 * stopsArray STRUCTURE
@@ -404,6 +439,7 @@ function updateRouteEstimates(){
 	
 	xhr4.open("GET", url);
 	xhr4.send();
+	Ti.API.info("ROUTES ARRAY v3: " + stopsArray.toString());
 }
 
 
