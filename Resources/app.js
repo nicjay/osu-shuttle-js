@@ -316,9 +316,8 @@ function findNearest(userLocation){
 		Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
 	});
 	
-			
+	//Event listener triggered on map click on stop. Starts function that scrolls the table.
 	Ti.App.addEventListener('adjustTable', function(event){
-		Ti.API.info('Adjust got to App.js: ' + event.data[0]);
 		adjustTable(event);		
 	});
 }
@@ -365,7 +364,6 @@ var xhr2 = Ti.Network.createHTTPClient({
 					var tmpArray = [];
 					tmpArray.push(cur[0], cur[1], cur[2], -1, -1, -1, id++);
 					stopsArray.push(tmpArray);
-					Ti.API.info("stops array status: " + stopsArray.toString());
 				}
 			}
 			
@@ -622,36 +620,32 @@ function setCheckBoxEventListeners(){
 	});
 }
 
+//FUNCTION : Adjusts tableView upon map click. Scrolls to chosen stop.
 function adjustTable(e){
 	var stopId = e.data[0];
-	Ti.API.info("STOP ID: " + stopId);
+	
 	var dataToChange = routeEstTable.getData();
 	dataToChange = dataToChange[0].getRows();
-	var chosenStop;
-	//Ti.API.info("DATA TO CHANGE: "  + dataToChange[0].children[0].text + "Row Count: " + dataToChange.length);
-	var i;
+	
+	//Find name of chosenStop using stopId passed in
+	var chosenStop, i;
 	for(i = 0; i < stopsArray.length; i++){
-		Ti.API.info("Checking if ------  " + stopsArray[i][6] + " = " + stopId);
 		if(stopsArray[i][6] == stopId){
 			chosenStop = stopsArray[i][0];
-			Ti.API.info("Found match for" + stopId + ", breaking loop...");
 			break;
 		}
 	}
-	Ti.API.info("Stop Clicked: " + chosenStop);
+	
+	//Find row with the same name, scroll to it.
 	var stopName, j;
 	for(i = 0; i < dataToChange.length; i++){
 		stopName = dataToChange[i].children[0].text;
-		//Ti.API.info("Stop Clicked: " + stopName);
 		if(stopName == chosenStop){
-			Ti.API.info("-------Stop Match--------");
 			var row = dataToChange[i];
-			routeEstTable.scrollToIndex(i, true);
-			row.backgroundColor = "#000000";
+			row.backgroundColor = '#000000';
+			routeEstTable.scrollToTop(i);
 			break;
-		}
-		
-		
+		}	
 	}
 	
 }

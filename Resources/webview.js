@@ -266,7 +266,6 @@
 	        		function myGraphicsClickHandler(evt) {
 	    				var obj = evt.graphic.attributes;
 	    				var str = JSON.stringify(obj);
-	    				Ti.API.info("User clicked on " + str);
 	    				Ti.App.fireEvent("adjustTable", {data: [obj.StopId]});
 	    			
 	  				}
