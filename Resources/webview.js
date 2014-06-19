@@ -8,6 +8,7 @@
  */
 
   	var data, UserGPS, map, pt, symbol;
+  	var selectStop;
   	var GS1, GS2, GS3;
   	var shuttlecoords;
   	var heading = new Array(3);
@@ -405,16 +406,23 @@
        function centerMap(data){
        	 require([
     		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
+    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic", "esri/symbols/PictureMarkerSymbol",
     		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
     		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
+    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, PictureMarkerSymbol, arrayUtils, domStyle, Color) {
       			var centerPoint = new esri.geometry.Point({
 					latitude: data[0],
 					longitude: data[1]
 				});
       			
+      			map.graphics.remove(selectStop);
+      			
       			map.centerAt(centerPoint);
+      			
+      			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/select.png', 15, 15);
+
+      			selectStop = new Graphic(centerPoint, selectStopSymbol);
+      			map.graphics.add(selectStop);
    				
         	});
        }
