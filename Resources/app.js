@@ -624,7 +624,6 @@ function setCheckBoxEventListeners(){
 
 function adjustTable(e){
 	var stopId = e.data[0];
-	var stop = JSON.parse(stopId);
 	Ti.API.info("STOP ID: " + stopId);
 	var dataToChange = routeEstTable.getData();
 	dataToChange = dataToChange[0].getRows();
@@ -632,9 +631,10 @@ function adjustTable(e){
 	//Ti.API.info("DATA TO CHANGE: "  + dataToChange[0].children[0].text + "Row Count: " + dataToChange.length);
 	var i;
 	for(i = 0; i < stopsArray.length; i++){
-		Ti.API.info("Checking if ------  " + stopsArray[i][6] + " = " + stop[0]);
+		Ti.API.info("Checking if ------  " + stopsArray[i][6] + " = " + stopId);
 		if(stopsArray[i][6] == stopId){
 			chosenStop = stopsArray[i][0];
+			Ti.API.info("Found match for" + stopId + ", breaking loop...");
 			break;
 		}
 	}
@@ -646,7 +646,7 @@ function adjustTable(e){
 		if(stopName == chosenStop){
 			Ti.API.info("-------Stop Match--------");
 			var row = dataToChange[i];
-			routeEstTable.scrollToIndex(i);
+			routeEstTable.scrollToIndex(i, true);
 			row.backgroundColor = "#000000";
 			break;
 		}
