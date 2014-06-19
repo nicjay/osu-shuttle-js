@@ -17,6 +17,13 @@
   	var NorthRouteGraphic;
   	var SouthRouteGraphic;
   	
+  	
+  	var ExprStopGraphics = [];
+  	var NorthStopGraphics = [];
+  	var SouthStopGraphics = [];
+  	
+  	
+  	
   	var enableExpress = true;
   	var enableNorth = true;
   	var enableSouth = true;
@@ -236,15 +243,21 @@
         			}
         			
         			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({ latitude: StopPt[0], longitude: StopPt[1] }), StopMarkerSymbol, {"StopId":StopPt[2]} , null));
+        			  	var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+        				SouthStopGraphics.push(tempStop);
+        			    map.graphics.add(tempStop);
         			});
         			
         			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null));
+        			    var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+        				NorthStopGraphics.push(tempStop);
+        			    map.graphics.add(tempStop);
         			});
         			
         			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
-        			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null));
+        				var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+        				ExprStopGraphics.push(tempStop);
+        			    map.graphics.add(tempStop);
           			});
           			
           			
@@ -344,10 +357,19 @@
    				if (enableExpress == true){
 	          		
 	          		ExprRouteGraphic.show();
+	          		
+	          		arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
+        				StopGraphic.show();
+          			});
+	          		
+	          		
 	      		}
 	      		else{
 	      			ExprRouteGraphic.hide();
-	      			//map.graphics.remove(ExprRouteGraphic);
+	      			
+	      			arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
+        				StopGraphic.hide();
+          			});
 	      			
 	      		}
    				
@@ -367,10 +389,17 @@
    				if (enableNorth == true){
 	      			
 	          		NorthRouteGraphic.show();
+	          		
+	          		arrayUtils.forEach(NorthStopGraphics, function(StopGraphic) {
+        				StopGraphic.show();
+          			});
 	      		}
 	      		else{
 	      			NorthRouteGraphic.hide();
-	      			//map.graphics.remove(ExprRouteGraphic);
+	      			
+	      			arrayUtils.forEach(NorthStopGraphics, function(StopGraphic) {
+        				StopGraphic.hide();
+          			});
 	      			
 	      		}
    			
@@ -389,11 +418,17 @@
    				if (enableSouth == true){
 
 	          		SouthRouteGraphic.show();
+	          		
+	          		arrayUtils.forEach(SouthStopGraphics, function(StopGraphic) {
+        				StopGraphic.show();
+          			});
 	      		}
 	      		else{
 	      			SouthRouteGraphic.hide();
-	      			//map.graphics.remove(ExprRouteGraphic);
 	      			
+	      			arrayUtils.forEach(SouthStopGraphics, function(StopGraphic) {
+        				StopGraphic.hide();
+          			});
 	      		}
    				
    				
