@@ -38,11 +38,11 @@ var localWebview = Titanium.UI.createWebView({
     right:0,
     //html:textContent,
     height:'71%',
-    width:'100%',
+    width:'auto',
     backgroundColor:'#373737',
     touchEnabled:true,
     borderColor: '#111111',
-    borderWidth: 5,
+    borderWidth: 0,
     borderRadius: 0,
     //borderColor: '#080808',
     //borderWidth: '8px'

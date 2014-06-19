@@ -85,6 +85,7 @@
     		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/Deferred", "dojo/_base/Color",
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
+      			var clickProcessing = false;
       			
       			map = new Map("mapDiv", {
         			center: [-123.280, 44.562],
@@ -262,12 +263,18 @@
           			
           			
           			map.graphics.on("click", myGraphicsClickHandler);
-        		
 	        		function myGraphicsClickHandler(evt) {
-	    				var obj = evt.graphic.attributes;
-	    				var str = JSON.stringify(obj);
-	    				Ti.App.fireEvent("adjustTable", {data: [obj.StopId]});
-	    			
+	    				if(clickProcessing == false){
+		    				Ti.API.info("Click sent...");
+		    				clickProcessing = true;
+		    				var obj = evt.graphic.attributes;
+		    				var str = JSON.stringify(obj);
+		    				Ti.App.fireEvent("adjustTable", {data: [obj.StopId]});
+		    				setTimeout(function(){ clickProcessing = false; }, 1500);
+	    				}
+	    				else{
+	    					Ti.API.info("______Click Skipped...");
+	    				}
 	  				}
           			
           			
