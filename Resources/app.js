@@ -316,11 +316,22 @@ function findNearest(userLocation){
 		Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
 	});
 	
+	
+	
 	//Event listener triggered on map click on stop. Starts function that scrolls the table.
+	/*
 	Ti.App.addEventListener('adjustTable', function(event){
 		adjustTable(event);		
 	});
+	
+	*/
+	
 }
+
+
+
+
+
 
 
 //set stopsArray
@@ -667,3 +678,13 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
 function deg2rad(deg) {
   return deg * (Math.PI/180);
 }
+
+
+
+//Event listener triggered on map click on stop. Starts function that scrolls the table.
+Ti.App.addEventListener('adjustTable', function(event){
+	adjustTable(event);		
+	});
+	
+
+
