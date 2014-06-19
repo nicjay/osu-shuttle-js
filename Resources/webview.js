@@ -25,7 +25,7 @@
   		data = event.data[0]; //Hold stop info -- not used currently
 		UserGPS = event.data[1]; //Holds user GPS data
     	createMap();
-    	init();
+    	
     });
     
     Ti.App.addEventListener('centerMap', function(event){
@@ -67,12 +67,7 @@
 		ShowExpress();
 		});
 	//===================================================================	
-	
-	dojo.connect(map.graphics, "onClick", identifyFeatures);
-	
-	function identifyFeatures(){
-		Ti.API.info("Map Clicked!!!");
-	}
+
 //===================================================================
 
     function createMap(){
@@ -133,7 +128,16 @@
        
         		//When the map loads, load in user and stops graphics
         		map.on("load", loadUserAndStops);
-
+        		
+        		
+        		
+        		map.on("click", myClickHandler);
+  
+  				function myClickHandler(evt) {
+    				Ti.API.info("Map Clicked!!!");
+  				}
+        		
+        		
         		function loadUserAndStops(){
 	        		var ExpressRoute = [
 			        		[-123.279941,44.567899],
@@ -242,7 +246,19 @@
         			    map.graphics.add(new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol));
           			});
           			
+          			
+          			map.graphics.on("click", myGraphicsClickHandler);
+        		
+	        		function myGraphicsClickHandler(evt) {
+	    				Ti.API.info("User clicked on " + evt.graphic);
+	  				}
+          			
+          			
         		}
+        		
+        		
+        		
+
         		
         	});
        }
@@ -400,5 +416,6 @@
        }
        
        
+     
 //===================================================================
 
