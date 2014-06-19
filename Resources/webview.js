@@ -102,7 +102,7 @@
         		//UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
         		//UserMarkerSymbol.setOutline(null);
         		
-        		var StopMarkerSymbol = new esri.symbol.PictureMarkerSymbol('GeneralUI/stopSign.png', 15, 15);
+        		var StopMarkerSymbol = new esri.symbol.PictureMarkerSymbol('GeneralUI/stopSign2.png', 20, 20);
         		//Cusom picture example for marker
         		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
         			
@@ -460,7 +460,7 @@
       			
       			map.centerAt(centerPoint);
       			
-      			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/select.png', 15, 15);
+      			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/stopSignSelected.png', 45, 45);
 
       			selectStop = new Graphic(centerPoint, selectStopSymbol);
       			map.graphics.add(selectStop);

@@ -186,9 +186,9 @@ function getUserGPS(){
 
 
 var tmpGPSData = [44.567635, -123.278518];
-var stopsArray = [];
+var stopsArray = [], diffArray = [];
 function findNearest(userLocation){
-	var diffArray = [];
+	diffArray = [];
 	nearestArray = [];
 	
 	updateRouteEstimates();
@@ -308,13 +308,6 @@ function findNearest(userLocation){
 	
 	
 	routeEstTable.setData(nearestArray);
-	routeEstTable.addEventListener('touchend', function(e){
-		Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
-		var index = diffArray[e.index][1];
-		var val1 = stopsArray[index][1];
-		var val2 = stopsArray[index][2];
-		Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
-	});
 	
 	
 	
@@ -328,6 +321,13 @@ function findNearest(userLocation){
 	
 }
 
+routeEstTable.addEventListener('longpress', function(e){
+	Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
+	var index = diffArray[e.index][1];
+	var val1 = stopsArray[index][1];
+	var val2 = stopsArray[index][2];
+	Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
+});
 
 
 
