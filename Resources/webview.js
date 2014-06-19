@@ -92,7 +92,10 @@
         			zoom: 15,
         			basemap: "osm",
         			minZoom: 12,
-        			sliderStyle:"large",
+        			sliderStyle:"small",
+        			sliderPosition:"bottom-left",
+        			sliderOrientation:"horizontal",
+        			showAttribution:false,
         			logo: false
        			});
        		
