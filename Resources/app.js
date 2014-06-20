@@ -199,7 +199,7 @@ function findNearest(userLocation){
 		var latitude = tmpStop[1];
 		var longitude = tmpStop[2];
 		//var diff = Math.sqrt(Math.pow(Math.abs(userLocation[0] - latitude),2) + Math.pow(Math.abs(userLocation[1] - longitude),2));
-		var diff = getDistanceFromLatLonInKm(userLocation[0],userLocation[1],latitude,longitude);
+		var diff = getDistanceFromLatLon(userLocation[0],userLocation[1],latitude,longitude);
 		
 		//var diff = Math.sqrt(Math.abs(userLocation[0] - latitude)^2 + Math.abs(userLocation[1] - longitude)^2);
 		diffArray.push([diff, i]);
@@ -322,7 +322,7 @@ function findNearest(userLocation){
 }
 
 routeEstTable.addEventListener('longpress', function(e){
-	Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
+	//Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
 	var index = diffArray[e.index][1];
 	var val1 = stopsArray[index][1];
 	var val2 = stopsArray[index][2];
@@ -378,36 +378,7 @@ var xhr2 = Ti.Network.createHTTPClient({
 				}
 			}
 			
-		}
-		//Ti.API.info("ROUTES ARRAY v2: " + stopsArray.toString());
-		
-		  /*      		var StopPtsSouthCentral = [
-					[44.55832, -123.28162, 1],
-					[44.560524, -123.282411, 2],
-					[44.56344, -123.27964, 3],
-					[44.564578, -123.279934, 4],
-					[44.56675, -123.27719, 5],
-					[44.56673, -123.273, 6],
-					[44.55901, -123.27962, 7]];
-					
-        		var StopPtsNorthCentral = [
-                    [44.564578, -123.279934, 4],
-                    [44.56344, -123.27964, 3],
-                    [44.56458, -123.28654, 8],
-                    [44.56785, -123.28934, 9],
-                    [44.56792, -123.28146, 10],
-                    [44.56675, -123.27719, 5],
-                    [44.56673, -123.273, 6],
-                    [44.562588, -123.274155, 11]];
-                    
-        		var StopPtsExpress = [
-                    [44.564578, -123.279934, 4],
-                    [44.568107, -123.279461, 12],
-                    [44.55901, -123.27962, 7],
-                    [44.55832, -123.28162, 1],
-                    [44.560524, -123.282411, 2],
-                    [44.56344, -123.27964, 3]];
-				*/        
+		}     
 
 		/* ----------------ARRAY INFO-----------------------
 		 * stopsArray STRUCTURE
@@ -661,7 +632,8 @@ function adjustTable(e){
 	
 }
 
-function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+function getDistanceFromLatLon(lat1,lon1,lat2,lon2) {
+  var miConversion = 0.621371;
   var R = 6371; // Radius of the earth in km
   var dLat = deg2rad(lat2-lat1);  // deg2rad below
   var dLon = deg2rad(lon2-lon1); 
@@ -671,7 +643,7 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
     Math.sin(dLon/2) * Math.sin(dLon/2)
     ; 
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  var d = R * c; // Distance in km
+  var d = R * c * miConversion; // Distance in km
   return d;
 }
 
