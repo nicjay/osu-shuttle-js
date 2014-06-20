@@ -18,6 +18,8 @@
   	var enableExpress = true;
   	var enableNorth = true;
   	var enableSouth = true;
+  	
+
   
   	//When this event occurs, fill up variables and create map.
    	Ti.App.addEventListener("startmap", function (event) {
@@ -296,8 +298,8 @@
 					map.graphics.remove(GS1);
         			map.graphics.remove(GS2);
    					map.graphics.remove(GS3);
-					
-					var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20); //south central
+   					
+   					var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20); //south central
 					var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('Shuttle/greentriangle.png', 20, 20); //*north central
 					var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('Shuttle/orangetriangle.png', 20, 20); //express
     				
@@ -450,14 +452,14 @@
 					longitude: data[1]
 				});
       			
-      			map.graphics.remove(selectStop);
       			
       			map.centerAt(centerPoint);
       			
-      			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/stopSignSelected.png', 45, 45);
-
+				map.graphics.remove(selectStop);
+				
+				var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/stopSignSelected.png', 45, 45);
       			selectStop = new Graphic(centerPoint, selectStopSymbol);
-      			map.graphics.add(selectStop);
+      			map.graphics.add(selectStop);		
    				
         	});
        }

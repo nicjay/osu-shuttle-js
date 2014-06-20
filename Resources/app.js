@@ -68,7 +68,7 @@ var localWebview = Titanium.UI.createWebView({
 
 var bottomMenu = Ti.UI.createView({
     width:'auto',
-    height: '30%',
+    height: 'auto',
     bottom:3,
     left: 3,
     right: 3,
@@ -102,13 +102,14 @@ var userGPSStatusLabel = Titanium.UI.createLabel({
 var routeEstTable = Ti.UI.createTableView({
   	left: 7,
   	right:25,
+  	height:Titanium.UI.SIZE,
   	maxRowHeight: 50,
   	data: nearestArray,
 	scrollable: true,
 	color: '#ffffff',
 	//separatorColor: 'transparent',
 	separatorColor: 'white',
-	showVerticalScrollIndicator: true,
+	showVerticalScrollIndicator: false,
 });
 
 var scrollArrows = Ti.UI.createImageView({
