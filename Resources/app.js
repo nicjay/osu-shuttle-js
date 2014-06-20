@@ -402,8 +402,9 @@ function findNearest(userLocation){
 					font: { fontSize:14 },
 					text: distance.toFixed(2.2) + " mi",
 					color: '#C0C0C0',
-					left: 10,
-					top: 28,
+					left: 30,
+					top: 9,
+					width: Ti.UI.FILL,
 				});
 				labelArray.push(distanceLabel);
 			}
@@ -450,16 +451,20 @@ function findNearest(userLocation){
 					font: { fontSize:34 },
 					text: eta,
 					color: routeColor,
+					width: '33.3%',
+					textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+					bottom: -20,
 					//top: 5,
-					left: 195 + (100*i)
+					//left: 195 + (100*i)
 				});
 				labelArray.push(stopTiming);
 			//}
 		}
 		
 		var secondaryRow = Ti.UI.createTableViewRow({
-	    	height:'auto',
+	    	height: 'auto',
 	    	textAlign: 'left',
+	    	layout: 'horizontal',
 	    });
 	   	
 	   	var stopNameLabel = Ti.UI.createLabel({
@@ -467,7 +472,7 @@ function findNearest(userLocation){
 			text: stopsArray[index][0],
 			color: '#FFFFFF',
 			left: 0,
-			top: 6
+			top: 10,
 		});
 		secondaryRow.add(stopNameLabel);
 	    
