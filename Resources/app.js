@@ -16,7 +16,7 @@ var url = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimate
 var url2 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetRoutesForMapWithSchedule";
 var url3 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapVehiclePoints";
 
-var userGPS = [0, 0];
+var userGPS = [44.565, -123.277];
 var deviceGPSOn = false;
 var gpsOffPhrase = "GPS: Off";
 var gpsOnPhrase = "GPS: On";
@@ -88,21 +88,29 @@ var slideLabel = Titanium.UI.createLabel({
 });
 
 var routeEstTable = Ti.UI.createTableView({
-  left: 70,
-  maxRowHeight: 50,
-  data: nearestArray,
-  scrollable: true,
-  color: '#ffffff',
-  separatorColor: 'transparent',
-  
+  	left: 7,
+  	right:25,
+  	maxRowHeight: 50,
+  	data: nearestArray,
+	scrollable: true,
+	color: '#ffffff',
+	//separatorColor: 'transparent',
+	separatorColor: 'white',
+	showVerticalScrollIndicator: true,
 });
 
-//Add objects to window
+var scrollArrows = Ti.UI.createImageView({
+	image:'GeneralUI/scrollarrow.png',
+	right:10
+});
+
+//Add objects to windows
 win.add(localWebview);
 win.add(bottomMenu);
 win.add(slideLabel);
 win.add(userGPSStatusLabel);
 bottomMenu.add(routeEstTable);
+bottomMenu.add(scrollArrows);
 
 createRouteCheckBox();
 
@@ -154,9 +162,10 @@ function createRouteCheckBox(){
 	  titleOn: ''
 	});
 	
+	/*
 	bottomMenu.add(routeCheckboxA);
 	bottomMenu.add(routeCheckboxB);
-	bottomMenu.add(routeCheckboxC);
+	bottomMenu.add(routeCheckboxC);*/
 	
 	setCheckBoxEventListeners();
 }
@@ -363,7 +372,7 @@ function findNearest(userLocation){
 		return a[0] - b[0];
 	});
 	
-	var routeColor, baseLeft = 70, labelArray = [];
+	var routeColor, labelArray = [], leftIncrement = 70;
 	for(var j = 0; j < diffArray.length; j++){
 		var index = diffArray[j][1], distance = diffArray[j][0];
 		var baseRow = Ti.UI.createTableViewRow({
@@ -371,7 +380,6 @@ function findNearest(userLocation){
 	    });
 	    
 	    labelArray = [];
-	    var leftIncrement = 70;
 		for(var i = 0; i < 3; i++){
 			if(i==0){
 				var distanceLabel = Ti.UI.createLabel({
@@ -384,7 +392,8 @@ function findNearest(userLocation){
 				labelArray.push(distanceLabel);
 			}
 			
-			if(stopsArray[index][i+3] != -1){
+			//Disabled empty check for testing -- Change this back!!
+			//if(stopsArray[index][i+3] != -1){
 				switch(i+3){
 					case 3:
 						//routeColor = '#576fff';
@@ -417,15 +426,19 @@ function findNearest(userLocation){
 				if(eta == '0:00'){
 					eta = 'Arrived';
 				}
+				
+				//TEST VALUE
+				eta = "10:40";
+				
 				var stopTiming = Ti.UI.createLabel({
-					font: { fontSize:20 },
+					font: { fontSize:34 },
 					text: eta,
 					color: routeColor,
-					top: 25,
-					left: baseLeft+(leftIncrement*i)
+					//top: 5,
+					left: 195 + (100*i)
 				});
 				labelArray.push(stopTiming);
-			}
+			//}
 		}
 		
 		var secondaryRow = Ti.UI.createTableViewRow({
@@ -450,77 +463,7 @@ function findNearest(userLocation){
 	routeEstTable.setData(nearestArray);
 }
 
-routeEstTable.addEventListener('longpress', function(e){
-	//Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
-	var index = diffArray[e.index][1];
-	var val1 = stopsArray[index][1];
-	var val2 = stopsArray[index][2];
-	Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
-});
 
-
-
-
-
-
-//set stopsArray
-var xhr2 = Ti.Network.createHTTPClient({
-	onload: function() {
-		var routesArray = [];
-		var id = 0;
-		
-		//Retrieve initial route info
-		routes = JSON.parse(this.responseText);
-		for(var i = 0; i < routes.length; i++){
-			var routeArray = [];
-			var route = routes[i];
-	
-			for (var j = 0; j < route.Landmarks.length; j++){
-				var landmarkArray = [];
-				var data = route.Landmarks[j];
-				landmarkArray.push(data.Label, data.Latitude, data.Longitude);
-				routeArray.push(landmarkArray);
-				
-			}
-			routesArray.push(routeArray);
-		}
-		Ti.API.info("ROUTES ARRAY: " + routesArray.toString());
-
-		//Sort and remove duplicates. Add flags for which shuttles stop at each stop.
-		for(var k = 0; k < routesArray.length; k++){
-			for(var l = 0; l < routesArray[k].length; l++){
-				var cur = routesArray[k][l];
-				var skip = 0;
-				
-				
-				for(var i = 0; i < stopsArray.length; i++){
-					if(stopsArray[i][0] == cur[0]){
-						skip = 1;
-						break;
-					}	
-				}
-		
-				if(!skip){
-					var tmpArray = [];
-					tmpArray.push(cur[0], cur[1], cur[2], -1, -1, -1, id++);
-					stopsArray.push(tmpArray);
-				}
-			}
-			
-		}     
-
-		/* ----------------ARRAY INFO-----------------------
-		 * stopsArray STRUCTURE
-		 * 		[Stop Name, Latitude, Longitude, SouthCentralBusFlag, NorthCentralBusFlag, ExpressBusFlag]
-		 * 	
-		 * 		Example
-		 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
-
-	}
-});
-
-xhr2.open("GET", url2);
-xhr2.send();
 
 
 function updateRouteEstimates(){
