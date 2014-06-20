@@ -581,7 +581,11 @@ function ShuttleLocRequest(){
 		
 			//Get all info
 			shuttlelocs = JSON.parse(this.responseText);
-		
+			
+			if(shuttlelocs.length == 0){
+				Ti.API.info("No shuttles active...");
+			}
+			
 			for (var x=0;x<shuttlelocs.length;x++){
 				shuttleloc = shuttlelocs[x];
 				shuttlecoords[x][0] = shuttleloc.Latitude;
