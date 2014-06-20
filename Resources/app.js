@@ -34,39 +34,41 @@ var win = Ti.UI.createWindow({
     backgroundColor:'#c34500',
     navBarHidden:true,
     softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
+    layout: 'vertical',
 });
+
+var topMenu = Ti.UI.createView({
+	width: 'auto',
+	height: Ti.UI.SIZE,
+	top: 0,
+});
+
+createRouteCheckBox();
+
 
 //Create webview of map.html
 var localWebview = Titanium.UI.createWebView({
 	url:'map.html',
-    top:0,
+    //bottom: bottomMenu.toImage().height,
     left:0,
     right:0,
+    top: 0,
     //html:textContent,
-    height:'71%',
-    width:'auto',
+    height:'55%',
+    //width:'auto',
     backgroundColor:'#373737',
     touchEnabled:true,
-    borderColor: '#111111',
-    borderWidth: 0,
+    borderColor: '#c34500',
+    borderWidth: 3,
     borderRadius: 0,
+    layout: 'vertical',
     //borderColor: '#080808',
     //borderWidth: '8px'
 });
 
-var userGPSStatusLabel = Titanium.UI.createLabel({
-	color:'#334C61',
-	text: '',
-	font:{fontSize:15,fontFamily:'Helvetica Neue', fontWeight: 'bold'},
-	textAlign:'left',
-	top: 3,
-	left: 10,
-	backgroundColor: 'transparent',
-});
-
 var bottomMenu = Ti.UI.createView({
     width:'auto',
-    height:'28%',
+    height: '30%',
     bottom:3,
     left: 3,
     right: 3,
@@ -76,7 +78,17 @@ var bottomMenu = Ti.UI.createView({
     borderRadius: 0,
 });
 
-var slideLabel = Titanium.UI.createLabel({
+var userGPSStatusLabel = Titanium.UI.createLabel({
+	color:'#334C61',
+	text: '',
+	font:{fontSize:15,fontFamily:'Helvetica Neue', fontWeight: 'bold'},
+	textAlign:'left',
+	top: '90px',
+	left: 10,
+	backgroundColor: 'transparent',
+});
+
+/*var slideLabel = Titanium.UI.createLabel({
 	color:'#334C61',
 	text: '',
 	font:{fontSize:20,fontFamily:'Helvetica Neue'},
@@ -85,7 +97,7 @@ var slideLabel = Titanium.UI.createLabel({
 	width: 'auto',
 	height:'auto',
 	backgroundImage: 'GeneralUI/slideBar.png'
-});
+});*/
 
 var routeEstTable = Ti.UI.createTableView({
   	left: 7,
@@ -99,20 +111,26 @@ var routeEstTable = Ti.UI.createTableView({
 	showVerticalScrollIndicator: true,
 });
 
+<<<<<<< HEAD
 var scrollArrows = Ti.UI.createImageView({
 	image:'GeneralUI/scrollarrow.png',
 	right:10
 });
 
 //Add objects to windows
+=======
+
+//Add objects to window
+win.add(topMenu);
+>>>>>>> origin/master
 win.add(localWebview);
 win.add(bottomMenu);
-win.add(slideLabel);
+
+//win.add(slideLabel);
 win.add(userGPSStatusLabel);
 bottomMenu.add(routeEstTable);
 bottomMenu.add(scrollArrows);
 
-createRouteCheckBox();
 
 SetStops();
 
@@ -130,11 +148,11 @@ function createRouteCheckBox(){
 	routeCheckboxB = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  value:true,
-	  left: 10,
-	  top: 5,
-	  width: 55,
-	  height: 50,
-	  backgroundImage: 'Checkbox/green_on.png',
+	  left: 0,
+	  width: '33.3%',
+	  height: 'auto',
+	  top: 0,
+	  backgroundImage: 'Checkbox/green_on2u.png',
 	  titleOff: '',
 	  titleOn: ''
 	});
@@ -142,10 +160,11 @@ function createRouteCheckBox(){
 	routeCheckboxA = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  value:true,
-	  left: 10,
-	  width: 55,
-	  height: 50,
-	  backgroundImage: 'Checkbox/orange_on.png',
+	  left: '33.3%',
+	  width: '33.3%',
+	  height: 'auto',
+	  top: 0,
+	  backgroundImage: 'Checkbox/orange_on2u.png',
 	  titleOff: '',
 	  titleOn: ''
 	});
@@ -153,19 +172,25 @@ function createRouteCheckBox(){
 	routeCheckboxC = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  value:true,
-	  left: 10,
-	  bottom: 5,
-	  width: 55,
-	  height: 50,
-	  backgroundImage: 'Checkbox/blue_on.png',
+	  left: '66.6%',
+	  width: '33.3%',
+	  height: 'auto',
+	  top: 0,
+	  backgroundImage: 'Checkbox/blue_on2u.png',
 	  titleOff: '',
 	  titleOn: ''
 	});
 	
+<<<<<<< HEAD
 	/*
 	bottomMenu.add(routeCheckboxA);
 	bottomMenu.add(routeCheckboxB);
 	bottomMenu.add(routeCheckboxC);*/
+=======
+	topMenu.add(routeCheckboxA);
+	topMenu.add(routeCheckboxB);
+	topMenu.add(routeCheckboxC);
+>>>>>>> origin/master
 	
 	setCheckBoxEventListeners();
 }
@@ -248,30 +273,30 @@ function setCheckBoxEventListeners(){
 	routeCheckboxA.addEventListener('change',function(){
 		Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
 		if(routeCheckboxA.value == true){
-			routeCheckboxA.setBackgroundImage('Checkbox/orange_on.png');
+			routeCheckboxA.setBackgroundImage('Checkbox/orange_on2u.png');
 		}
 		else{
-			routeCheckboxA.setBackgroundImage('Checkbox/orange_off.png');
+			routeCheckboxA.setBackgroundImage('Checkbox/orange_off2u.png');
 		}
 	});
 	
 	routeCheckboxB.addEventListener('change',function(){
 		Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
 		if(routeCheckboxB.value == true){
-			routeCheckboxB.setBackgroundImage('Checkbox/green_on.png');
+			routeCheckboxB.setBackgroundImage('Checkbox/green_on2u.png');
 		}
 		else{
-			routeCheckboxB.setBackgroundImage('Checkbox/green_off.png');
+			routeCheckboxB.setBackgroundImage('Checkbox/green_off2u.png');
 		}
 	});
 	
 	routeCheckboxC.addEventListener('change',function(){
 		Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
 		if(routeCheckboxC.value == true){
-			routeCheckboxC.setBackgroundImage('Checkbox/blue_on.png');
+			routeCheckboxC.setBackgroundImage('Checkbox/blue_on2u.png');
 		}
 		else{
-			routeCheckboxC.setBackgroundImage('Checkbox/blue_off.png');
+			routeCheckboxC.setBackgroundImage('Checkbox/blue_off2u.png');
 		}
 	});
 }
@@ -509,7 +534,11 @@ function ShuttleLocRequest(){
 		
 			//Get all info
 			shuttlelocs = JSON.parse(this.responseText);
-		
+			
+			if(shuttlelocs.length == 0){
+				Ti.API.info("No shuttles active...");
+			}
+			
 			for (var x=0;x<shuttlelocs.length;x++){
 				shuttleloc = shuttlelocs[x];
 				shuttlecoords[x][0] = shuttleloc.Latitude;
