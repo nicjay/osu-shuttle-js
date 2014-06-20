@@ -68,7 +68,7 @@ var localWebview = Titanium.UI.createWebView({
 
 var bottomMenu = Ti.UI.createView({
     width:'auto',
-    height: '30%',
+    height: 'auto',
     bottom:3,
     left: 3,
     right: 3,
