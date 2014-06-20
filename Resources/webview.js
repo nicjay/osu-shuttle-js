@@ -1,12 +1,6 @@
   	
 //===================================================================
   	//Set up variables and event listeners
-/*
-  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
-  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/widget/ColorPicker/ColorPicker.css">
-  	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
- */
-
   	var data, UserGPS, map, pt, symbol;
   	var selectStop;
   	var GS1, GS2, GS3;
@@ -17,12 +11,9 @@
   	var NorthRouteGraphic;
   	var SouthRouteGraphic;
   	
-  	
   	var ExprStopGraphics = [];
   	var NorthStopGraphics = [];
   	var SouthStopGraphics = [];
-  	
-  	
   	
   	var enableExpress = true;
   	var enableNorth = true;
