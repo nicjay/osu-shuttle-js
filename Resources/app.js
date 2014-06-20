@@ -99,13 +99,7 @@ var userGPSStatusLabel = Titanium.UI.createLabel({
 	backgroundImage: 'GeneralUI/slideBar.png'
 });*/
 
-var scrollView = Ti.UI.createScrollView({
-	width:'auto',
-    height: 'auto',
-    bottom:3,
-    left: 3,
-    right: 3,
-});
+
 
 var routeEstTable = Ti.UI.createTableView({
   	left: 7,
@@ -116,7 +110,7 @@ var routeEstTable = Ti.UI.createTableView({
 	color: '#ffffff',
 	//separatorColor: 'transparent',
 	separatorColor: 'white',
-	showVerticalScrollIndicator: false,
+	showVerticalScrollIndicator:false
 });
 
 var scrollArrows = Ti.UI.createImageView({
@@ -133,12 +127,9 @@ win.add(bottomMenu);
 //win.add(slideLabel);
 win.add(userGPSStatusLabel);
 
-scrollView.add(routeEstTable);
-bottomMenu.add(scrollView);
-//bottomMenu.add(routeEstTable);
+bottomMenu.add(routeEstTable);
 
-
-//bottomMenu.add(scrollArrows);
+bottomMenu.add(scrollArrows);
 
 
 SetStops();
@@ -263,6 +254,9 @@ function SetStops(){
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
+
+win.addEventListener('android:back',function(e) {
+});
 
 function setAdjustTableListener(){
 	//Event listener triggered on map click on stop. Starts function that scrolls the table.
@@ -414,7 +408,9 @@ function findNearest(userLocation){
 					font: { fontSize:14 },
 					text: distance.toFixed(2.2) + " mi",
 					color: '#C0C0C0',
-					left: 30,
+					//left: 30,
+					right:25,
+					textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
 					top: 9,
 					width: Ti.UI.FILL,
 				});
@@ -483,7 +479,7 @@ function findNearest(userLocation){
 			font: { fontSize:16 },
 			text: stopsArray[index][0],
 			color: '#FFFFFF',
-			left: 0,
+			left: 15,
 			top: 10,
 		});
 		secondaryRow.add(stopNameLabel);
