@@ -99,10 +99,17 @@ var userGPSStatusLabel = Titanium.UI.createLabel({
 	backgroundImage: 'GeneralUI/slideBar.png'
 });*/
 
+var scrollView = Ti.UI.createScrollView({
+	width:'auto',
+    height: 'auto',
+    bottom:3,
+    left: 3,
+    right: 3,
+});
+
 var routeEstTable = Ti.UI.createTableView({
   	left: 7,
   	right:25,
-  	height:Titanium.UI.SIZE,
   	maxRowHeight: 50,
   	data: nearestArray,
 	scrollable: true,
@@ -125,8 +132,13 @@ win.add(bottomMenu);
 
 //win.add(slideLabel);
 win.add(userGPSStatusLabel);
-bottomMenu.add(routeEstTable);
-bottomMenu.add(scrollArrows);
+
+scrollView.add(routeEstTable);
+bottomMenu.add(scrollView);
+//bottomMenu.add(routeEstTable);
+
+
+//bottomMenu.add(scrollArrows);
 
 
 SetStops();
