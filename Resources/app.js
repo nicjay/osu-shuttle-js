@@ -354,14 +354,7 @@ function findNearest(userLocation){
 		var tmpStop = stopsArray[i];
 		var latitude = tmpStop[1];
 		var longitude = tmpStop[2];
-<<<<<<< HEAD
-		//var diff = Math.sqrt(Math.pow(Math.abs(userLocation[0] - latitude),2) + Math.pow(Math.abs(userLocation[1] - longitude),2));
 		var diff = getDistanceFromLatLon(userLocation[0],userLocation[1],latitude,longitude);
-		
-		//var diff = Math.sqrt(Math.abs(userLocation[0] - latitude)^2 + Math.abs(userLocation[1] - longitude)^2);
-=======
-		var diff = getDistanceFromLatLonInKm(userLocation[0],userLocation[1],latitude,longitude);
->>>>>>> origin/master
 		diffArray.push([diff, i]);
 	}
 	
@@ -457,7 +450,6 @@ function findNearest(userLocation){
 	routeEstTable.setData(nearestArray);
 }
 
-<<<<<<< HEAD
 routeEstTable.addEventListener('longpress', function(e){
 	//Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
 	var index = diffArray[e.index][1];
@@ -529,11 +521,7 @@ var xhr2 = Ti.Network.createHTTPClient({
 
 xhr2.open("GET", url2);
 xhr2.send();
-=======
-//===================================================================
-//-------------------------------------------------------------------
-//===================================================================
->>>>>>> origin/master
+
 
 function updateRouteEstimates(){
 	var shuttles = [];
