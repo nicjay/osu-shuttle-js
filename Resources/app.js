@@ -111,18 +111,14 @@ var routeEstTable = Ti.UI.createTableView({
 	showVerticalScrollIndicator: true,
 });
 
-<<<<<<< HEAD
 var scrollArrows = Ti.UI.createImageView({
 	image:'GeneralUI/scrollarrow.png',
 	right:10
 });
 
-//Add objects to windows
-=======
 
 //Add objects to window
 win.add(topMenu);
->>>>>>> origin/master
 win.add(localWebview);
 win.add(bottomMenu);
 
@@ -181,16 +177,10 @@ function createRouteCheckBox(){
 	  titleOn: ''
 	});
 	
-<<<<<<< HEAD
-	/*
-	bottomMenu.add(routeCheckboxA);
-	bottomMenu.add(routeCheckboxB);
-	bottomMenu.add(routeCheckboxC);*/
-=======
+
 	topMenu.add(routeCheckboxA);
 	topMenu.add(routeCheckboxB);
 	topMenu.add(routeCheckboxC);
->>>>>>> origin/master
 	
 	setCheckBoxEventListeners();
 }
