@@ -31,7 +31,7 @@ var routeCheckboxA, routeCheckBoxB, routeCheckboxC;
 
 //Create main window
 var win = Ti.UI.createWindow({
-    backgroundColor:'#c34500',
+    backgroundColor:'#000000',
     navBarHidden:true,
     softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
     layout: 'vertical',
@@ -59,7 +59,7 @@ var localWebview = Titanium.UI.createWebView({
     backgroundColor:'#373737',
     touchEnabled:true,
     borderColor: '#c34500',
-    borderWidth: 3,
+    borderWidth: 0,
     borderRadius: 0,
     layout: 'vertical',
     //borderColor: '#080808',
@@ -69,9 +69,9 @@ var localWebview = Titanium.UI.createWebView({
 var bottomMenu = Ti.UI.createView({
     width:'auto',
     height: 'auto',
-    bottom:3,
-    left: 3,
-    right: 3,
+    bottom:0,
+    left: 0,
+    right: 0,
     backgroundColor:'#373737',
     borderColor: '#111111',
     borderWidth: 5,
@@ -303,7 +303,7 @@ function setCheckBoxEventListeners(){
 function setWebViewListener(){
 	//Event listener to start when webview loads
 	localWebview.addEventListener('load',function(){
-		var gpsCounter = 0;
+		var gpsCounter = 0, nearestCounter = 0;
 		var stops = [];
 		//Start the create map event
 	
@@ -318,6 +318,8 @@ function setWebViewListener(){
 	
 		//Request the shuttle data, and start the update event, repeats every 5 seconds
 		setInterval(function() {
+			ShuttleLocRequest();
+			
 			if(deviceGPSOn){
 				gpsCounter++;
 				if(gpsCounter === 10){
@@ -326,8 +328,16 @@ function setWebViewListener(){
 					gpsCounter = 0;
 				}
 			}
-			ShuttleLocRequest();
-			findNearest(userGPS);
+			if(nearestCounter == 0){
+				Ti.API.info("FIND NEAREST FUNCTION CALLED!");
+				findNearest(userGPS);
+				nearestCounter++;
+			} else if(nearestCounter >= 5){
+				nearestCounter = 0;
+			} else {
+				nearestCounter++;
+			}
+
 			Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
 		}, 4000);
 		
@@ -397,9 +407,6 @@ function findNearest(userLocation){
 	var routeColor, labelArray = [], leftIncrement = 70;
 	for(var j = 0; j < diffArray.length; j++){
 		var index = diffArray[j][1], distance = diffArray[j][0];
-		var baseRow = Ti.UI.createTableViewRow({
-	    	height:'auto',
-	    });
 	    
 	    labelArray = [];
 		for(var i = 0; i < 3; i++){
@@ -474,7 +481,7 @@ function findNearest(userLocation){
 	    	textAlign: 'left',
 	    	layout: 'horizontal',
 	    });
-	   	
+	   
 	   	var stopNameLabel = Ti.UI.createLabel({
 			font: { fontSize:16 },
 			text: stopsArray[index][0],
