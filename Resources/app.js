@@ -127,7 +127,7 @@ var toggleMenu1 = Ti.UI.createView({
     top: 0,
     left: 0,
     //right: 0,
-    backgroundColor:'#373737',
+    backgroundImage: 'GeneralUI/toggleBgOrange.png',
     borderColor: '#111111',
     borderWidth: 5,
     borderRadius: 0,
@@ -141,7 +141,7 @@ var toggleMenu2 = Ti.UI.createView({
     top: 0,
     //left: 0,
     right: 0,
-    backgroundColor:'#373737',
+    backgroundImage: 'GeneralUI/toggleBgBlue.png',
     borderColor: '#111111',
     borderWidth: 5,
     borderRadius: 0,
@@ -155,7 +155,7 @@ var toggleMenu3 = Ti.UI.createView({
     //top: 0,
     left: 0,
     //right: 0,
-    backgroundColor:'#373737',
+    backgroundImage: 'GeneralUI/toggleBgGreen.png',
     borderColor: '#111111',
     borderWidth: 5,
     borderRadius: 0,
@@ -169,7 +169,7 @@ var toggleMenu4 = Ti.UI.createView({
     //top: 0,
     //left: 0,
     right: 0,
-    backgroundColor:'#373737',
+    backgroundImage: 'GeneralUI/toggleBgYellow.png',
     borderColor: '#111111',
     borderWidth: 5,
     borderRadius: 0,
@@ -260,74 +260,59 @@ win.open();
 function createRouteCheckBox(){
 	routeCheckboxB = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
 	  value:true,
-	 // left: '25%',
-	 width: '100%',
-	  height: 'auto',
-	  
-	  backgroundImage: 'Checkbox/green_on2u.png',
-	  titleOff: '',
-	  titleOn: '',
-	   verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
+	  width: '100%',
+	  height: '100%',
+	  titleOff: 'Express',
+	  titleOn: 'Express',
+	  borderRadius: 5,
+	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
 	
 	routeCheckboxA = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
 	  value:true,
-	  
 	  width: '100%',
-	  height: 'auto',
-	
-	  backgroundImage: 'Checkbox/orange_on2u.png',
-	  titleOff: '',
-	  titleOn: '',
+	  height: '100%',
+	  titleOff: 'South Central',
+	  titleOn: 'South Central',
+	  borderRadius: 5,
 	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
 	
 	routeCheckboxC = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
 	  value:true,
-	  
-  width: '100%',
-	  height: 'auto',
-	
-	  backgroundImage: 'Checkbox/blue_on2u.png',
-	  titleOff: '',
-	  titleOn: '',
-	   verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
+	  width: '100%',
+	  height: '100%',
+	  titleOff: 'Norst Central',
+	  titleOn: 'North Central',
+	  borderRadius: 5,
+	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
 	
 	routeCheckboxD = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
 	  value:true,
-	  
-  width: '100%',
-	  height: 'auto',
-	
-	  
-	  backgroundImage: 'Checkbox/blue_on2u.png',
-	  titleOff: '',
-	  titleOn: '',
-	   verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
+	  width: '100%',
+	  height: '100%',
+	  titleOff: 'Central Campus',
+	  titleOn: 'Central Campus',
+	  borderRadius: 5,
+	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
+
 	
 	toggleMenu1.add(routeCheckboxA);
 	toggleMenu2.add(routeCheckboxB);
 	toggleMenu3.add(routeCheckboxC);
 	toggleMenu4.add(routeCheckboxD);
 	
-	
-	var tempcenter = toggleMenu1.getCenter();
-	Ti.API.info(tempcenter);
 
-	//routeCheckboxA.setCenter(tempcenter);
-	
-	
-	
-	
-	
-	
-	
 	setCheckBoxEventListeners();
 }
 
@@ -430,33 +415,85 @@ function setAdjustTableListener(){
 function setCheckBoxEventListeners(){
 	routeCheckboxA.addEventListener('change',function(){
 		Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
-		if(routeCheckboxA.value == true){
-			routeCheckboxA.setBackgroundImage('Checkbox/orange_on2u.png');
+		if(routeCheckboxA.value == false){
+			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrangeOffD.png');
 		}
 		else{
-			routeCheckboxA.setBackgroundImage('Checkbox/orange_off2u.png');
+			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrange.png');
 		}
 	});
 	
 	routeCheckboxB.addEventListener('change',function(){
 		Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
-		if(routeCheckboxB.value == true){
-			routeCheckboxB.setBackgroundImage('Checkbox/green_on2u.png');
+		if(routeCheckboxB.value == false){
+			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlueOffD.png');
 		}
 		else{
-			routeCheckboxB.setBackgroundImage('Checkbox/green_off2u.png');
+			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlue.png');
 		}
 	});
 	
 	routeCheckboxC.addEventListener('change',function(){
 		Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
-		if(routeCheckboxC.value == true){
-			routeCheckboxC.setBackgroundImage('Checkbox/blue_on2u.png');
+		if(routeCheckboxC.value == false){
+			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreenOffD.png');
 		}
 		else{
-			routeCheckboxC.setBackgroundImage('Checkbox/blue_off2u.png');
+			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreen.png');
 		}
 	});
+	
+	//'dbox' event not caught yet in webview.js
+	routeCheckboxD.addEventListener('change',function(){
+		Ti.App.fireEvent("dbox", {data: [routeCheckboxD.value]});
+		if(routeCheckboxD.value == false){
+			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellowOffD.png');
+		}
+		else{
+			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellow.png');
+		}
+	});
+	
+	/*toggleMenu1.addEventListener('click', function(){
+		if(routeCheckboxA.value == false){
+			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrangeOff.png');
+			routeCheckboxA.value = true;
+		}
+		else{
+			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrange.png');
+			routeCheckboxA.value = false;
+		}
+	});
+	toggleMenu2.addEventListener('click', function(){
+		if(routeCheckboxB.value == false){
+			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlueOff.png');
+			routeCheckboxB.value = true;
+		}
+		else{
+			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlue.png');
+			routeCheckboxB.value = false;
+		}
+	});
+	toggleMenu3.addEventListener('click', function(){
+		if(routeCheckboxC.value == false){
+			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreenOff.png');
+			routeCheckboxC.value = true;
+		}
+		else{
+			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreen.png');
+			routeCheckboxD.value = false;
+		}
+	});
+	toggleMenu4.addEventListener('click', function(){
+		if(routeCheckboxD.value == false){
+			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellowOff.png');
+			routeCheckboxD.value = true;
+		}
+		else{
+			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellow.png');
+			routeCheckboxD.value = false;
+		}
+	});*/
 }
 
 
@@ -642,9 +679,9 @@ function updateTable(){
 			if(i==0){
 				var distanceLabel = Ti.UI.createLabel({
 					color: '#C0C0C0',
-					textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
+					//textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
 					top: 9,
-					width: Ti.UI.FILL,
+					//width: Ti.UI.FILL,
 				});
 				labelArray.push(distanceLabel);
 			}
@@ -718,6 +755,11 @@ function updateTable(){
 			secondaryRow.add(labelArray[i]);
 		}
 		nearestArray.push(secondaryRow);
+		var selectButton = Ti.UI.createButton({
+	   		backgroundImage: 'GeneralUI/stopSelectButton.png',
+	   		left: 0,
+   		});
+   		secondaryRow.add(selectButton);
 	}
 	routeEstTable.setData(nearestArray);
 	Ti.API.info("Set Table in updateTable");
@@ -811,9 +853,15 @@ function updateTableGPSOn(diffArray){
 			top: 10,
 		});
 		secondaryRow.add(stopNameLabel);
-	    
+		secondaryRow.add(distanceLabel);
+		
+	    var selectButton = Ti.UI.createButton({
+	   		backgroundImage: 'GeneralUI/stopSelectButton.png',
+	   		left: 0,
+   		});
+   		secondaryRow.add(selectButton);
 	    //!!!! Commented out stopTimings and added line below.
-	    secondaryRow.add(distanceLabel);
+	    
 	    /*for(var i = 0; i < labelArray.length; i++){
 			secondaryRow.add(labelArray[i]);
 		}*/
