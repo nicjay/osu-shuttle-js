@@ -89,7 +89,10 @@
         			sliderPosition:"bottom-left",
         			sliderOrientation:"horizontal",
         			showAttribution:false,
-        			logo: false
+        			logo: false,
+        			displayGraphicsOnPan: true,
+        			optimizePanAnimation: true,
+        			showAttribution: false,
        			});
        		
    				
