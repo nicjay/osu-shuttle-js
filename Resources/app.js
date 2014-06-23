@@ -48,8 +48,6 @@ var topMenu = Ti.UI.createView({
 	top: 0,
 });
 
-createRouteCheckBox();
-
 
 //Create webview of map.html
 var localWebview = Titanium.UI.createWebView({
@@ -102,6 +100,113 @@ var userGPSStatusLabel = Titanium.UI.createLabel({
 	backgroundColor: 'transparent',
 });
 
+
+
+var toggleMenu = Ti.UI.createView({
+    width:'auto',
+    height:'auto',
+    bottom:0,
+    left: 0,
+    right: 0,
+    backgroundColor:'#373737',
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
+    //visible: false,
+});
+
+
+
+var toggleMenu1 = Ti.UI.createView({
+    width:'50%',
+    height:'50%',
+    //bottom:0,
+    top: 0,
+    left: 0,
+    //right: 0,
+    backgroundColor:'#373737',
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
+    //visible: false,
+});
+
+var toggleMenu2 = Ti.UI.createView({
+    width:'50%',
+    height:'50%',
+    //bottom:0,
+    top: 0,
+    //left: 0,
+    right: 0,
+    backgroundColor:'#373737',
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
+    //visible: false,
+});
+
+var toggleMenu3 = Ti.UI.createView({
+    width:'50%',
+    height:'50%',
+    bottom:0,
+    //top: 0,
+    left: 0,
+    //right: 0,
+    backgroundColor:'#373737',
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
+    //visible: false,
+});
+
+var toggleMenu4 = Ti.UI.createView({
+    width:'50%',
+    height:'50%',
+    bottom:0,
+    //top: 0,
+    //left: 0,
+    right: 0,
+    backgroundColor:'#373737',
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
+    //visible: false,
+});
+
+toggleMenu.add(toggleMenu1);
+toggleMenu.add(toggleMenu2);
+toggleMenu.add(toggleMenu3);
+toggleMenu.add(toggleMenu4);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var toggleMenuOn = false;
+
+var toggleButton = Ti.UI.createButton({
+   title: 'Visibility',
+   //bottom: bottomMenu.getHeight() + 10,
+   bottom: 0,
+   left: 0,
+   top: 'auto',
+   width: 80,
+   height: 40
+});
+
+
+createRouteCheckBox();
+
 /*var slideLabel = Titanium.UI.createLabel({
 	color:'#334C61',
 	text: '',
@@ -132,6 +237,9 @@ var scrollArrows = Ti.UI.createImageView({
 	image:'GeneralUI/scrollarrow.png',
 	right:10
 });
+
+
+localWebview.add(toggleButton);
 
 
 //Add objects to window
@@ -165,43 +273,72 @@ function createRouteCheckBox(){
 	routeCheckboxB = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  value:true,
-	  left: 0,
-	  width: '33.3%',
+	 // left: '25%',
+	 width: '100%',
 	  height: 'auto',
-	  top: 0,
+	  
 	  backgroundImage: 'Checkbox/green_on2u.png',
 	  titleOff: '',
-	  titleOn: ''
+	  titleOn: '',
+	   verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
 	
 	routeCheckboxA = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  value:true,
-	  left: '33.3%',
-	  width: '33.3%',
+	  
+	  width: '100%',
 	  height: 'auto',
-	  top: 0,
+	
 	  backgroundImage: 'Checkbox/orange_on2u.png',
 	  titleOff: '',
-	  titleOn: ''
+	  titleOn: '',
+	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
 	
 	routeCheckboxC = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  value:true,
-	  left: '66.6%',
-	  width: '33.3%',
+	  
+  width: '100%',
 	  height: 'auto',
-	  top: 0,
+	
 	  backgroundImage: 'Checkbox/blue_on2u.png',
 	  titleOff: '',
-	  titleOn: ''
+	  titleOn: '',
+	   verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
 	
+	routeCheckboxD = Ti.UI.createSwitch({
+	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  value:true,
+	  
+  width: '100%',
+	  height: 'auto',
+	
+	  
+	  backgroundImage: 'Checkbox/blue_on2u.png',
+	  titleOff: '',
+	  titleOn: '',
+	   verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
+	});
+	
+	toggleMenu1.add(routeCheckboxA);
+	toggleMenu2.add(routeCheckboxB);
+	toggleMenu3.add(routeCheckboxC);
+	toggleMenu4.add(routeCheckboxD);
+	
+	
+	var tempcenter = toggleMenu1.getCenter();
+	Ti.API.info(tempcenter);
 
-	topMenu.add(routeCheckboxA);
-	topMenu.add(routeCheckboxB);
-	topMenu.add(routeCheckboxC);
+	//routeCheckboxA.setCenter(tempcenter);
+	
+	
+	
+	
+	
+	
 	
 	setCheckBoxEventListeners();
 }
@@ -271,6 +408,25 @@ function SetStops(){
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
+
+
+
+toggleButton.addEventListener('click',function(e)
+{
+   Titanium.API.info("You clicked the toggle visibility button");
+   if (!toggleMenuOn){
+   		bottomMenu.remove(routeEstTable);
+   		bottomMenu.add(toggleMenu);
+   		toggleMenuOn = true;
+   }
+   else{
+   		bottomMenu.remove(toggleMenu);
+   		bottomMenu.add(routeEstTable);
+   		toggleMenuOn = false;
+   	
+   }
+});
+
 
 win.addEventListener('android:back',function(e) {
 });
