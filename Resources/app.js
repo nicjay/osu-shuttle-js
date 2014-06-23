@@ -64,7 +64,10 @@ var localWebview = Titanium.UI.createWebView({
     borderColor: '#c34500',
     borderWidth: 0,
     borderRadius: 0,
-    layout: 'vertical',
+    
+    //layout: 'vertical',
+    layout: 'composite'
+    
     //borderColor: '#080808',
     //borderWidth: '8px'
 });
@@ -178,30 +181,12 @@ toggleMenu.add(toggleMenu2);
 toggleMenu.add(toggleMenu3);
 toggleMenu.add(toggleMenu4);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var toggleMenuOn = false;
 
 var toggleButton = Ti.UI.createButton({
-   title: 'Visibility',
-   //bottom: bottomMenu.getHeight() + 10,
-   bottom: 0,
-   left: 0,
-   top: 'auto',
-   width: 80,
-   height: 40
+	bottom: 50,
+   title: 'Bus Toggle',
+
 });
 
 
@@ -240,6 +225,9 @@ var scrollArrows = Ti.UI.createImageView({
 
 
 localWebview.add(toggleButton);
+
+//toggleButton.setRight(0);
+//toggleButton.setBottom(0);
 
 
 //Add objects to window
@@ -483,7 +471,9 @@ function setWebViewListener(){
 	
 		getUserGPS();
 		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
-		setTimeout(function() {
+		//Want to wait until map is started and ready before doing this stuff
+		localWebview.addEventListener('maploaded', function(){
+		//setTimeout(function() {
 			ShuttleLocRequest();
 			if(deviceGPSOn){
 				updateRouteEstimates();
@@ -496,8 +486,8 @@ function setWebViewListener(){
 			updateSelected();
 			setBackupShuttleData();
 			Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
-		}, 0);
-		
+		//}, 0);
+		});
 	
 		//Request the shuttle data, and start the update event, repeats every 5 seconds
 		setInterval(function() {

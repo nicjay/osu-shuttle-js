@@ -147,6 +147,10 @@
         		
         		
         		function loadUserAndStops(){
+        			
+        			Ti.App.fireEvent("maploaded", {});
+        			
+        			
 	        		var ExpressRoute = [
 			        		[-123.279941,44.567899],
 		        			[-123.279925,44.568082],
