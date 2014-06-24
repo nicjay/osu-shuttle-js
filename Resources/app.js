@@ -219,17 +219,17 @@ createRouteCheckBox();
 
 
 var routeEstTable = Ti.UI.createTableView({
-  	left: 7,
-  	right:25,
+  	minRowHeight: 50,
   	maxRowHeight: 50,
   	data: nearestArray,
 	scrollable: true,
 	color: '#ffffff',
-	//separatorColor: 'transparent',
 	separatorColor: 'white',
-	showVerticalScrollIndicator:false,
+	showVerticalScrollIndicator: true,
 	softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
 });
+
+
 
 var scrollArrows = Ti.UI.createImageView({
 	image:'GeneralUI/scrollarrow.png',
@@ -543,6 +543,7 @@ function setWebViewListener(){
 			diffArray = findNearest(userGPS);
 		}
 		
+		updateRouteEstimates();
 		updateSelected();
 		
 		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
@@ -601,12 +602,18 @@ function setWebViewListener(){
 
 
 function setLongPressListener(){
-	routeEstTable.addEventListener('longpress', function(e){
-		Ti.API.info("Clicked! e.row: " + e.row + " diffArray[e.row]: " + diffArray[e.row]);
-		var index = diffArray[e.index][1];
-		var val1 = stopsArray[index][1];
-		var val2 = stopsArray[index][2];
-		Ti.App.fireEvent("centerMap", {latitude: val1, longitude: val2});
+	routeEstTable.addEventListener('click', function(e){
+		if(e.source == '[object Button]'){
+			//e.row.backgroundColor = '#42a6ca';
+			e.row.backgroundColor = '#337a94';
+			e.source.backgroundImage = 'GeneralUI/stopSelectButton2.png';
+			setTimeout(function() {
+        		e.row.backgroundColor = "transparent";
+        		e.source.backgroundImage = 'GeneralUI/stopSelectButton.png';
+    		}, 500);
+			var stopsArray = e.row.stopsArray;
+			Ti.App.fireEvent("centerMap", {latitude: stopsArray[1], longitude: stopsArray[2]});
+		}
 	});
 }
 
@@ -718,6 +725,9 @@ function updateTable(){
 		var tableRow = Ti.UI.createTableViewRow({
 			layout: 'horizontal',
 		});
+		
+		tableRow.stopsArray = stopsArray[index];
+		
 		var rowView = Ti.UI.createView({
 			width: Ti.UI.SIZE,
 			height: Ti.UI.SIZE,
@@ -730,8 +740,8 @@ function updateTable(){
 		});
 		var rowViewSeg2 = Ti.UI.createView({
 			width: '20%',
-			height: Ti.UI.SIZE,
-			top: 0,
+			//height: Ti.UI.SIZE,
+			//top: 0,
 		});
 	
 	   	var stopNameLabel = Ti.UI.createLabel({
@@ -743,10 +753,15 @@ function updateTable(){
 			color: '#C0C0C0',
 			right: 0,
 		});
+		
 		var selectButton = Ti.UI.createButton({
-	   		backgroundImage: 'GeneralUI/stopSelectButton.png',
+   			backgroundImage:'GeneralUI/stopSelectButton.png',
+   			width: '50',
+   			height:'50',
+   			right: 0,
+   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
    		});
-   		
+   	
    		rowViewSeg1.add(stopNameLabel);
    		rowViewSeg1.add(distanceLabel);
    		rowViewSeg2.add(selectButton);
@@ -771,6 +786,9 @@ function updateTableGPSOn(diffArray){
 		var tableRow = Ti.UI.createTableViewRow({
 			layout: 'horizontal',
 		});
+		
+		tableRow.stopsArray = stopsArray[index];
+		
 		var rowView = Ti.UI.createView({
 			width: Ti.UI.SIZE,
 			height: Ti.UI.SIZE,
@@ -783,8 +801,8 @@ function updateTableGPSOn(diffArray){
 		});
 		var rowViewSeg2 = Ti.UI.createView({
 			width: '20%',
-			height: Ti.UI.SIZE,
-			top: 0,
+			//height: Ti.UI.SIZE,
+			//top: 0,
 		});
 		
 	   	var stopNameLabel = Ti.UI.createLabel({
@@ -802,9 +820,13 @@ function updateTableGPSOn(diffArray){
 		});
 		
 		var selectButton = Ti.UI.createButton({
-	   		backgroundImage: 'GeneralUI/stopSelectButton.png',
+   			backgroundImage:'GeneralUI/stopSelectButton.png',
+   			width: '50',
+   			height:'50',
+   			right: 0,
+   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
    		});
-			
+   		
 		
    		rowViewSeg1.add(stopNameLabel);
    		rowViewSeg1.add(distanceLabel);
