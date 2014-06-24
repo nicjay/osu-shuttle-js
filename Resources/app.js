@@ -537,30 +537,37 @@ function setWebViewListener(){
 		var gpsCounter = getGPSInterval, nearestCounter = 0;
 		var stops = [];
 		//Start the create map event
-	
+		
 		getUserGPS();
+		if(deviceGPSOn){
+			diffArray = findNearest(userGPS);
+		}
+		
+		updateSelected();
+		
 		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
 		//Want to wait until map is started and ready before doing this stuff
-		localWebview.addEventListener('maploaded', function(){
-		//setTimeout(function() {
+		/*localWebview.addEventListener('maploaded', function(){
+			Ti.API.info("--Map Loaded--");
+			updateRouteEstimates();
 			ShuttleLocRequest();
+			
 			if(deviceGPSOn){
-				updateRouteEstimates();
 				diffArray = findNearest(userGPS);
 				updateTableGPSOn(diffArray);
 			} else{
-				updateRouteEstimates();
 				updateTable();
 			}
 			updateSelected();
 			setBackupShuttleData();
 			Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
-		//}, 0);
-		});
+		});*/
 	
 		//Request the shuttle data, and start the update event, repeats every 5 seconds
 		setInterval(function() {
+			Ti.API.info("--Interval Function--");
 			ShuttleLocRequest();
+			updateRouteEstimates();
 			
 			if(deviceGPSOn){
 				if(gpsCounter == getGPSInterval){
@@ -570,9 +577,9 @@ function setWebViewListener(){
 					
 					if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
 						Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
+						updateTableGPSOn(diffArray);
 					} else {
 						Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
-						updateRouteEstimates();
 						diffArray = findNearest(userGPS);
 						updateTableGPSOn(diffArray);
 					}
@@ -583,7 +590,6 @@ function setWebViewListener(){
 				}
 			} else {
 				Ti.API.info("Device GPS off");
-				updateRouteEstimates();
 				updateTable();
 			}
 
@@ -704,179 +710,83 @@ function findNearest(userLocation){
 	
 function updateTable(){
 	nearestArray = [];
-	var routeColor, labelArray = [];
+	Ti.API.info("-- updateTable -- function starting...");
+	
+	//Iterate through stopsArray and create rows for ALL stops.
 	for(var index = 0; index < stopsArray.length; index++){
-	    labelArray = [];
-		for(var i = 0; i < 3; i++){
-			if(i==0){
-				var distanceLabel = Ti.UI.createLabel({
-					color: '#C0C0C0',
-					//textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
-					top: 9,
-					//width: Ti.UI.FILL,
-				});
-				labelArray.push(distanceLabel);
-			}
-			
-			//Disabled empty check for testing -- Change this back!!
-			//if(stopsArray[index][i+3] != -1){
-				switch(i+3){
-					case 3:
-						//routeColor = '#576fff';
-						routeColor = '#7084ff';
-						break;
-					case 4:
-						routeColor = '#36c636';
-						break;
-					case 5:
-						routeColor = '#ff6600';
-						break;
-					default:
-						Ti.API.info("ALERT, wrong index Stops Array");
-				}
-				var eta = stopsArray[index][i+3].toString();
-				if(eta > 59){
-					var minutes = Math.round(eta % 60);
-					var hours = Math.round(eta / 60);
-					if(minutes < 10)
-						eta = hours + ":0" + minutes;
-					else
-						eta = hours + ":" + minutes;
-				}
-				else{
-					if(eta < 10)
-						eta = "0:0"+eta;
-					else
-						eta = "0:"+eta;
-				}
-
-				
-				//TEST VALUE
-				eta = "10:40";
-				
-				var stopTiming = Ti.UI.createLabel({
-					font: { fontSize:34 },
-					text: eta,
-					color: routeColor,
-					width: '33.3%',
-					textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
-					bottom: -20,
-					//top: 5,
-					//left: 195 + (100*i)
-				});
-				labelArray.push(stopTiming);
-			//}
-		}
-		
-		var secondaryRow = Ti.UI.createTableViewRow({
-	    	height: 'auto',
-	    	textAlign: 'left',
-	    	layout: 'horizontal',
-	    });
-	   
+		//Initalize row elements. Two child views within an overall rowView that is added to the row element. 
+		var tableRow = Ti.UI.createTableViewRow({
+			layout: 'horizontal',
+		});
+		var rowView = Ti.UI.createView({
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			layout: 'horizontal',
+		});
+		var rowViewSeg1 = Ti.UI.createView({
+			width: '80%',
+			height: Ti.UI.SIZE,
+			top: 0,
+		});
+		var rowViewSeg2 = Ti.UI.createView({
+			width: '20%',
+			height: Ti.UI.SIZE,
+			top: 0,
+		});
+	
 	   	var stopNameLabel = Ti.UI.createLabel({
 			font: { fontSize:16 },
 			text: stopsArray[index][0],
 			color: '#FFFFFF',
-			left: 15,
-			top: 10,
 		});
-		secondaryRow.add(stopNameLabel);
-	    
-	    for(var i = 0; i < labelArray.length; i++){
-			secondaryRow.add(labelArray[i]);
-		}
-		nearestArray.push(secondaryRow);
+	    var distanceLabel = Ti.UI.createLabel({
+			color: '#C0C0C0',
+			right: 0,
+		});
 		var selectButton = Ti.UI.createButton({
 	   		backgroundImage: 'GeneralUI/stopSelectButton.png',
-	   		left: 0,
    		});
-   		secondaryRow.add(selectButton);
+   		
+   		rowViewSeg1.add(stopNameLabel);
+   		rowViewSeg1.add(distanceLabel);
+   		rowViewSeg2.add(selectButton);
+   		
+   		rowView.add(rowViewSeg1);
+   		rowView.add(rowViewSeg2);
+   		
+   		tableRow.add(rowView);
+   		nearestArray.push(tableRow);
 	}
+	//Set row data to newly set nearestArray
 	routeEstTable.setData(nearestArray);
 	Ti.API.info("Set Table in updateTable");
 }
 	
 function updateTableGPSOn(diffArray){
 	nearestArray = [];
-	var routeColor, labelArray = [], leftIncrement = 70;
+	Ti.API.info(diffArray + ", diffArray.toString() = " + diffArray.toString());
 	for(var j = 0; j < diffArray.length; j++){
 		var index = diffArray[j][1], distance = diffArray[j][0];
-	    
-	    labelArray = [];
-		for(var i = 0; i < 3; i++){
-			if(i==0){
-				var distanceLabel = Ti.UI.createLabel({
-					font: { fontSize:14 },
-					text: distance.toFixed(2.2) + " mi",
-					color: '#C0C0C0',
-					//left: 30,
-					right:25,
-					textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
-					top: 9,
-					width: Ti.UI.FILL,
-				});
-				labelArray.push(distanceLabel);
-			}
-			
-			//Disabled empty check for testing -- Change this back!!
-			//if(stopsArray[index][i+3] != -1){
-				switch(i+3){
-					case 3:
-						//routeColor = '#576fff';
-						routeColor = '#7084ff';
-						break;
-					case 4:
-						routeColor = '#36c636';
-						break;
-					case 5:
-						routeColor = '#ff6600';
-						break;
-					default:
-						Ti.API.info("ALERT, wrong index Stops Array");
-				}
-				var eta = stopsArray[index][i+3].toString();
-				if(eta > 59){
-					var minutes = Math.round(eta % 60);
-					var hours = Math.round(eta / 60);
-					if(minutes < 10)
-						eta = hours + ":0" + minutes;
-					else
-						eta = hours + ":" + minutes;
-				}
-				else{
-					if(eta < 10)
-						eta = "0:0"+eta;
-					else
-						eta = "0:"+eta;
-				}
-				if(eta == '0:00'){
-					eta = 'Arrived';
-				}
-				
-				//TEST VALUE
-				eta = "10:40";
-				
-				var stopTiming = Ti.UI.createLabel({
-					font: { fontSize:34 },
-					text: eta,
-					color: routeColor,
-					width: '33.3%',
-					textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
-					bottom: -20,
-					//top: 5,
-					//left: 195 + (100*i)
-				});
-				labelArray.push(stopTiming);
-			//}
-		}
-		
-		var secondaryRow = Ti.UI.createTableViewRow({
-	    	height: 'auto',
-	    	textAlign: 'left',
-	    	layout: 'horizontal',
-	    });
 	   
+		var tableRow = Ti.UI.createTableViewRow({
+			layout: 'horizontal',
+		});
+		var rowView = Ti.UI.createView({
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			layout: 'horizontal',
+		});
+		var rowViewSeg1 = Ti.UI.createView({
+			width: '80%',
+			height: Ti.UI.SIZE,
+			top: 0,
+		});
+		var rowViewSeg2 = Ti.UI.createView({
+			width: '20%',
+			height: Ti.UI.SIZE,
+			top: 0,
+		});
+		
 	   	var stopNameLabel = Ti.UI.createLabel({
 			font: { fontSize:16 },
 			text: stopsArray[index][0],
@@ -884,20 +794,27 @@ function updateTableGPSOn(diffArray){
 			left: 15,
 			top: 10,
 		});
-		secondaryRow.add(stopNameLabel);
-		secondaryRow.add(distanceLabel);
+		var distanceLabel = Ti.UI.createLabel({
+			font: { fontSize:14 },
+			text: distance.toFixed(2.2) + " mi",
+			color: '#C0C0C0',
+			right: 0,
+		});
 		
-	    var selectButton = Ti.UI.createButton({
+		var selectButton = Ti.UI.createButton({
 	   		backgroundImage: 'GeneralUI/stopSelectButton.png',
-	   		left: 0,
    		});
-   		secondaryRow.add(selectButton);
-	    //!!!! Commented out stopTimings and added line below.
-	    
-	    /*for(var i = 0; i < labelArray.length; i++){
-			secondaryRow.add(labelArray[i]);
-		}*/
-		nearestArray.push(secondaryRow);
+			
+		
+   		rowViewSeg1.add(stopNameLabel);
+   		rowViewSeg1.add(distanceLabel);
+   		rowViewSeg2.add(selectButton);
+   		
+   		rowView.add(rowViewSeg1);
+   		rowView.add(rowViewSeg2);
+   		
+   		tableRow.add(rowView);
+   		nearestArray.push(tableRow);
 	}
 	routeEstTable.setData(nearestArray);
 	Ti.API.info("Set Table in updateTableGPSOn");
@@ -1038,3 +955,38 @@ function deg2rad(deg) {
   return deg * (Math.PI/180);
 }
 
+	/*//Disabled empty check for testing -- Change this back!!
+	//if(stopsArray[index][i+3] != -1){
+		switch(i+3){
+			case 3:
+				//routeColor = '#576fff';
+				routeColor = '#7084ff';
+				break;
+			case 4:
+				routeColor = '#36c636';
+				break;
+			case 5:
+				routeColor = '#ff6600';
+				break;
+			default:
+				Ti.API.info("ALERT, wrong index Stops Array");
+		}
+		var eta = stopsArray[index][i+3].toString();
+		if(eta > 59){
+			var minutes = Math.round(eta % 60);
+			var hours = Math.round(eta / 60);
+			if(minutes < 10)
+				eta = hours + ":0" + minutes;
+			else
+				eta = hours + ":" + minutes;
+		}
+		else{
+			if(eta < 10)
+				eta = "0:0"+eta;
+			else
+				eta = "0:"+eta;
+		}
+		if(eta == '0:00'){
+			eta = 'Arrived';
+		}
+		*/
