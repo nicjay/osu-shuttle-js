@@ -185,8 +185,21 @@ var toggleMenuOn = false;
 
 var toggleButton = Ti.UI.createButton({
 	bottom: 50,
-   title: 'Bus Toggle',
+	title: 'Bus Toggle',
+});
 
+var zoomInButton = Ti.UI.createButton({
+	top:0,
+	right:0,
+	width: 100,
+	title: '+',
+});
+
+var zoomOutButton = Ti.UI.createButton({
+	top:0,
+	right: 100,
+	width: 100,
+	title: '-',
 });
 
 
@@ -230,13 +243,15 @@ localWebview.add(toggleButton);
 //toggleButton.setBottom(0);
 
 
+//localWebview.add(zoomInButton);
+//localWebview.add(zoomOutButton)
+
+
 //Add objects to window
-//win.add(topMenu);
 win.add(localWebview);
 win.add(selectedStopView);
 win.add(bottomMenu);
 
-//win.add(slideLabel);
 win.add(userGPSStatusLabel);
 
 bottomMenu.add(selectedStopView);
@@ -382,6 +397,23 @@ function SetStops(){
 //-------------------------------------------------------------------
 //===================================================================
 
+
+
+var zoomIn;
+
+zoomInButton.addEventListener('click',function(e)
+{
+	zoomIn = true;
+	Ti.API.info("zoom in" +zoomIn);
+	Ti.App.fireEvent("zoomMap", {data: [true]});
+});
+
+zoomOutButton.addEventListener('click',function(e)
+{
+	zoomIn = false;
+	Ti.API.info("Zoom out" +zoomIn);
+	Ti.App.fireEvent("zoomMap", {data: [false]});
+});
 
 
 toggleButton.addEventListener('click',function(e)

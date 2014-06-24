@@ -26,13 +26,15 @@
   		data = event.data[0]; //Hold stop info -- not used currently
 		UserGPS = event.data[1]; //Holds user GPS data
     	createMap();
-    	
     });
     
     Ti.App.addEventListener('centerMap', function(event){
 		var pointArray = [event.latitude, event.longitude];
 		centerMap(pointArray);
-    	
+    });
+    
+    Ti.App.addEventListener('zoomMap', function(event){
+		zoomMap(event.data[0]);
     });
     
     //When this event occurs, fill up shuttle coords and update map.
@@ -85,9 +87,7 @@
         			zoom: 15,
         			basemap: "osm",
         			minZoom: 12,
-        			sliderStyle:"small",
-        			sliderPosition:"bottom-left",
-        			sliderOrientation:"horizontal",
+        			slider: false,
         			showAttribution:false,
         			logo: false,
         			displayGraphicsOnPan: true,
@@ -476,6 +476,23 @@
        }
        
        
+       function zoomMap(zoom){
+       	 require([
+    		"esri/map", "esri/geometry/Point",
+    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic", "esri/symbols/PictureMarkerSymbol",
+    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
+    		"dojo/domReady!"], 
+    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, PictureMarkerSymbol, arrayUtils, domStyle, Color) {
+      		
+      			if (zoom == true){
+					map.setZoom(map.getZoom()+1);
+      			}
+      			else if (zoom == false){
+      				map.setZoom(map.getZoom()-1);
+      			}
+   				
+        	});
+       }
      
 //===================================================================
 
