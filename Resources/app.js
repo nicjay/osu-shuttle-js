@@ -42,11 +42,111 @@ var win = Ti.UI.createWindow({
     layout: 'vertical',
 });
 
-var topMenu = Ti.UI.createView({
+//===================================================================
+//-------------------------------------------------------------------
+//===================================================================
+//Init everything for selectedStopView
+
+var selectedStopView = Ti.UI.createView({
+	backgroundColor: '#323031',
 	width: 'auto',
 	height: Ti.UI.SIZE,
-	top: 0,
+	layout: 'horizontal',
+	borderColor: '#9D9C9C',
+	borderRadius: 5,
+	borderWidth: 3,
+	height: '20%',
+	layout: 'vertical',	
 });
+
+
+
+var stopNameLabel = Ti.UI.createLabel({
+		font: { fontSize:16 },
+		text: '',//stopsArray[0][0],
+		color: '#FFFFFF',
+		left: 10,
+		top: 0,
+		//height: '10%',
+		verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+	});
+	
+var distanceLabel = Ti.UI.createLabel({
+		color: '#C0C0C0',
+		textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
+		top: 9,
+		width: Ti.UI.FILL,
+	});
+	
+   var viewTopSection = Ti.UI.createView({
+   		height: '50%',
+   		width: '100%',
+   		layout: 'horizontal',
+   	});
+   	
+var viewTopSegs = new Array(3);
+   	
+for (var i=0;i<3;i++){
+   		viewTopSegs[i] = Ti.UI.createView({
+   		});
+   		
+   		viewTopSection.add(viewTopSegs[i]);
+}
+  
+viewTopSegs[0].setWidth('50%');
+viewTopSegs[1].setWidth('30%');
+viewTopSegs[2].setWidth('20%');
+   	
+viewTopSegs[0].add(stopNameLabel);
+viewTopSegs[1].add(distanceLabel);
+	
+var viewBottomSection = Ti.UI.createView({
+		height: '50%',
+		width: '100%',
+		layout: 'horizontal',
+   	});
+   	
+   	
+var viewBottomSegs = new Array(4);
+
+
+var stopTimingLabels = new Array(4); 
+	
+for (var i=0; i<4; i++){
+		viewBottomSegs[i] = Ti.UI.createView({
+   			width: '25%'
+		});
+   	
+		stopTimingLabels[i] = Ti.UI.createLabel({
+			font: { fontSize:30 },
+			text: '---',//timeConversion(times[i]),
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+		});
+		
+		viewBottomSegs[i].add(stopTimingLabels[i]);
+		viewBottomSection.add(viewBottomSegs[i]);
+}
+
+selectedStopView.add(viewTopSection);
+	selectedStopView.add(viewBottomSection);
+	
+	stopTimingLabels[0].setColor('#7084ff');
+	stopTimingLabels[1].setColor('#36c636');
+	stopTimingLabels[2].setColor('#ff6600');
+	stopTimingLabels[3].setColor('#ffd119');
+	
+	
+	for (var i=0;i<4;i++){
+		selectedStopView.add(stopTimingLabels[i]);
+	}
+
+
+//===================================================================
+//-------------------------------------------------------------------
+//===================================================================
+
 
 var webviewContainer = Ti.UI.createView({
 	height: '55%',
@@ -65,20 +165,6 @@ var localWebview = Titanium.UI.createWebView({
     borderRadius: 0,
 });
 
-
-var selectedStopView = Ti.UI.createView({
-	backgroundColor: '#323031',
-	width: 'auto',
-	height: Ti.UI.SIZE,
-	layout: 'horizontal',
-	borderColor: '#9D9C9C',
-	borderRadius: 5,
-	borderWidth: 3,
-	height: '20%',
-	layout: 'vertical',	
-});
-
-
 var bottomMenu = Ti.UI.createView({
     width:'auto',
     height: 'auto',
@@ -88,110 +174,6 @@ var bottomMenu = Ti.UI.createView({
     backgroundColor: '#323031',
     //backgroundImage: 'GeneralUI/selectedStopBackground.png',
 });
-
-var userGPSStatusLabel = Titanium.UI.createLabel({
-	color:'#334C61',
-	text: '',
-	font:{fontSize:15,fontFamily:'Helvetica Neue', fontWeight: 'bold'},
-	textAlign:'left',
-	top: '90px',
-	left: 10,
-	backgroundColor: 'transparent',
-});
-
-
-
-var toggleMenu = Ti.UI.createView({
-    width:'auto',
-    height:'auto',
-    //bottom:0,
-    //left: 0,
-    //right: 0,
-    backgroundColor:'#373737',
-    borderColor: '#111111',
-    borderWidth: 5,
-    borderRadius: 0,
-    bottom: 0,
-    layout: 'horizontal',
-});
-
-
-
-var toggleMenu1 = Ti.UI.createView({
-    width:'50%',
-    height:'50%',
-    backgroundImage: 'GeneralUI/toggleBgOrange.png',
-    borderColor: '#111111',
-    borderWidth: 5,
-});
-
-var toggleMenu2 = Ti.UI.createView({
-    width:'50%',
-    height:'50%',
-    backgroundImage: 'GeneralUI/toggleBgBlue.png',
-    borderColor: '#111111',
-    borderWidth: 5,
-});
-
-var toggleMenu3 = Ti.UI.createView({
-    width:'50%',
-    height:'50%',
-    backgroundImage: 'GeneralUI/toggleBgGreen.png',
-    borderColor: '#111111',
-    borderWidth: 5,
-});
-
-var toggleMenu4 = Ti.UI.createView({
-    width:'50%',
-    height:'50%',
-    backgroundImage: 'GeneralUI/toggleBgYellow.png',
-    borderColor: '#111111',
-    borderWidth: 5,
-});
-
-toggleMenu.add(toggleMenu1);
-toggleMenu.add(toggleMenu2);
-toggleMenu.add(toggleMenu3);
-toggleMenu.add(toggleMenu4);
-
-var toggleMenuOn = false;
-
-var toggleButton = Ti.UI.createButton({
-	top:0,
-	//bottom: 50,
-	backgroundImage: 'GeneralUI/shinyBus.png',
-	borderWidth: '2px',
-	borderColor: '#000000',
-	right: 0,
-	width: 100,
-	title: 'Toggle',
-	zIndex: 1
-});
-
-var zoomInButton = Ti.UI.createButton({
-	top:toggleButton.getHeight(),
-	right:0,
-	width: 50,
-	title: '+',
-	zIndex: 1,
-	//bottom: 25,
-	//right:0,
-	//width: 100,
-	title: '+',
-	font:{fontSize:25},
-	//height: '50%',
-});
-
-var zoomOutButton = Ti.UI.createButton({
-	//right: 100,
-	//width: 100,
-	title: '-',
-	font:{fontSize:25},
-	//height: '50%',
-});
-
-
-createRouteCheckBox();
 
 var bottomMenuView = Ti.UI.createView({
 	layout: 'horizontal',
@@ -222,6 +204,76 @@ var routeEstTable = Ti.UI.createTableView({
 	softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
 });
 
+var userGPSStatusLabel = Titanium.UI.createLabel({
+	color:'#334C61',
+	text: '',
+	font:{fontSize:15,fontFamily:'Helvetica Neue', fontWeight: 'bold'},
+	textAlign:'left',
+	top: '90px',
+	left: 10,
+	backgroundColor: 'transparent',
+});
+
+
+var toggleMenu = Ti.UI.createView({
+    width:'auto',
+    height:'auto',
+    //bottom:0,
+    //left: 0,
+    //right: 0,
+    backgroundColor:'#373737',
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
+    bottom: 0,
+    layout: 'horizontal',
+});
+
+
+var toggleMenus = new Array(4);
+	for (var i=0;i<4;i++){
+		toggleMenus[i] = Ti.UI.createView({
+	    width:'50%',
+	    height:'50%',
+	    borderColor: '#111111',
+	    borderWidth: 5,
+	});
+	
+	toggleMenu.add(toggleMenus[i]);
+}
+
+toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrange.png');
+toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlue.png');
+toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreen.png');
+toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellow.png');
+
+
+var toggleMenuOn = false;
+
+var toggleButton = Ti.UI.createButton({
+	top:0,
+	//bottom: 50,
+	backgroundImage: 'GeneralUI/shinyBus.png',
+	borderWidth: '2px',
+	borderColor: '#000000',
+	right: 0,
+	width: 100,
+	title: 'Toggle',
+	zIndex: 1
+});
+
+var zoomInButton = Ti.UI.createButton({
+	width: 50,
+	title: '+',
+	font:{fontSize:25},
+});
+
+var zoomOutButton = Ti.UI.createButton({
+	width:50,
+	title: '-',
+	font:{fontSize:25},
+});
+
 bottomMenuViewSeg1.add(zoomInButton);	//+ map
 bottomMenuViewSeg1.add(zoomOutButton);	//
 //bottomMenuViewSeg1.add(toggleButton);	//Route Toggle
@@ -232,22 +284,17 @@ bottomMenuView.add(bottomMenuViewSeg2);
 
 bottomMenu.add(bottomMenuView);
 
-var scrollArrows = Ti.UI.createImageView({
-	image:'GeneralUI/scrollarrow.png',
-	right:10
-});
 
 webviewContainer.add(localWebview);
 webviewContainer.add(bottomMenuViewSeg1);
 
 
-SetStops();
+createRouteCheckBox();
 
+SetStops();
 setAdjustTableListener();
 setWebViewListener();
 setLongPressListener();
-
-
 
 win.add(selectedStopView);
 win.add(webviewContainer);				//win.add(localWebview);
@@ -291,7 +338,7 @@ function createRouteCheckBox(){
 	  value:true,
 	  width: '100%',
 	  height: '100%',
-	  titleOff: 'Norst Central',
+	  titleOff: 'North Central',
 	  titleOn: 'North Central',
 	  borderRadius: 5,
 	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
@@ -310,10 +357,10 @@ function createRouteCheckBox(){
 	});
 
 	
-	toggleMenu1.add(routeCheckboxA);
-	toggleMenu2.add(routeCheckboxB);
-	toggleMenu3.add(routeCheckboxC);
-	toggleMenu4.add(routeCheckboxD);
+	toggleMenus[0].add(routeCheckboxA);
+	toggleMenus[1].add(routeCheckboxB);
+	toggleMenus[2].add(routeCheckboxC);
+	toggleMenus[3].add(routeCheckboxD);
 	
 
 	setCheckBoxEventListeners();
@@ -428,30 +475,30 @@ function setCheckBoxEventListeners(){
 	routeCheckboxA.addEventListener('change',function(){
 		Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
 		if(routeCheckboxA.value == false){
-			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrangeOffD.png');
+			toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrangeOffD.png');
 		}
 		else{
-			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrange.png');
+			toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrange.png');
 		}
 	});
 	
 	routeCheckboxB.addEventListener('change',function(){
 		Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
 		if(routeCheckboxB.value == false){
-			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlueOffD.png');
+			toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlueOffD.png');
 		}
 		else{
-			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlue.png');
+			toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlue.png');
 		}
 	});
 	
 	routeCheckboxC.addEventListener('change',function(){
 		Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
 		if(routeCheckboxC.value == false){
-			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreenOffD.png');
+			toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreenOffD.png');
 		}
 		else{
-			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreen.png');
+			toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreen.png');
 		}
 	});
 	
@@ -459,10 +506,10 @@ function setCheckBoxEventListeners(){
 	routeCheckboxD.addEventListener('change',function(){
 		Ti.App.fireEvent("dbox", {data: [routeCheckboxD.value]});
 		if(routeCheckboxD.value == false){
-			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellowOffD.png');
+			toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellowOffD.png');
 		}
 		else{
-			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellow.png');
+			toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellow.png');
 		}
 	});
 	
@@ -524,7 +571,8 @@ function setWebViewListener(){
 		}
 		
 		updateRouteEstimates();
-		updateSelected();
+		
+		updateSelected(stopsArray[0]);
 		
 		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
 		//Want to wait until map is started and ready before doing this stuff
@@ -543,6 +591,7 @@ function setWebViewListener(){
 			setBackupShuttleData();
 			Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
 		});*/
+	
 	
 		//Request the shuttle data, and start the update event, repeats every 5 seconds
 		setInterval(function() {
@@ -575,9 +624,20 @@ function setWebViewListener(){
 			}
 
 			Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
+			
+			for(var i = 0; i < stopsArray.length; i++){
+				if (stopsArray[0] == stopNameLabel.getText()){
+					updateSelectedTimes(stopsArray[i][3],stopsArray[i][4],stopsArray[i][5],stopsArray[i][6]);
+				}
+			}
+			
+			
 		}, updateInterval);
 		
+		
+		
 	});	
+	
 }
 
 
@@ -600,6 +660,10 @@ function setLongPressListener(){
         		e.source.backgroundImage = 'GeneralUI/stopSelectButton.png';
     		}, 1200);
 			var stopsArray = e.row.stopsArray;
+			Ti.API.info(stopsArray);
+			
+			updateSelected(stopsArray);//Does this include seconds to stop for each shuttle?
+			
 			Ti.App.fireEvent("centerMap", {latitude: stopsArray[1], longitude: stopsArray[2]});
 		}
 	});
@@ -632,90 +696,33 @@ function getUserGPS(){
 }
 
 
-function updateSelected(){	
-	var stopNameLabel = Ti.UI.createLabel({
-		font: { fontSize:16 },
-		text: stopsArray[0][0],
-		color: '#FFFFFF',
-		left: 10,
-		top: 0,
-		//height: '10%',
-		verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
-	});
+//Updates selected stop text
+function updateSelected(stop){	
 	
-	var distanceLabel = Ti.UI.createLabel({
-		color: '#C0C0C0',
-		textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
-		top: 9,
-		width: Ti.UI.FILL,
-	});
-	
-   	var viewTopSection = Ti.UI.createView({
-   		height: '50%',
-   		width: '100%',
-   		layout: 'horizontal',
-   	});
-   	
-   	var viewTopSegs = new Array(3);
-   	
-   	for (var i=0;i<3;i++){
-   		viewTopSegs[i] = Ti.UI.createView({
-   		});
-   		
-   		viewTopSection.add(viewTopSegs[i]);
-   	}
-  
-   	viewTopSegs[0].setWidth('50%');
-   	viewTopSegs[1].setWidth('30%');
-   	viewTopSegs[2].setWidth('20%');
-   	
-   	viewTopSegs[0].add(stopNameLabel);
-	viewTopSegs[1].add(distanceLabel);
-	
-   	var viewBottomSection = Ti.UI.createView({
-		height: '50%',
-		width: '100%',
-		layout: 'horizontal',
-   	});
-   	
-   	var viewBottomSegs = new Array(4);
 
 	//Examples for # seconds. 
 	//Need to replace label text when new real data is called
-	var times = new Array(4);
+	/*var times = new Array(4);
 	times[0] = 13;
 	times[1] = 603;
 	times[2] = 350;
-	times[3] = 461;
-	
-	var stopTimingLabels = new Array(4); 
-	
-	for (var i=0; i<4; i++){
-		viewBottomSegs[i] = Ti.UI.createView({
-   			width: '25%'
-   		});
-   	
-		stopTimingLabels[i] = Ti.UI.createLabel({
-			font: { fontSize:30 },
-			text: timeConversion(times[i]),
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-		});
-		
-		viewBottomSegs[i].add(stopTimingLabels[i]);
-		viewBottomSection.add(viewBottomSegs[i]);
-	}
+	times[3] = 461;*/
 	
 	
-	selectedStopView.add(viewTopSection);
-	selectedStopView.add(viewBottomSection);
+	stopNameLabel.setText(stop[0]);
+	//distanceLabel.setText()
 	
-	stopTimingLabels[0].setColor('#7084ff');
-	stopTimingLabels[1].setColor('#36c636');
-	stopTimingLabels[2].setColor('#ff6600');
-	stopTimingLabels[3].setColor('#ffd119');
+	Ti.API.info(stop[3]+''+stop[4]+''+stop[5]);
+	
+	updateSelectedTimes(stop[3], stop[4], stop[5], stop[6]);
+	
+	
+	
+	
+	
+	
 
+	/*
 	setInterval(function(){
 			for (var i=0;i<4;i++){
 				if (times[i]-- <= 0){
@@ -727,12 +734,40 @@ function updateSelected(){
 				}
 			}		 
 		},1000);
+	*/
 	
+	/*
 	for (var i=0;i<4;i++){
-		selectedStopView.add(stopTimingLabels[i]);
+		stopTimingLabels[i].setText(timeConversion(times[i]));
+	}
+	*/
+	
+	
+	
+	
+}
+
+//Takes in 4 times, updates label
+//Should be called when selectedStop is changed, and when new data is pulled
+function updateSelectedTimes(t0, t1, t2, t3){
+	Ti.API.info("TimeA:"+ t0);
+	var times = new Array(4);
+	times[0] = t0;
+	times[1] = t1;
+	times[2] = t2;
+	times[3] = t3;
+	
+	//change this back to 4 iterations after stopsArray modified to include 4th ETA
+	for (var i=0;i<3;i++){
+		if (times[i] >= 0 && times[i] != null){
+			stopTimingLabels[i].setText(timeConversion(times[i]));
+		}
+		else 
+			stopTimingLabels[i].setText('---');
 	}
 	
 }
+
 
 //Converts seconds to a minute:second string
 function timeConversion(time){
