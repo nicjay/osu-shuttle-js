@@ -208,7 +208,7 @@ webviewContainer.add(zoomButtonView);
 
 
 setStops();
-setWebViewListener();
+
 setTableClickListener();
 
 win.add(selectedStopView);
@@ -744,6 +744,10 @@ function setStops(){
 			 * 	
 			 * 		Example
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
+			
+			
+			setWebViewListener();
+			
 		}
 	});
 	xhr.open("GET", url2);
