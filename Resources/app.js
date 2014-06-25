@@ -203,6 +203,7 @@ setWebViewListener();
 setTableClickListener();
 
 
+
 win.add(selectedStopView);
 win.add(webviewContainer);
 win.add(bottomMenu);
@@ -518,42 +519,8 @@ function getUserGPS(){
 }
 
 
-function updateSelected(){
-   	var viewTopSection = Ti.UI.createView({
-   		height: '50%',
-   		width: '100%',
-   		layout: 'horizontal',
-   	});
-   	var viewTopSeg1 = Ti.UI.createView({
-   		width: '50%'
-   	});
-   	var viewTopSeg2 = Ti.UI.createView({
-   		width: '30%'
-   	});
-   	var viewTopSeg3 = Ti.UI.createView({
-   		width: '20%'
-   	});
-   	
-   	var viewBottomSection = Ti.UI.createView({
-		height: '50%',
-		width: '100%',
-		layout: 'horizontal',
-   	});
-   	var viewBottomSeg1 = Ti.UI.createView({
-   		width: '25%'
-   	});
-   	var viewBottomSeg2 = Ti.UI.createView({
-   		width: '25%'
-   	});
-   	var viewBottomSeg3 = Ti.UI.createView({
-   		width: '25%'
-   	});
-   	var viewBottomSeg4 = Ti.UI.createView({
-   		width: '25%'
-   	});
-
-   	
-   	var stopNameLabel = Ti.UI.createLabel({
+function updateSelected(){	
+	var stopNameLabel = Ti.UI.createLabel({
 		font: { fontSize:16 },
 		text: stopsArray[0][0],
 		color: '#FFFFFF',
@@ -562,6 +529,7 @@ function updateSelected(){
 		//height: '10%',
 		verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
 	});
+	
 	var distanceLabel = Ti.UI.createLabel({
 		color: '#C0C0C0',
 		textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
@@ -569,109 +537,66 @@ function updateSelected(){
 		width: Ti.UI.FILL,
 	});
 	
-	viewTopSeg1.add(stopNameLabel);
-	viewTopSeg2.add(distanceLabel);
+   	var viewTopSection = Ti.UI.createView({
+   		height: '50%',
+   		width: '100%',
+   		layout: 'horizontal',
+   	});
+   	
+   	var viewTopSegs = new Array(3);
+   	
+   	for (var i=0;i<3;i++){
+   		viewTopSegs[i] = Ti.UI.createView({
+   		});
+   		
+   		viewTopSection.add(viewTopSegs[i]);
+   	}
+  
+   	viewTopSegs[0].setWidth('50%');
+   	viewTopSegs[1].setWidth('30%');
+   	viewTopSegs[2].setWidth('20%');
+   	
+   	viewTopSegs[0].add(stopNameLabel);
+	viewTopSegs[1].add(distanceLabel);
 	
-	//example for # seconds. replace with data source
-	var time1 = 547;
-	var time2 = 600;
-	var time3 = 300;
-	var time4 = 59;
+   	var viewBottomSection = Ti.UI.createView({
+		height: '50%',
+		width: '100%',
+		layout: 'horizontal',
+   	});
+   	
+   	var viewBottomSegs = new Array(4);
 
 	//Examples for # seconds. 
 	//Need to replace label text when new real data is called
 	var times = new Array(4);
 	times[0] = 13;
-	times[1] = 623;
+	times[1] = 603;
 	times[2] = 350;
 	times[3] = 461;
-
-	var stopTiming1 = Ti.UI.createLabel({
-		font: { fontSize:30 },
-		text: timeConversion(time1),
-		color: '#7084ff',
-		//left:25,
-		width: Ti.UI.SIZE,
-		height: Ti.UI.SIZE,
-		//textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-	});
-		
-	var stopTiming2 = Ti.UI.createLabel({
-		font: { fontSize:30 },
-		text: timeConversion(time2),
-		color: '#36c636',
-		//left: 125,
-		width: Ti.UI.SIZE,
-		height: Ti.UI.SIZE,
-		//textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-	});
-		
-	var stopTiming3 = Ti.UI.createLabel({
-		font: { fontSize:30 },
-		text: timeConversion(time3),
-		color: '#ff6600',
-		//left: 225,
-		width: Ti.UI.SIZE,
-		height: Ti.UI.SIZE,
-		//textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-	});
-		
-	var stopTiming4 = Ti.UI.createLabel({
-		font: { fontSize:30 },
-		text: timeConversion(time4),
-		color: '#7084ff',
-		//left: 325,
-		width: Ti.UI.SIZE,
-		height: Ti.UI.SIZE,
-		//textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-	});
-		
-		
-	setInterval(function(){
-		/*time1--;
-		time2--;
-		time3--;
-		time4--;
-		
-		stopTiming1.setText(timeConversion(time1));
-		stopTiming2.setText(timeConversion(time2));
-		stopTiming3.setText(timeConversion(time3));
-		stopTiming4.setText(timeConversion(time4));*/
-	},1000);
 	
-	
-	viewTopSeg1.add(stopNameLabel);
-	viewTopSeg2.add(distanceLabel);
-	
-	viewTopSection.add(viewTopSeg1);
-	viewTopSection.add(viewTopSeg2);
-	viewTopSection.add(viewTopSeg3);
-	
-	viewBottomSeg1.add(stopTiming1);
-	viewBottomSeg2.add(stopTiming2);
-	viewBottomSeg3.add(stopTiming3);
-	viewBottomSeg4.add(stopTiming4);
-	viewBottomSection.add(viewBottomSeg1);
-	viewBottomSection.add(viewBottomSeg2);
-	viewBottomSection.add(viewBottomSeg3);
-	viewBottomSection.add(viewBottomSeg4);
-	
-	selectedStopView.add(viewTopSection);
-	selectedStopView.add(viewBottomSection);
 	var stopTimingLabels = new Array(4); 
 	
 	for (var i=0; i<4; i++){
+		viewBottomSegs[i] = Ti.UI.createView({
+   			width: '25%'
+   		});
+   	
 		stopTimingLabels[i] = Ti.UI.createLabel({
 			font: { fontSize:30 },
 			text: timeConversion(times[i]),
-			//color: '#7084ff',
-			left:(20+(i*20)).toString()+'%',
-			//width: '25%',
+			width: Ti.UI.SIZE,
 			height: Ti.UI.SIZE,
 			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
 		});
 		
+		viewBottomSegs[i].add(stopTimingLabels[i]);
+		viewBottomSection.add(viewBottomSegs[i]);
 	}
+	
+	
+	selectedStopView.add(viewTopSection);
+	selectedStopView.add(viewBottomSection);
 	
 	stopTimingLabels[0].setColor('#7084ff');
 	stopTimingLabels[1].setColor('#36c636');
