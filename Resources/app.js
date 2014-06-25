@@ -313,13 +313,13 @@ setLongPressListener();
 
 //Add objects to window
 
-win.add(localWebview);
+//win.add(localWebview);
 
 
 
-win.add(zoomInButton);
+//win.add(zoomInButton);
 //childWebview.add(zoomOutButton)
-win.add(toggleButton);
+//win.add(toggleButton);
 
 
 win.add(selectedStopView);
@@ -743,7 +743,7 @@ function updateSelected(){
 	for (var i=0; i<4; i++){
 		stopTimingLabels[i] = Ti.UI.createLabel({
 			font: { fontSize:30 },
-			text: timeConversion(time1),
+			text: timeConversion(times[i]),
 			//color: '#7084ff',
 			left:(20+(i*20)).toString()+'%',
 			//width: '25%',
