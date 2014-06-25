@@ -51,6 +51,7 @@ var topMenu = Ti.UI.createView({
 var webviewContainer = Ti.UI.createView({
 	height: '55%',
 });
+
 //Create webview of map.html
 var localWebview = Titanium.UI.createWebView({
 	url:'map.html',
@@ -66,13 +67,10 @@ var localWebview = Titanium.UI.createWebView({
     borderColor: '#c34500',
     borderWidth: 0,
     borderRadius: 0,
-    
     //layout: 'vertical',
-    layout: 'composite'
-    
-    //borderColor: '#080808',
-    //borderWidth: '8px'
+   // layout: 'composite'
 });
+
 
 var selectedStopView = Ti.UI.createView({
 	backgroundColor: '#323031',
@@ -185,16 +183,23 @@ toggleMenu.add(toggleMenu4);
 var toggleMenuOn = false;
 
 var toggleButton = Ti.UI.createButton({
+	top:0,
 	//bottom: 50,
 	backgroundImage: 'GeneralUI/shinyBus.png',
 	borderWidth: '2px',
 	borderColor: '#000000',
 	right: 0,
-	height: '10%',
+	width: 100,
 	title: 'Toggle',
+	zIndex: 1
 });
 
 var zoomInButton = Ti.UI.createButton({
+	top:toggleButton.getHeight(),
+	right:0,
+	width: 50,
+	title: '+',
+	zIndex: 1,
 	//bottom: 25,
 	//right:0,
 	//width: 100,
@@ -273,12 +278,16 @@ webviewContainer.add(localWebview);
 webviewContainer.add(bottomMenuViewSeg1);
 
 
-//--!!!!!!!!!!				!!!!!!!!!				!!!!				!!!!!
-//localWebview.add(toggleButton);
-
-//!!!!
 
 //localWebview.add(toggleButton);
+
+
+
+//localWebview.add(toggleButton);
+//selectedStopView.add(toggleButton);
+
+
+
 //selectedStopView.add(toggleButton);
 
 
@@ -297,6 +306,16 @@ setLongPressListener();
 //localWebview.add(zoomOutButton)
 
 //Add objects to window
+
+//win.add(localWebview);
+
+
+
+//win.add(zoomInButton);
+//childWebview.add(zoomOutButton)
+//win.add(toggleButton);
+
+
 win.add(selectedStopView);
 win.add(webviewContainer);				//win.add(localWebview);
 win.add(bottomMenu);
@@ -438,23 +457,15 @@ function SetStops(){
 //===================================================================
 
 
-
-var zoomIn;
-
 zoomInButton.addEventListener('click',function(e)
 {
-	zoomIn = true;
-	Ti.API.info("zoom in" +zoomIn);
 	Ti.App.fireEvent("zoomMap", {data: [true]});
 });
 
 zoomOutButton.addEventListener('click',function(e)
 {
-	zoomIn = false;
-	Ti.API.info("Zoom out" +zoomIn);
 	Ti.App.fireEvent("zoomMap", {data: [false]});
 });
-
 
 toggleButton.addEventListener('click',function(e)
 {
@@ -691,6 +702,7 @@ function getUserGPS(){
 		});
 }
 
+
 function updateSelected(){
    	var viewTopSection = Ti.UI.createView({
    		height: '50%',
@@ -751,7 +763,14 @@ function updateSelected(){
 	var time3 = 300;
 	var time4 = 59;
 
-	
+	//Examples for # seconds. 
+	//Need to replace label text when new real data is called
+	var times = new Array(4);
+	times[0] = 13;
+	times[1] = 623;
+	times[2] = 350;
+	times[3] = 461;
+
 	var stopTiming1 = Ti.UI.createLabel({
 		font: { fontSize:30 },
 		text: timeConversion(time1),
@@ -824,11 +843,45 @@ function updateSelected(){
 	
 	selectedStopView.add(viewTopSection);
 	selectedStopView.add(viewBottomSection);
+	var stopTimingLabels = new Array(4); 
+	
+	for (var i=0; i<4; i++){
+		stopTimingLabels[i] = Ti.UI.createLabel({
+			font: { fontSize:30 },
+			text: timeConversion(times[i]),
+			//color: '#7084ff',
+			left:(20+(i*20)).toString()+'%',
+			//width: '25%',
+			height: Ti.UI.SIZE,
+			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+		});
+		
+	}
+	
+	stopTimingLabels[0].setColor('#7084ff');
+	stopTimingLabels[1].setColor('#36c636');
+	stopTimingLabels[2].setColor('#ff6600');
+	stopTimingLabels[3].setColor('#ffd119');
+
+	setInterval(function(){
+			for (var i=0;i<4;i++){
+				if (times[i]-- <= 0){
+					stopTimingLabels[i].setText("0:00");
+					stopTimingLabels[i].visible = !stopTimingLabels[i].visible ;
+				}
+				else{
+					stopTimingLabels[i].setText(timeConversion(times[i]));
+				}
+			}		 
+		},1000);
+	
+	for (var i=0;i<4;i++){
+		selectedStopView.add(stopTimingLabels[i]);
+	}
 	
 }
 
-
-
+//Converts seconds to a minute:second string
 function timeConversion(time){
 	var timeOutput;
 	var min = Math.floor(time / 60);
@@ -1013,6 +1066,7 @@ function updateRouteEstimates(){
 					for(var k = 0; k < shuttle.RouteStops.length; k++){
 						if(shuttle.RouteStops[k].Description == stopsArray[j][0]){
 							stopsArray[j][i+3] = shuttle.RouteStops[k].Estimates[0].SecondsToStop;
+							Ti.API.info(stopsArray[j][i+3]);
 						}
 					}
 				}
