@@ -1,0 +1,22 @@
+[{"GroundSpeed":0,
+"Heading":103,
+"IsDelayed":false,
+"IsOnRoute":true,
+"Latitude":44.56844,
+"Longitude":-123.1739,
+"Name":"Bus 1",
+"RouteID":4,
+"Seconds":2,
+"TimeStamp":
+"\/Date(1403665735000-0500)\/",
+"VehicleID":1},{
+"GroundSpeed":8.0778254916666672,
+"Heading":203,
+"IsDelayed":false,
+"IsOnRoute":true,
+"Latitude":44.56699,
+"Longitude":-123.27232,
+"Name":"Bus 4",
+"RouteID":5,"Seconds":5,
+"TimeStamp":"\/Date(1403665742000-0500)\/",
+"VehicleID":5}]
