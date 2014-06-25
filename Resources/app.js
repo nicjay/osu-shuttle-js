@@ -55,20 +55,14 @@ var webviewContainer = Ti.UI.createView({
 //Create webview of map.html
 var localWebview = Titanium.UI.createWebView({
 	url:'map.html',
-    //bottom: bottomMenu.toImage().height,
     left:0,
     right:0,
     top: 0,
-    //html:textContent,
-    //height:'55%',
-    //width:'auto',
     backgroundColor:'#373737',
     touchEnabled:true,
     borderColor: '#c34500',
     borderWidth: 0,
     borderRadius: 0,
-    //layout: 'vertical',
-   // layout: 'composite'
 });
 
 
@@ -76,16 +70,10 @@ var selectedStopView = Ti.UI.createView({
 	backgroundImage: 'GeneralUI/selectedStopBackground2.png',
 	width: 'auto',
 	height: Ti.UI.SIZE,
-	//borderColor: '#9D9C9C',
-	//borderWidth: 0,
 	layout: 'horizontal',
-
 	borderColor: '#9D9C9C',
 	borderRadius: 5,
 	borderWidth: 3,
-	//layout: 'horizontal',
-
-	
 });
 
 
@@ -121,7 +109,6 @@ var toggleMenu = Ti.UI.createView({
     borderWidth: 5,
     borderRadius: 0,
     bottom: 0,
-    //visible: false,
     layout: 'horizontal',
 });
 
@@ -130,57 +117,33 @@ var toggleMenu = Ti.UI.createView({
 var toggleMenu1 = Ti.UI.createView({
     width:'50%',
     height:'50%',
-    //bottom:0,
-    //top: 0,
-    //left: 0,
-    //right: 0,
     backgroundImage: 'GeneralUI/toggleBgOrange.png',
     borderColor: '#111111',
     borderWidth: 5,
-    //borderRadius: 0,
-    //visible: false,
 });
 
 var toggleMenu2 = Ti.UI.createView({
     width:'50%',
     height:'50%',
-    //bottom:0,
-    //top: 0,
-    //left: 0,
-    //right: 0,
     backgroundImage: 'GeneralUI/toggleBgBlue.png',
     borderColor: '#111111',
     borderWidth: 5,
-    //borderRadius: 0,
-    //visible: false,
 });
 
 var toggleMenu3 = Ti.UI.createView({
     width:'50%',
     height:'50%',
-    //bottom:0,
-    //top: 0,
-    //left: 0,
-    //right: 0,
     backgroundImage: 'GeneralUI/toggleBgGreen.png',
     borderColor: '#111111',
     borderWidth: 5,
-    //borderRadius: 0,
-    //visible: false,
 });
 
 var toggleMenu4 = Ti.UI.createView({
     width:'50%',
     height:'50%',
-    //bottom:0,
-    //top: 0,
-    //left: 0,
-    //right: 0,
     backgroundImage: 'GeneralUI/toggleBgYellow.png',
     borderColor: '#111111',
     borderWidth: 5,
-    //borderRadius: 0,
-    //visible: false,
 });
 
 toggleMenu.add(toggleMenu1);
@@ -226,17 +189,6 @@ var zoomOutButton = Ti.UI.createButton({
 
 
 createRouteCheckBox();
-
-/*var slideLabel = Titanium.UI.createLabel({
-	color:'#334C61',
-	text: '',
-	font:{fontSize:20,fontFamily:'Helvetica Neue'},
-	textAlign:'center',
-	bottom: 0,
-	width: 'auto',
-	height:'auto',
-	backgroundImage: 'GeneralUI/slideBar.png'
-});*/
 
 var bottomMenuView = Ti.UI.createView({
 	layout: 'horizontal',
@@ -285,41 +237,12 @@ var scrollArrows = Ti.UI.createImageView({
 webviewContainer.add(localWebview);
 webviewContainer.add(bottomMenuViewSeg1);
 
-
-
-//localWebview.add(toggleButton);
-
-
-
-
-
-//selectedStopView.add(toggleButton);
-
-
-
-//toggleButton.setRight(0);
-//toggleButton.setBottom(0);
-
-
 SetStops();
 
 setAdjustTableListener();
 setWebViewListener();
 setLongPressListener();
 
-//localWebview.add(zoomInButton);
-
-//localWebview.add(zoomOutButton)
-
-//Add objects to window
-
-//win.add(localWebview);
-
-
-
-//win.add(zoomInButton);
-//childWebview.add(zoomOutButton)
-//win.add(toggleButton);
 
 
 win.add(selectedStopView);
@@ -327,10 +250,6 @@ win.add(webviewContainer);				//win.add(localWebview);
 win.add(bottomMenu);
 
 win.add(userGPSStatusLabel);
-
-//bottomMenu.add(selectedStopView);
-
-//bottomMenu.add(scrollArrows);
 
 
 //===================================================================
@@ -750,6 +669,7 @@ function updateSelected(){
 			height: Ti.UI.SIZE,
 			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
 		});
+		
 		
 	}
 	
