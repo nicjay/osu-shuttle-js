@@ -81,9 +81,15 @@ var selectedStopView = Ti.UI.createView({
 	//borderColor: '#9D9C9C',
 	//borderWidth: 0,
 	layout: 'horizontal',
-	
+
+	borderColor: '#9D9C9C',
+	borderRadius: 5,
+	borderWidth: 3,
+	//layout: 'horizontal',
+
 	
 });
+
 
 var bottomMenu = Ti.UI.createView({
     width:'auto',
@@ -191,6 +197,9 @@ var toggleButton = Ti.UI.createButton({
 	backgroundImage: 'GeneralUI/shinyBus.png',
 	borderWidth: '2px',
 	borderColor: '#000000',
+	right: 0,
+	height: '10%',
+	title: 'Toggle',
 });
 
 var zoomInButton = Ti.UI.createButton({
@@ -271,10 +280,15 @@ var scrollArrows = Ti.UI.createImageView({
 webviewContainer.add(localWebview);
 webviewContainer.add(bottomMenuViewSeg1);
 
+
 //--!!!!!!!!!!				!!!!!!!!!				!!!!				!!!!!
 //localWebview.add(toggleButton);
 
 //!!!!
+
+//localWebview.add(toggleButton);
+selectedStopView.add(toggleButton);
+
 
 //toggleButton.setRight(0);
 //toggleButton.setBottom(0);
@@ -287,6 +301,7 @@ setWebViewListener();
 setLongPressListener();
 
 //localWebview.add(zoomInButton);
+
 //localWebview.add(zoomOutButton)
 
 //Add objects to window
@@ -689,8 +704,9 @@ function updateSelected(){
 		font: { fontSize:16 },
 		text: stopsArray[0][0],
 		color: '#FFFFFF',
-		left: 15,
-		top: 10,
+		left: 10,
+		top: 0,
+		//height: '10%',
 		verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
 	});
 	var distanceLabel = Ti.UI.createLabel({
@@ -703,7 +719,9 @@ function updateSelected(){
 	selectedStopView.add(stopNameLabel);
 	selectedStopView.add(distanceLabel);
 	
-	for(var i = 0; i < 3; i++){
+	/*
+	
+	for(var i = 0; i < 4; i++){
 		switch(i){
 			case 0:
 				routeColor = '#7084ff';
@@ -714,23 +732,121 @@ function updateSelected(){
 			case 2:
 				routeColor = '#ff6600';
 				break;
+			case 3:
+				routeColor = '#ffd119';
+				break;
 			default:
 				Ti.API.info("ALERT, wrong index Stops Array");
 		}
 		
 		var stopTiming = Ti.UI.createLabel({
-			font: { fontSize:34 },
+			font: { fontSize:32 },
 			text: '10:40',
 			color: routeColor,
-			width: '33.3%',
-			textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+			//width: '33.3%',
+			
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			
+			//textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+			
+			//bottom: 0,
+			left: 90*i,
+			//left:0,
 		});
 		selectedStopView.add(stopTiming);
+		
 	}
+	*/
+	
+	//example for # seconds. replace with data source
+	var time1 = 547;
+	var time2 = 600;
+	var time3 = 300;
+	var time4 = 59;
+
+	
+	var stopTiming1 = Ti.UI.createLabel({
+			font: { fontSize:30 },
+			text: timeConversion(time1),
+			color: '#7084ff',
+			left:25,
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+		});
+		
+		var stopTiming2 = Ti.UI.createLabel({
+			font: { fontSize:30 },
+			text: timeConversion(time2),
+			color: '#36c636',
+			left: 125,
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+		});
+		
+		var stopTiming3 = Ti.UI.createLabel({
+			font: { fontSize:30 },
+			text: timeConversion(time3),
+			color: '#ff6600',
+			left: 225,
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+		});
+		
+		var stopTiming4 = Ti.UI.createLabel({
+			font: { fontSize:30 },
+			text: timeConversion(time4),
+			color: '#7084ff',
+			left: 325,
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+		});
+		
+		
+		setInterval(function(){
+			time1--;
+			time2--;
+			time3--;
+			time4--;
+			
+			stopTiming1.setText(timeConversion(time1));
+			stopTiming2.setText(timeConversion(time2));
+			stopTiming3.setText(timeConversion(time3));
+			stopTiming4.setText(timeConversion(time4));
+		},1000);
+	
+
+	selectedStopView.add(stopTiming1);
+	selectedStopView.add(stopTiming2);
+	selectedStopView.add(stopTiming3);
+	selectedStopView.add(stopTiming4);
+	
+	
 	selectedStopView.add(routeEstTable);
 
 	
 }
+
+
+
+function timeConversion(time){
+	var timeOutput;
+	var min = Math.floor(time / 60);
+	var sec = time - min * 60;
+
+	if (sec < 10)
+		timeOutput = min+':0'+sec;
+	else
+		timeOutput = min+':'+sec;
+	
+	return timeOutput;
+}
+
 
 //===================================================================
 //-------------------------------------------------------------------
