@@ -4,7 +4,7 @@
   	var data, UserGPS, map, pt, symbol;
   	var selectStop;
   	var GS1, GS2, GS3;
-  	var shuttlecoords;
+  	var shuttleData;
   	var heading = new Array(3);
   	
   	var ExprRouteGraphic;
@@ -19,6 +19,8 @@
   	var enableNorth = true;
   	var enableSouth = true;
   	
+  	//TODO: expand to set this array
+  	var enabledRouteIDs = [4, 5];
 
   
   	//When this event occurs, fill up variables and create map.
@@ -39,9 +41,8 @@
     
     //When this event occurs, fill up shuttle coords and update map.
     Ti.App.addEventListener('updatemap', function(event){
-    	shuttlecoords = [];
-		shuttlecoords = event.data[0];
-		heading = event.data[1];
+    	shuttleData = [];
+		shuttleData = event.data[0];
 		updateMap();
 		});
 		
@@ -300,38 +301,70 @@
     		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color", "dojo/Deferred",
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Graphic, arrayUtils, domStyle, Color) {
-
-    				//Clear the outdated positions
+					
+					Ti.API.info("Map Graphics: " + JSON.parse(map.graphics));
+					
+					map.removeLayer(shuttleLayer);
+					var shuttleLayer = new esri.layers.GraphicsLayer();
+    				
+    				/*//Clear the outdated positions
 					map.graphics.remove(GS1);
         			map.graphics.remove(GS2);
    					map.graphics.remove(GS3);
+   					*/
    					
    					var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20); //south central
 					var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('Shuttle/greentriangle.png', 20, 20); //*north central
 					var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('Shuttle/orangetriangle.png', 20, 20); //express
     				
+    				Ti.API.info("ShuttleData length is : " + shuttleData.length);
+    				for(var i = 0; i < shuttleData.length; i++){
+    					var shuttleGraphic;
+    					
+    					//Check if route is enabled, if not, don't display shuttle graphic.
+    					if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
+    						continue;
+    					}
+    					
+    					//Assign graphic based on RouteID
+    					switch(shuttleData[i][0]){
+    						case 4: //Express
+    							shuttleGraphic = ShuttleMarkerSymbol1;
+    							break;
+    						case 5:	//South-Central
+    							shuttleGraphic = ShuttleMarkerSymbol2;
+    					}
+    					shuttleGraphic.setAngle(shuttleData[i][3]);
+    					var newShuttle = new esri.geometry.Point({
+ 							latitude: shuttleData[i][1],
+ 							longitude: shuttleData[i][2],
+    					});
+    					var newGraphic = new Graphic(newShuttle, shuttleGraphic);
+    					shuttleLayer.add(newGraphic);
+    				}
+    				map.addLayer(shuttleLayer);
+    				
+    				/*
     				//Set up the point coordinates
        				Shuttle1 = new esri.geometry.Point({
-  								latitude: shuttlecoords[0][0],
-  								longitude: shuttlecoords[0][1]
+  								latitude: shuttleData[0][1],
+  								longitude: shuttleData[0][2]
 								});
 										
 
 					Shuttle2 = new esri.geometry.Point({
-  								latitude: shuttlecoords[1][0],
-  								longitude: shuttlecoords[1][1]
+  								latitude: shuttleData[1][1],
+  								longitude: shuttleData[1][2]
 								});
 				
 					Shuttle3 = new esri.geometry.Point({
-  								latitude: shuttlecoords[2][0],
-  								longitude: shuttlecoords[2][1]
+  								latitude: shuttleData[2][1],
+  								longitude: shuttleData[2][2]
 								});
 								
-        				
-        
-        			ShuttleMarkerSymbol1.setAngle(heading[0]);
-        			ShuttleMarkerSymbol2.setAngle(heading[1]);
-        			ShuttleMarkerSymbol3.setAngle(heading[2]);
+        			ShuttleMarkerSymbol1.setAngle(shuttleData[0][3]);
+        			ShuttleMarkerSymbol2.setAngle(shuttleData[1][3]);
+        			ShuttleMarkerSymbol3.setAngle(shuttleData[2][3]);
         			
        				GS3 = new Graphic(Shuttle1, ShuttleMarkerSymbol1);
        				GS2 = new Graphic(Shuttle2, ShuttleMarkerSymbol2);
@@ -347,7 +380,7 @@
        				
        				if (enableExpress){
        					map.graphics.add(GS3);
-       				}
+       				} */
 
       		});
        }
