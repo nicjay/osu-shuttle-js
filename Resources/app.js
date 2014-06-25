@@ -48,6 +48,9 @@ var topMenu = Ti.UI.createView({
 	top: 0,
 });
 
+var webviewContainer = Ti.UI.createView({
+	height: '55%',
+});
 
 //Create webview of map.html
 var localWebview = Titanium.UI.createWebView({
@@ -57,7 +60,7 @@ var localWebview = Titanium.UI.createWebView({
     right:0,
     top: 0,
     //html:textContent,
-    height:'55%',
+    //height:'55%',
     //width:'auto',
     backgroundColor:'#373737',
     touchEnabled:true,
@@ -70,13 +73,18 @@ var localWebview = Titanium.UI.createWebView({
 
 
 var selectedStopView = Ti.UI.createView({
-	backgroundImage: 'GeneralUI/selectedStopBackground.png',
+	backgroundImage: 'GeneralUI/selectedStopBackground2.png',
 	width: 'auto',
 	height: Ti.UI.SIZE,
+	//borderColor: '#9D9C9C',
+	//borderWidth: 0,
+	layout: 'horizontal',
+
 	borderColor: '#9D9C9C',
 	borderRadius: 5,
 	borderWidth: 3,
 	//layout: 'horizontal',
+
 	
 });
 
@@ -105,14 +113,16 @@ var userGPSStatusLabel = Titanium.UI.createLabel({
 var toggleMenu = Ti.UI.createView({
     width:'auto',
     height:'auto',
-    bottom:0,
-    left: 0,
-    right: 0,
+    //bottom:0,
+    //left: 0,
+    //right: 0,
     backgroundColor:'#373737',
     borderColor: '#111111',
     borderWidth: 5,
     borderRadius: 0,
+    bottom: 0,
     //visible: false,
+    layout: 'horizontal',
 });
 
 
@@ -121,13 +131,13 @@ var toggleMenu1 = Ti.UI.createView({
     width:'50%',
     height:'50%',
     //bottom:0,
-    top: 0,
-    left: 0,
+    //top: 0,
+    //left: 0,
     //right: 0,
     backgroundImage: 'GeneralUI/toggleBgOrange.png',
     borderColor: '#111111',
     borderWidth: 5,
-    borderRadius: 0,
+    //borderRadius: 0,
     //visible: false,
 });
 
@@ -135,41 +145,41 @@ var toggleMenu2 = Ti.UI.createView({
     width:'50%',
     height:'50%',
     //bottom:0,
-    top: 0,
+    //top: 0,
     //left: 0,
-    right: 0,
+    //right: 0,
     backgroundImage: 'GeneralUI/toggleBgBlue.png',
     borderColor: '#111111',
     borderWidth: 5,
-    borderRadius: 0,
+    //borderRadius: 0,
     //visible: false,
 });
 
 var toggleMenu3 = Ti.UI.createView({
     width:'50%',
     height:'50%',
-    bottom:0,
+    //bottom:0,
     //top: 0,
-    left: 0,
+    //left: 0,
     //right: 0,
     backgroundImage: 'GeneralUI/toggleBgGreen.png',
     borderColor: '#111111',
     borderWidth: 5,
-    borderRadius: 0,
+    //borderRadius: 0,
     //visible: false,
 });
 
 var toggleMenu4 = Ti.UI.createView({
     width:'50%',
     height:'50%',
-    bottom:0,
+    //bottom:0,
     //top: 0,
     //left: 0,
-    right: 0,
+    //right: 0,
     backgroundImage: 'GeneralUI/toggleBgYellow.png',
     borderColor: '#111111',
     borderWidth: 5,
-    borderRadius: 0,
+    //borderRadius: 0,
     //visible: false,
 });
 
@@ -182,6 +192,10 @@ var toggleMenuOn = false;
 
 var toggleButton = Ti.UI.createButton({
 	top:0,
+	//bottom: 50,
+	backgroundImage: 'GeneralUI/shinyBus.png',
+	borderWidth: '2px',
+	borderColor: '#000000',
 	right: 0,
 	width: 100,
 	title: 'Toggle',
@@ -193,14 +207,21 @@ var zoomInButton = Ti.UI.createButton({
 	right:0,
 	width: 50,
 	title: '+',
-	zIndex: 1
+	zIndex: 1,
+	//bottom: 25,
+	//right:0,
+	//width: 100,
+	title: '+',
+	font:{fontSize:25},
+	//height: '50%',
 });
 
 var zoomOutButton = Ti.UI.createButton({
-	top:0,
-	right: 100,
-	width: 100,
+	//right: 100,
+	//width: 100,
 	title: '-',
+	font:{fontSize:25},
+	//height: '50%',
 });
 
 
@@ -217,7 +238,23 @@ createRouteCheckBox();
 	backgroundImage: 'GeneralUI/slideBar.png'
 });*/
 
+var bottomMenuView = Ti.UI.createView({
+	layout: 'horizontal',
+});
 
+var bottomMenuViewSeg1 = Ti.UI.createView({
+	left: 5,
+	width: '15%',
+	height: Ti.UI.SIZE,
+	top: '65%',
+	layout: 'vertical',
+});
+var bottomMenuViewSeg2 = Ti.UI.createView({
+	width: '100%',
+	left: 0,
+	height: Ti.UI.SIZE,
+	top: 0,
+});
 
 var routeEstTable = Ti.UI.createTableView({
   	minRowHeight: 50,
@@ -225,17 +262,34 @@ var routeEstTable = Ti.UI.createTableView({
   	data: nearestArray,
 	scrollable: true,
 	color: '#ffffff',
-	separatorColor: 'white',
+	separatorColor: '#838383',
 	showVerticalScrollIndicator: true,
 	softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
 });
 
+bottomMenuViewSeg1.add(zoomInButton);	//+ map
+bottomMenuViewSeg1.add(zoomOutButton);	//
+//bottomMenuViewSeg1.add(toggleButton);	//Route Toggle
 
+bottomMenuViewSeg2.add(routeEstTable);
+//bottomMenuView.add(bottomMenuViewSeg1);
+bottomMenuView.add(bottomMenuViewSeg2);
+
+bottomMenu.add(bottomMenuView);
 
 var scrollArrows = Ti.UI.createImageView({
 	image:'GeneralUI/scrollarrow.png',
 	right:10
 });
+
+webviewContainer.add(localWebview);
+webviewContainer.add(bottomMenuViewSeg1);
+
+
+
+//localWebview.add(toggleButton);
+
+
 
 
 
@@ -243,8 +297,22 @@ var scrollArrows = Ti.UI.createImageView({
 
 
 
+//toggleButton.setRight(0);
+//toggleButton.setBottom(0);
+
+
+SetStops();
+
+setAdjustTableListener();
+setWebViewListener();
+setLongPressListener();
+
+//localWebview.add(zoomInButton);
+
+//localWebview.add(zoomOutButton)
 
 //Add objects to window
+
 win.add(localWebview);
 
 
@@ -254,25 +322,16 @@ win.add(zoomInButton);
 win.add(toggleButton);
 
 
-
 win.add(selectedStopView);
+win.add(webviewContainer);				//win.add(localWebview);
 win.add(bottomMenu);
 
 win.add(userGPSStatusLabel);
 
-bottomMenu.add(selectedStopView);
-bottomMenu.add(routeEstTable);
+//bottomMenu.add(selectedStopView);
 
 //bottomMenu.add(scrollArrows);
 
-
-SetStops();
-
-setAdjustTableListener();
-setWebViewListener();
-setLongPressListener();
-
-win.open();
 
 //===================================================================
 //-------------------------------------------------------------------
@@ -418,13 +477,13 @@ toggleButton.addEventListener('click',function(e)
 {
    Titanium.API.info("You clicked the toggle visibility button");
    if (!toggleMenuOn){
-   		bottomMenu.remove(routeEstTable);
-   		bottomMenu.add(toggleMenu);
+   		bottomMenuViewSeg2.remove(routeEstTable);
+   		bottomMenuViewSeg2.add(toggleMenu);
    		toggleMenuOn = true;
    }
    else{
-   		bottomMenu.remove(toggleMenu);
-   		bottomMenu.add(routeEstTable);
+   		bottomMenuViewSeg2.remove(toggleMenu);
+   		bottomMenuViewSeg2.add(routeEstTable);
    		toggleMenuOn = false;
    	
    }
@@ -603,12 +662,20 @@ function setLongPressListener(){
 	routeEstTable.addEventListener('click', function(e){
 		if(e.source == '[object Button]'){
 			//e.row.backgroundColor = '#42a6ca';
-			e.row.backgroundColor = '#337a94';
-			e.source.backgroundImage = 'GeneralUI/stopSelectButton2.png';
+			var childViews = e.row.getChildren();
+			childViews = childViews[0].getChildren();
+			childViews = childViews[0].getChildren();
+			Ti.API.info("childview 1: " + childViews[0] + " , childView: " + childViews);
+			childViews[0].color = '#FFA94C';
+			childViews[1].color = '#FFA94C';
+			//e.row.backgroundColor = '#337a94';
+			e.source.backgroundImage = 'GeneralUI/stopSelectButton3.png';
 			setTimeout(function() {
-        		e.row.backgroundColor = "transparent";
+        		childViews[0].color = '#FFFFFF';
+				childViews[1].color = '#C0C0C0';
+        		//e.row.backgroundColor = "transparent";
         		e.source.backgroundImage = 'GeneralUI/stopSelectButton.png';
-    		}, 500);
+    		}, 1200);
 			var stopsArray = e.row.stopsArray;
 			Ti.App.fireEvent("centerMap", {latitude: stopsArray[1], longitude: stopsArray[2]});
 		}
@@ -756,6 +823,7 @@ function updateTable(){
 	for(var index = 0; index < stopsArray.length; index++){
 		//Initalize row elements. Two child views within an overall rowView that is added to the row element. 
 		var tableRow = Ti.UI.createTableViewRow({
+			className: 'Stops',
 			layout: 'horizontal',
 		});
 		
@@ -802,6 +870,7 @@ function updateTable(){
    		rowView.add(rowViewSeg1);
    		rowView.add(rowViewSeg2);
    		
+   		
    		tableRow.add(rowView);
    		nearestArray.push(tableRow);
 	}
@@ -839,24 +908,25 @@ function updateTableGPSOn(diffArray){
 		});
 		
 	   	var stopNameLabel = Ti.UI.createLabel({
-			font: { fontSize:16 },
+			font: { fontSize:18 },
 			text: stopsArray[index][0],
 			color: '#FFFFFF',
 			left: 15,
 			top: 10,
 		});
 		var distanceLabel = Ti.UI.createLabel({
-			font: { fontSize:14 },
+			font: { fontSize:16 },
 			text: distance.toFixed(2.2) + " mi",
 			color: '#C0C0C0',
 			right: 0,
+			top: 10,
 		});
 		
 		var selectButton = Ti.UI.createButton({
    			backgroundImage:'GeneralUI/stopSelectButton.png',
    			width: '50',
    			height:'50',
-   			right: 0,
+   			right: 10,
    			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
    		});
    		
@@ -867,6 +937,8 @@ function updateTableGPSOn(diffArray){
    		
    		rowView.add(rowViewSeg1);
    		rowView.add(rowViewSeg2);
+   		
+   		
    		
    		tableRow.add(rowView);
    		nearestArray.push(tableRow);
@@ -950,6 +1022,10 @@ function ShuttleLocRequest(){
 }
 
 //===================================================================
+
+win.open();
+
+
 //-------------------------------------------------------------------
 //===================================================================
 
