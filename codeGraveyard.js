@@ -57,6 +57,37 @@ function createRouteCheckBox(){
 	setCheckBoxEventListeners();
 }
 
+var toggleMenu = Ti.UI.createView({
+    width:'auto',
+    height:'auto',
+    //bottom:0,
+    //left: 0,
+    //right: 0,
+    backgroundColor:'#373737',
+    borderColor: '#111111',
+    borderWidth: 5,
+    borderRadius: 0,
+    bottom: 0,
+    layout: 'horizontal',
+});
+
+var toggleMenus = new Array(4);
+	for (var i=0;i<4;i++){
+		toggleMenus[i] = Ti.UI.createView({
+	    width:'50%',
+	    height:'50%',
+	    borderColor: '#111111',
+	    borderWidth: 5,
+	});
+	
+	toggleMenu.add(toggleMenus[i]);
+}
+
+toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrange.png');
+toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlue.png');
+toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreen.png');
+toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellow.png');
+
 
 function setCheckBoxEventListeners(){
 	routeCheckboxA.addEventListener('change',function(){

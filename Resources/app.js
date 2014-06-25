@@ -164,20 +164,6 @@ var bottomMenuView = Ti.UI.createView({
 	layout: 'horizontal',
 });
 
-var bottomMenuViewSeg1 = Ti.UI.createView({
-	left: 5,
-	width: '15%',
-	height: Ti.UI.SIZE,
-	top: '65%',
-	layout: 'vertical',
-});
-var bottomMenuViewSeg2 = Ti.UI.createView({
-	width: '100%',
-	left: 0,
-	height: Ti.UI.SIZE,
-	top: 0,
-});
-
 var routeEstTable = Ti.UI.createTableView({
   	minRowHeight: 50,
   	maxRowHeight: 50,
@@ -188,66 +174,6 @@ var routeEstTable = Ti.UI.createTableView({
 	showVerticalScrollIndicator: true,
 	softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
 });
-
-var userGPSStatusLabel = Titanium.UI.createLabel({
-	color:'#334C61',
-	text: '',
-	font:{fontSize:15,fontFamily:'Helvetica Neue', fontWeight: 'bold'},
-	textAlign:'left',
-	top: '90px',
-	left: 10,
-	backgroundColor: 'transparent',
-});
-
-
-var toggleMenu = Ti.UI.createView({
-    width:'auto',
-    height:'auto',
-    //bottom:0,
-    //left: 0,
-    //right: 0,
-    backgroundColor:'#373737',
-    borderColor: '#111111',
-    borderWidth: 5,
-    borderRadius: 0,
-    bottom: 0,
-    layout: 'horizontal',
-});
-
-
-var toggleMenus = new Array(4);
-	for (var i=0;i<4;i++){
-		toggleMenus[i] = Ti.UI.createView({
-	    width:'50%',
-	    height:'50%',
-	    borderColor: '#111111',
-	    borderWidth: 5,
-	});
-	
-	toggleMenu.add(toggleMenus[i]);
-}
-
-toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrange.png');
-toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlue.png');
-toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreen.png');
-toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellow.png');
-
-
-var toggleMenuOn = false;
-
-var toggleButton = Ti.UI.createButton({
-	top:0,
-	//bottom: 50,
-	backgroundImage: 'GeneralUI/shinyBus.png',
-	borderWidth: '2px',
-	borderColor: '#000000',
-	right: 0,
-	width: 100,
-	title: 'Toggle',
-	zIndex: 1
-});
-
-
 
 var zoomButtonView = Ti.UI.createView({
 	left: 5,
@@ -271,22 +197,14 @@ var zoomOutButton = Ti.UI.createButton({
 	height: '50%'
 });
 
-
 zoomButtonView.add(zoomInButton);
 zoomButtonView.add(zoomOutButton);
 
-
 bottomMenu.add(bottomMenuView);
-
-
 bottomMenu.add(routeEstTable);
 
 webviewContainer.add(localWebview);
 webviewContainer.add(zoomButtonView);
-
-
-
-createRouteCheckBox();
 
 
 setStops();
@@ -303,129 +221,6 @@ win.add(userGPSStatusLabel);
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
-
-function createRouteCheckBox(){
-	routeCheckboxB = Ti.UI.createSwitch({
-	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
-	  width: '100%',
-	  height: '100%',
-	  titleOff: 'Express',
-	  titleOn: 'Express',
-	  borderRadius: 5,
-	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
-	});
-	
-	routeCheckboxA = Ti.UI.createSwitch({
-	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
-	  width: '100%',
-	  height: '100%',
-	  titleOff: 'South Central',
-	  titleOn: 'South Central',
-	  borderRadius: 5,
-	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
-	});
-	
-	routeCheckboxC = Ti.UI.createSwitch({
-	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
-	  width: '100%',
-	  height: '100%',
-	  titleOff: 'North Central',
-	  titleOn: 'North Central',
-	  borderRadius: 5,
-	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
-	});
-	
-	routeCheckboxD = Ti.UI.createSwitch({
-	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
-	  width: '100%',
-	  height: '100%',
-	  titleOff: 'Central Campus',
-	  titleOn: 'Central Campus',
-	  borderRadius: 5,
-	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
-	});
-
-	
-	toggleMenus[0].add(routeCheckboxA);
-	toggleMenus[1].add(routeCheckboxB);
-	toggleMenus[2].add(routeCheckboxC);
-	toggleMenus[3].add(routeCheckboxD);
-	
-
-	setCheckBoxEventListeners();
-}
-
-//===================================================================
-//-------------------------------------------------------------------
-//===================================================================
-
-//set stopsArray
-function SetStops(){
-	var xhr = Ti.Network.createHTTPClient({
-		onload: function() {
-			var routesArray = [];
-			var id = 0;
-			
-			//Retrieve initial route info
-			routes = JSON.parse(this.responseText);
-			for(var i = 0; i < routes.length; i++){
-				var routeArray = [];
-				var route = routes[i];
-		
-				for (var j = 0; j < route.Landmarks.length; j++){
-					var landmarkArray = [];
-					var data = route.Landmarks[j];
-					landmarkArray.push(data.Label, data.Latitude, data.Longitude);
-					routeArray.push(landmarkArray);
-					
-				}
-				routesArray.push(routeArray);
-			}
-			Ti.API.info("ROUTES ARRAY: " + routesArray.toString());
-	
-			//Sort and remove duplicates. Add flags for which shuttles stop at each stop.
-			for(var k = 0; k < routesArray.length; k++){
-				for(var l = 0; l < routesArray[k].length; l++){
-					var cur = routesArray[k][l];
-					var skip = 0;
-					
-					
-					for(var i = 0; i < stopsArray.length; i++){
-						if(stopsArray[i][0] == cur[0]){
-							skip = 1;
-							break;
-						}	
-					}
-			
-					if(!skip){
-						var tmpArray = [];
-						tmpArray.push(cur[0], cur[1], cur[2], -1, -1, -1, id++);
-						stopsArray.push(tmpArray);
-					}
-				}
-				
-			}
-			/* ----------------ARRAY INFO-----------------------
-			 * stopsArray STRUCTURE
-			 * 		[Stop Name, Latitude, Longitude, SouthCentralBusFlag, NorthCentralBusFlag, ExpressBusFlag]
-			 * 	
-			 * 		Example
-			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
-		}
-	});
-	xhr.open("GET", url2);
-	xhr.send();
-}
-
-
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
@@ -820,12 +615,13 @@ function updateTableGPSOn(diffArray){
 	for(var j = 0; j < diffArray.length; j++){
 		var index = diffArray[j][1], distance = diffArray[j][0];
 	   	
+	   	var tableRow = Ti.UI.createTableViewRow({
+			layout: 'horizontal',
+		});
+	   
 	   	tableRow.stopsArray = stopsArray[index];
 		tableRow.distance = distance;
 	 
-		var tableRow = Ti.UI.createTableViewRow({
-			layout: 'horizontal',
-		});
 		
 		var rowView = Ti.UI.createView({
 			width: Ti.UI.SIZE,
