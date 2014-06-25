@@ -75,19 +75,10 @@ var localWebview = Titanium.UI.createWebView({
 });
 
 var selectedStopView = Ti.UI.createView({
-	backgroundImage: 'GeneralUI/selectedStopBackground2.png',
+	backgroundColor: '#323031',
 	width: 'auto',
-	height: Ti.UI.SIZE,
-	//borderColor: '#9D9C9C',
-	//borderWidth: 0,
-	layout: 'horizontal',
-
-	borderColor: '#9D9C9C',
-	borderRadius: 5,
-	borderWidth: 3,
-	//layout: 'horizontal',
-
-	
+	height: '20%',
+	layout: 'vertical',	
 });
 
 
@@ -97,7 +88,8 @@ var bottomMenu = Ti.UI.createView({
     bottom:0,
     left: 0,
     right: 0,
-    backgroundImage: 'GeneralUI/selectedStopBackground.png',
+    backgroundColor: '#323031',
+    //backgroundImage: 'GeneralUI/selectedStopBackground.png',
 });
 
 var userGPSStatusLabel = Titanium.UI.createLabel({
@@ -287,7 +279,7 @@ webviewContainer.add(bottomMenuViewSeg1);
 //!!!!
 
 //localWebview.add(toggleButton);
-selectedStopView.add(toggleButton);
+//selectedStopView.add(toggleButton);
 
 
 //toggleButton.setRight(0);
@@ -700,6 +692,40 @@ function getUserGPS(){
 }
 
 function updateSelected(){
+   	var viewTopSection = Ti.UI.createView({
+   		height: '50%',
+   		width: '100%',
+   		layout: 'horizontal',
+   	});
+   	var viewTopSeg1 = Ti.UI.createView({
+   		width: '50%'
+   	});
+   	var viewTopSeg2 = Ti.UI.createView({
+   		width: '30%'
+   	});
+   	var viewTopSeg3 = Ti.UI.createView({
+   		width: '20%'
+   	});
+   	
+   	var viewBottomSection = Ti.UI.createView({
+		height: '50%',
+		width: '100%',
+		layout: 'horizontal',
+   	});
+   	var viewBottomSeg1 = Ti.UI.createView({
+   		width: '25%'
+   	});
+   	var viewBottomSeg2 = Ti.UI.createView({
+   		width: '25%'
+   	});
+   	var viewBottomSeg3 = Ti.UI.createView({
+   		width: '25%'
+   	});
+   	var viewBottomSeg4 = Ti.UI.createView({
+   		width: '25%'
+   	});
+
+   	
    	var stopNameLabel = Ti.UI.createLabel({
 		font: { fontSize:16 },
 		text: stopsArray[0][0],
@@ -716,49 +742,8 @@ function updateSelected(){
 		width: Ti.UI.FILL,
 	});
 	
-	selectedStopView.add(stopNameLabel);
-	selectedStopView.add(distanceLabel);
-	
-	/*
-	
-	for(var i = 0; i < 4; i++){
-		switch(i){
-			case 0:
-				routeColor = '#7084ff';
-				break;
-			case 1:
-				routeColor = '#36c636';
-				break;
-			case 2:
-				routeColor = '#ff6600';
-				break;
-			case 3:
-				routeColor = '#ffd119';
-				break;
-			default:
-				Ti.API.info("ALERT, wrong index Stops Array");
-		}
-		
-		var stopTiming = Ti.UI.createLabel({
-			font: { fontSize:32 },
-			text: '10:40',
-			color: routeColor,
-			//width: '33.3%',
-			
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			
-			//textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
-			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-			
-			//bottom: 0,
-			left: 90*i,
-			//left:0,
-		});
-		selectedStopView.add(stopTiming);
-		
-	}
-	*/
+	viewTopSeg1.add(stopNameLabel);
+	viewTopSeg2.add(distanceLabel);
 	
 	//example for # seconds. replace with data source
 	var time1 = 547;
@@ -768,67 +753,77 @@ function updateSelected(){
 
 	
 	var stopTiming1 = Ti.UI.createLabel({
-			font: { fontSize:30 },
-			text: timeConversion(time1),
-			color: '#7084ff',
-			left:25,
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-		});
+		font: { fontSize:30 },
+		text: timeConversion(time1),
+		color: '#7084ff',
+		//left:25,
+		width: Ti.UI.SIZE,
+		height: Ti.UI.SIZE,
+		//textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+	});
 		
-		var stopTiming2 = Ti.UI.createLabel({
-			font: { fontSize:30 },
-			text: timeConversion(time2),
-			color: '#36c636',
-			left: 125,
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-		});
+	var stopTiming2 = Ti.UI.createLabel({
+		font: { fontSize:30 },
+		text: timeConversion(time2),
+		color: '#36c636',
+		//left: 125,
+		width: Ti.UI.SIZE,
+		height: Ti.UI.SIZE,
+		//textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+	});
 		
-		var stopTiming3 = Ti.UI.createLabel({
-			font: { fontSize:30 },
-			text: timeConversion(time3),
-			color: '#ff6600',
-			left: 225,
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-		});
+	var stopTiming3 = Ti.UI.createLabel({
+		font: { fontSize:30 },
+		text: timeConversion(time3),
+		color: '#ff6600',
+		//left: 225,
+		width: Ti.UI.SIZE,
+		height: Ti.UI.SIZE,
+		//textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+	});
 		
-		var stopTiming4 = Ti.UI.createLabel({
-			font: { fontSize:30 },
-			text: timeConversion(time4),
-			color: '#7084ff',
-			left: 325,
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-		});
+	var stopTiming4 = Ti.UI.createLabel({
+		font: { fontSize:30 },
+		text: timeConversion(time4),
+		color: '#7084ff',
+		//left: 325,
+		width: Ti.UI.SIZE,
+		height: Ti.UI.SIZE,
+		//textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+	});
 		
 		
-		setInterval(function(){
-			time1--;
-			time2--;
-			time3--;
-			time4--;
-			
-			stopTiming1.setText(timeConversion(time1));
-			stopTiming2.setText(timeConversion(time2));
-			stopTiming3.setText(timeConversion(time3));
-			stopTiming4.setText(timeConversion(time4));
-		},1000);
-	
-
-	selectedStopView.add(stopTiming1);
-	selectedStopView.add(stopTiming2);
-	selectedStopView.add(stopTiming3);
-	selectedStopView.add(stopTiming4);
+	setInterval(function(){
+		/*time1--;
+		time2--;
+		time3--;
+		time4--;
+		
+		stopTiming1.setText(timeConversion(time1));
+		stopTiming2.setText(timeConversion(time2));
+		stopTiming3.setText(timeConversion(time3));
+		stopTiming4.setText(timeConversion(time4));*/
+	},1000);
 	
 	
-	selectedStopView.add(routeEstTable);
-
+	viewTopSeg1.add(stopNameLabel);
+	viewTopSeg2.add(distanceLabel);
+	
+	viewTopSection.add(viewTopSeg1);
+	viewTopSection.add(viewTopSeg2);
+	viewTopSection.add(viewTopSeg3);
+	
+	viewBottomSeg1.add(stopTiming1);
+	viewBottomSeg2.add(stopTiming2);
+	viewBottomSeg3.add(stopTiming3);
+	viewBottomSeg4.add(stopTiming4);
+	viewBottomSection.add(viewBottomSeg1);
+	viewBottomSection.add(viewBottomSeg2);
+	viewBottomSection.add(viewBottomSeg3);
+	viewBottomSection.add(viewBottomSeg4);
+	
+	selectedStopView.add(viewTopSection);
+	selectedStopView.add(viewBottomSection);
 	
 }
 
@@ -837,7 +832,7 @@ function updateSelected(){
 function timeConversion(time){
 	var timeOutput;
 	var min = Math.floor(time / 60);
-	var sec = time - min * 60;
+	var sec = time%60;
 
 	if (sec < 10)
 		timeOutput = min+':0'+sec;
