@@ -19,6 +19,7 @@ var gpsOffPhrase = "GPS: Off";
 var gpsOnPhrase = "GPS: On";
 
 var toggleMenuOn = false;
+var loadedHTTP = false;
 
 //Array of nearest stops
 var nearestArray = [];
@@ -207,15 +208,21 @@ webviewContainer.add(localWebview);
 webviewContainer.add(zoomButtonView);
 
 
+
+
 setStops();
 
+
+setWebViewListener();
 setTableClickListener();
+
+
 
 win.add(selectedStopView);
 win.add(webviewContainer);
 win.add(bottomMenu);
 
-win.add(userGPSStatusLabel);
+//win.add(userGPSStatusLabel);
 
 
 //===================================================================
@@ -329,6 +336,8 @@ function setCheckBoxEventListeners(){
 
 
 function setWebViewListener(){
+	Ti.API.info("Starting webviewlistener");
+	
 	//Event listener to start when webview loads
 	var lastGPS;
 	localWebview.addEventListener('load',function(){
@@ -343,7 +352,10 @@ function setWebViewListener(){
 		
 		updateRouteEstimates();
 		
-		updateSelected(stopsArray[0]);
+		if (stopsArray[0].length > 0)
+			updateSelected(stopsArray[0]);
+		else 
+			updateSelected(["No selection", 0,0,0,0,0,0]);
 		
 		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
 		//Want to wait until map is started and ready before doing this stuff
@@ -410,6 +422,9 @@ function setWebViewListener(){
 
 
 function setTableClickListener(){
+	Ti.API.info("Starting settableclicklistener");
+
+	
 	routeEstTable.addEventListener('click', function(e){
 		if(e.source == '[object Button]'){
 			//e.row.backgroundColor = '#42a6ca';
@@ -453,7 +468,7 @@ function getUserGPS(){
 			{
 				Ti.API.info("Failed to get UserGPS, error: " + e);
 				deviceGPSOn = false;
-				userGPSStatusLabel.text = gpsOffPhrase;
+				//userGPSStatusLabel.text = gpsOffPhrase;
 				Ti.API.info("Failed to get userGPS...");
 				return;
 			}
@@ -462,7 +477,7 @@ function getUserGPS(){
 				userGPS[1] = e.coords.longitude;
 				userGPS[2] = e.coords.timestamp;
 				deviceGPSOn = true;
-				userGPSStatusLabel.text = gpsOnPhrase;
+				//userGPSStatusLabel.text = gpsOnPhrase;
 				Ti.API.info("Got userGPS. Lat: " + e.coords.latitude + ", Long: " + e.coords.longitude + ", at " + e.coords.timestamp);
 			}
 		});
@@ -745,13 +760,13 @@ function setStops(){
 			 * 		Example
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
 			
-			
-			setWebViewListener();
-			
+			Ti.API.info("LOADED HTTP");
 		}
 	});
 	xhr.open("GET", url2);
 	xhr.send();
+	
+	
 }
 function updateRouteEstimates(){
 	var xhr = Ti.Network.createHTTPClient({
