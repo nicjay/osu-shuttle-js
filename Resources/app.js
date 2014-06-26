@@ -352,7 +352,7 @@ function setWebViewListener(){
 		
 		updateRouteEstimates();
 		
-		if (stopsArray[0].length > 0)
+		if (stopsArray.length > 0)
 			updateSelected(stopsArray[0]);
 		else 
 			updateSelected(["No selection", 0,0,0,0,0,0]);
