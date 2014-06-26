@@ -149,7 +149,7 @@
         		
         		function loadUserAndStops(){
         			
-        			Ti.App.fireEvent("maploaded", {});
+        			Ti.App.fireEvent('maploaded', {});
         			
         			
 	        		var ExpressRoute = [

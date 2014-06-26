@@ -208,26 +208,48 @@ webviewContainer.add(localWebview);
 webviewContainer.add(zoomButtonView);
 
 
-
-
-setStops();
-
-
-setWebViewListener();
-setTableClickListener();
+var activityIndicator = Ti.UI.createActivityIndicator({
+	color: 'blue',
+	message: 'Loading...',
+	top: '45%',
+	height: Ti.UI.SIZE,
+	weight: Ti.UI.SIZE,
+	visible: true
+});
 
 
 
 win.add(selectedStopView);
 win.add(webviewContainer);
 win.add(bottomMenu);
+win.open();
 
-//win.add(userGPSStatusLabel);
+zoomButtonView.visible = false;
+selectedStopView.visible = false;
+bottomMenu.visible = false;
+localWebview.visible = false;
+
+webviewContainer.add(activityIndicator);
+
+Ti.App.addEventListener('doneLoading', function(e){
+	activityIndicator.visible = false;
+	webviewContainer.remove(activityIndicator);
+	
+	zoomButtonView.visible = true;
+	selectedStopView.visible = true;
+	bottomMenu.visible = true;
+	localWebview.visible = true;
+	
+	Ti.API.info("recieved doneLoading event");
+	
+});
 
 
-//===================================================================
-//-------------------------------------------------------------------
-//===================================================================
+
+setStops();
+
+
+
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
@@ -246,6 +268,13 @@ zoomOutButton.addEventListener('click',function(e)
 
 win.addEventListener('android:back',function(e) {
 });
+
+
+
+
+
+
+//win.open();
 
 
 function setCheckBoxEventListeners(){
@@ -358,11 +387,13 @@ function setWebViewListener(){
 			updateSelected(["No selection", 0,0,0,0,0,0]);
 		
 		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
+		
 		//Want to wait until map is started and ready before doing this stuff
-		/*localWebview.addEventListener('maploaded', function(){
+		/*
+		Ti.App.addEventListener('maploaded', function(){
 			Ti.API.info("--Map Loaded--");
 			updateRouteEstimates();
-			ShuttleLocRequest();
+			shuttleLocRequest();
 			
 			if(deviceGPSOn){
 				diffArray = findNearest(userGPS);
@@ -373,8 +404,11 @@ function setWebViewListener(){
 			updateSelected();
 			setBackupShuttleData();
 			Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
-		});*/
-	
+
+			
+		});
+		*/
+		
 	
 		//Request the shuttle data, and start the update event, repeats every 5 seconds
 		setInterval(function() {
@@ -416,6 +450,8 @@ function setWebViewListener(){
 			}
 		}, updateInterval);
 		
+		
+	
 	});	
 	
 }
@@ -454,6 +490,7 @@ function setTableClickListener(){
 			//UstopNameLabel.text = stopsArray[0];
 		}
 	});
+	
 }
 
 //===================================================================
@@ -510,7 +547,7 @@ function updateSelectedTimes(t0, t1, t2, t3){
 	
 	//change this back to 4 iterations after stopsArray modified to include 4th ETA
 	for (var i=0;i<3;i++){
-		if (times[i] >= 0 && times[i] != null){
+		if (times[i] > 0 && times[i] != null){
 			stopTimingLabels[i].setText(timeConversion(times[i]));
 		}
 		else 
@@ -621,6 +658,10 @@ function updateTable(){
 	//Set row data to newly set nearestArray
 	routeEstTable.setData(nearestArray);
 	Ti.API.info("Set Table in updateTable");
+	
+	Ti.API.info("firing doneloading event");
+	Ti.App.fireEvent('doneLoading');
+		
 }
 	
 function updateTableGPSOn(diffArray){
@@ -697,7 +738,7 @@ function updateTableGPSOn(diffArray){
 //------------------------------------------------------------------------------------------------------------------------------------
 //====================================================================================================================================
 
-win.open();
+
 
 //====================================================================================================================================
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -761,6 +802,11 @@ function setStops(){
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
 			
 			Ti.API.info("LOADED HTTP");
+			
+			
+			setWebViewListener();
+			setTableClickListener();
+	
 		}
 	});
 	xhr.open("GET", url2);
