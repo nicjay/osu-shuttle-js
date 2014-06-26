@@ -37,6 +37,7 @@ var gpsOnPhrase = "GPS: On";
 var settings = require('settings');
 var settingsWin;
 var toggleMenuOn = false;
+var loadedHTTP = false;
 
 //Array of nearest stops
 var nearestArray = [];
@@ -246,9 +247,15 @@ webviewContainer.add(localWebview);
 webviewContainer.add(zoomButtonView);
 
 
+
+
 setStops();
+
+
 setWebViewListener();
 setTableClickListener();
+
+
 
 win.add(selectedStopView);
 win.add(webviewContainer);
@@ -369,6 +376,8 @@ function setCheckBoxEventListeners(){
 
 
 function setWebViewListener(){
+	Ti.API.info("Starting webviewlistener");
+	
 	//Event listener to start when webview loads
 	var lastGPS;
 	localWebview.addEventListener('load',function(){
@@ -383,7 +392,10 @@ function setWebViewListener(){
 		
 		updateRouteEstimates();
 		
-		updateSelected(stopsArray[0]);
+		if (stopsArray.length > 0)
+			updateSelected(stopsArray[0]);
+		else 
+			updateSelected(["No selection", 0,0,0,0,0,0]);
 		
 		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
 		//Want to wait until map is started and ready before doing this stuff
@@ -450,6 +462,9 @@ function setWebViewListener(){
 
 
 function setTableClickListener(){
+	Ti.API.info("Starting settableclicklistener");
+
+	
 	routeEstTable.addEventListener('click', function(e){
 		if(e.source == '[object Button]'){
 			//e.row.backgroundColor = '#42a6ca';
@@ -782,10 +797,14 @@ function setStops(){
 			 * 	
 			 * 		Example
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
+			
+			Ti.API.info("LOADED HTTP");
 		}
 	});
 	xhr.open("GET", url2);
 	xhr.send();
+	
+	
 }
 function updateRouteEstimates(){
 	var xhr = Ti.Network.createHTTPClient({
