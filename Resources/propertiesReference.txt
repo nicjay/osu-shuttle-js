@@ -1,0 +1,9 @@
+
+showExpress : true/false (true)
+showSouthCentral : true/false (true)
+showNorthCentral : true/false (true)
+showCentralCampus : true/false (true)
+
+gpsEnabled : true/false (true)
+
+unitMi : true/false (true)

@@ -4,6 +4,22 @@
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
+var props = [];
+var tmp = Ti.App.Properties.getString('showExpress', ['true']);
+props.push(tmp);
+tmp = Ti.App.Properties.getString('showSouthCentral', ['true']);
+props.push(tmp);
+tmp = Ti.App.Properties.getString('showNorthCentral', ['true']);
+props.push(tmp);
+tmp = Ti.App.Properties.getString('showCentralCampus', ['true']);
+props.push(tmp);
+tmp = Ti.App.Properties.getString('gpsEnabled', ['true']);
+props.push(tmp);
+tmp = Ti.App.Properties.getString('unitMi', ['true']);
+props.push(tmp);
+
+Ti.API.info("props[] = " + props.toString());
+
 
 Titanium.UI.setBackgroundColor('#fff');
 Ti.UI.Android.hideSoftKeyboard();
@@ -18,6 +34,8 @@ var deviceGPSOn = false;
 var gpsOffPhrase = "GPS: Off";
 var gpsOnPhrase = "GPS: On";
 
+var settings = require('settings');
+var settingsWin;
 var toggleMenuOn = false;
 var loadedHTTP = false;
 
@@ -52,35 +70,53 @@ var win = Ti.UI.createWindow({
 
 
 var selectedStopView = Ti.UI.createView({
-	backgroundColor: '#323031',
+	backgroundGradient: {
+		type:'linear',
+		//colors:[{color:'#656968', position:0.0},{color:'#3a3c3b', position: 1.0}]
+		colors:[{color:'#3b3b3b', position:0.0},{color:'#1e1e1e', position: 1.0}]
+	},
 	height: '15%',
 	layout: 'vertical',	
 });
 
-
-
 var UstopNameLabel = Ti.UI.createLabel({
-		font: { fontSize:16 },
-		text: '',//stopsArray[0][0],
-		color: '#FFFFFF',
-		left: 10,
-		top: 0,
-		//height: '10%',
-		verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
-	});
+	minimumFontSize: '12sp',
+	font: { fontSize:'22sp' },
+	text: '',//stopsArray[0][0],
+	color: '#FFFFFF',
+	left: 10,
+	//height: '10%',
+	//verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+	//textAlign: Titanium.UI.TEXT_ALIGNMENT_LEFT,
+});
 	
 var distanceLabel = Ti.UI.createLabel({
-		color: '#C0C0C0',
-		textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
-		top: 9,
-		width: Ti.UI.FILL,
-	});
+	color: '#C0C0C0',
+	textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
+	top: 9,
+	width: Ti.UI.FILL,
+});
+
+/*var settingsButtonContainer Ti.UI.createView({
+	height:
+});*/
+
+var settingsButton = Ti.UI.createButton({
+	height: 36,
+	width: 36,
+	backgroundImage: 'GeneralUI/settingsGear.png',
+	backgroundSelectedImage: 'GeneralUI/settingsGearPressed.png',
 	
-   var viewTopSection = Ti.UI.createView({
-   		height: '50%',
-   		width: '100%',
-   		layout: 'horizontal',
-   	});
+});
+	
+Ti.API.info("Settings Button Width = " + settingsButton.width);
+settingsButton.width = settingsButton.height;
+Ti.API.info("Settings Button Height = " + settingsButton.height);
+var viewTopSection = Ti.UI.createView({
+   	height: '50%',
+	width: '100%',
+	layout: 'horizontal',
+});
    	
 var viewTopSegs = new Array(3);
    	
@@ -97,6 +133,7 @@ viewTopSegs[2].setWidth('15%');
    	
 viewTopSegs[0].add(UstopNameLabel);
 viewTopSegs[1].add(distanceLabel);
+viewTopSegs[2].add(settingsButton);
 	
 var viewBottomSection = Ti.UI.createView({
 		height: '50%',
@@ -106,39 +143,37 @@ var viewBottomSection = Ti.UI.createView({
    	
    	
 var viewBottomSegs = new Array(4);
-
-
 var stopTimingLabels = new Array(4); 
 	
 for (var i=0; i<4; i++){
-		viewBottomSegs[i] = Ti.UI.createView({
-   			width: '25%'
-		});
-   	
-		stopTimingLabels[i] = Ti.UI.createLabel({
-			font: { fontSize:30 },
-			text: '---',//timeConversion(times[i]),
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-		});
-		
-		viewBottomSegs[i].add(stopTimingLabels[i]);
-		viewBottomSection.add(viewBottomSegs[i]);
+	viewBottomSegs[i] = Ti.UI.createView({
+		width: '25%'
+	});
+
+	stopTimingLabels[i] = Ti.UI.createLabel({
+		font: { fontSize:30 },
+		text: '---',//timeConversion(times[i]),
+		width: Ti.UI.SIZE,
+		height: Ti.UI.SIZE,
+		textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+	});
+	
+	viewBottomSegs[i].add(stopTimingLabels[i]);
+	viewBottomSection.add(viewBottomSegs[i]);
 }
 
 selectedStopView.add(viewTopSection);
-	selectedStopView.add(viewBottomSection);
+selectedStopView.add(viewBottomSection);
 	
-	stopTimingLabels[0].setColor('#7084ff');
-	stopTimingLabels[1].setColor('#36c636');
-	stopTimingLabels[2].setColor('#ff6600');
-	stopTimingLabels[3].setColor('#ffd119');
+stopTimingLabels[0].setColor('#7084ff');
+stopTimingLabels[1].setColor('#36c636');
+stopTimingLabels[2].setColor('#ff6600');
+stopTimingLabels[3].setColor('#ffd119');
 	
 	
-	for (var i=0;i<4;i++){
-		selectedStopView.add(stopTimingLabels[i]);
-	}
+for (var i=0;i<4;i++){
+	selectedStopView.add(stopTimingLabels[i]);
+}
 
 
 //===================================================================
@@ -159,6 +194,10 @@ var localWebview = Titanium.UI.createWebView({
 var bottomMenu = Ti.UI.createView({
     backgroundColor: '#323031',
     //backgroundImage: 'GeneralUI/selectedStopBackground.png',
+	backgroundGradient: {
+		type:'linear',
+		colors:[{color:'#3b3b3b', position:0.0},{color:'#1e1e1e', position: 1.0}]
+	},
 });
 
 var bottomMenuView = Ti.UI.createView({
@@ -248,12 +287,14 @@ Ti.App.addEventListener('doneLoading', function(e){
 
 setStops();
 
-
-
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
 
+settingsButton.addEventListener('click', function(e){
+	settingsWin = settings.createSettingsWin(props);
+	settingsWin.open();
+});
 
 zoomInButton.addEventListener('click',function(e)
 {
@@ -505,7 +546,6 @@ function getUserGPS(){
 			{
 				Ti.API.info("Failed to get UserGPS, error: " + e);
 				deviceGPSOn = false;
-				//userGPSStatusLabel.text = gpsOffPhrase;
 				Ti.API.info("Failed to get userGPS...");
 				return;
 			}
@@ -514,7 +554,6 @@ function getUserGPS(){
 				userGPS[1] = e.coords.longitude;
 				userGPS[2] = e.coords.timestamp;
 				deviceGPSOn = true;
-				//userGPSStatusLabel.text = gpsOnPhrase;
 				Ti.API.info("Got userGPS. Lat: " + e.coords.latitude + ", Long: " + e.coords.longitude + ", at " + e.coords.timestamp);
 			}
 		});
