@@ -227,12 +227,12 @@ exports.createSettingsWin = function(props){
 };
 
 function setDefaults(props){
-	routeToggleA.value = props[0];
-	routeToggleB.value = props[1];
-	routeToggleC.value = props[2];
-	routeToggleD.value = props[3];
-	gpsToggleButton.value = props[4];
-	unitToggle.value = props[5];
+	routeToggleA.setValue = props[0];
+	routeToggleB.setValue = props[1];
+	routeToggleC.setValue = props[2];
+	routeToggleD.setValue = props[3];
+	gpsToggleButton.setValue = props[4];
+	unitToggle.setValue = props[5];
 }
 
 function setProperties(){
