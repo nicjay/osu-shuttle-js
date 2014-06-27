@@ -250,6 +250,7 @@ win.add(bottomMenu);
 win.open();
 
 //Hide elements temporarily for load indicator
+
 zoomButtonView.visible = false;
 selectedStopView.visible = false;
 bottomMenu.visible = false;
@@ -276,12 +277,10 @@ Ti.App.addEventListener('doneLoading', function(e){
 
 
 //Make sure map.html is loaded into the window before beginning
-localWebview.addEventListener('load',function(e){
-		setStops();
-		e.source.removeEventListener('load', arguments.callee);
-});
 
-	
+localWebview.addEventListener('load', function(e){
+	setStops();		
+});
 
 
 //===================================================================
@@ -319,7 +318,8 @@ Ti.App.addEventListener('settingsChanged', function(e){
 });
 
 settingsButton.addEventListener('click', function(e){
-	settings = require('settings');
+	if(settings == null)
+		settings = require('settings');
 	Ti.API.info("Sending props : " + props.toString());
 	settingsWin = settings.createSettingsWin(props);
 	Ti.API.info(settingsWin);
@@ -686,13 +686,13 @@ function updateTable(diffArray){
 //====================================================================================================================================
 
 
-
 //====================================================================================================================================
 //------------------------------------------------------------------------------------------------------------------------------------
 //====================================================================================================================================
 
 //Set stopsArray
 function setStops(){
+	shuttleLocRequest();
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
 			var routeNames = new Array(3);
@@ -751,10 +751,8 @@ function setStops(){
 			Ti.API.info("LOADED HTTP");
 			
 			updateRouteEstimates();
-			shuttleLocRequest();
-			setWebViewListener();
 			setTableClickListener();
-	
+			setWebViewListener();
 		}
 	});
 	xhr.open("GET", url2);
