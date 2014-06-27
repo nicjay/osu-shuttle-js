@@ -268,7 +268,8 @@ webviewContainer.add(activityIndicator);
 
 //Ti.App.addEventListener('doneLoading', function(e){
 	
-setTimeout(function(){
+	
+//setTimeout(function(){
 setStops();
 
 Ti.App.addEventListener('doneLoading', function(e){
@@ -283,7 +284,7 @@ Ti.App.addEventListener('doneLoading', function(e){
 	
 	Ti.API.info("recieved doneLoading event");
 	
-}, 5000);
+//}, 5000);
 	
 	
 	
