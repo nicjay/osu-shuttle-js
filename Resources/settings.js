@@ -19,26 +19,11 @@ var routeToggleA, routeToggleB, routeToggleC, routeToggleD;
 //===========================================================================================
 
 exports.createSettingsWin = function(props){
-
-	
-	//mainSettingsWin.open();
-	
-	
-	Ti.API.info("In settings.js.");
 	oldProps = props;
-	Ti.API.info("IN SETTINGS: props[] = " + props.toString());
-	//setDefaults(props);
-	//return mainSettingsWin;
-	
-	//Ti.API.info("In settings.js.");
-	oldProps = props;
-	//Ti.API.info("IN SETTINGS: props[] = " + props.toString());
-	//setDefaults(props);
-	var ret = createWindow();
-	return ret;
+	createWindow(props);
 };
 
-function createWindow(){
+function createWindow(props){
 	mainSettingsWin = Ti.UI.createWindow({
 		layout: 'vertical',
 		width: '100%',
@@ -101,7 +86,7 @@ function createWindow(){
 	routeToggleA = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
+	  value: props[0],
 	  width: '50%',
 	  //height: '100%',
 	  titleOff: 'Express',
@@ -113,7 +98,7 @@ function createWindow(){
 	routeToggleB = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
+	  value: props[1],
 	  width: '50%',
 	  //height: '100%',
 	  titleOff: 'South Central',
@@ -125,7 +110,7 @@ function createWindow(){
 	routeToggleC = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
+	  value: props[2],
 	  width: '50%',
 	  //height: '100%',
 	  titleOff: 'North Central',
@@ -137,7 +122,7 @@ function createWindow(){
 	routeToggleD = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
+	  value: props[3],
 	  width: '50%',
 	  //height: '100%',
 	  titleOff: 'Central Campus',
@@ -170,7 +155,7 @@ function createWindow(){
 	gpsToggleButton = Ti.UI.createSwitch({
 		style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 		font: {fontsize: 16},
-		value: true,
+		value: props[4],
 		titleOff: "GPS Off",
 		titleOn: "GPS On",
 	});
@@ -230,7 +215,7 @@ function createWindow(){
 	unitToggle = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value:true,
+	  value: props[5],
 	  titleOff: 'Km',
 	  titleOn: 'Mi',
 	  //verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
@@ -244,7 +229,7 @@ function createWindow(){
 	mainSettingsWin.add(view4);
 	mainSettingsWin.add(view3);
 	
-	return mainSettingsWin;
+	mainSettingsWin.open();
 }
 
 function destroyWindow(){
@@ -258,15 +243,6 @@ function destroyWindow(){
 	mainSettingsWin = null;
 }
 
-function setDefaults(props){
-	routeToggleA.setValue(props[0]);
-	routeToggleB.setValue(props[1]);
-	routeToggleC.setValue(props[2]);
-	routeToggleD.setValue(props[3]);
-	gpsToggleButton.setValue(props[4]);
-	unitToggle.setValue(props[5]);
-}
-
 function setProperties(){
 	Ti.App.Properties.setString('showExpress', routeToggleA.getValue());
 	Ti.App.Properties.setString('showSouthCentral', routeToggleB.getValue());
@@ -277,16 +253,16 @@ function setProperties(){
 	
 	Ti.App.Properties.setString('unitMi', unitToggle.getValue());
 	
-	var props = [routeToggleA.getValue(), routeToggleB.getValue(), routeToggleC.getValue(), routeToggleD.getValue(), gpsToggleButton.getValue(), unitToggle.getValue()];
+	var propsArray = [routeToggleA.getValue(), routeToggleB.getValue(), routeToggleC.getValue(), routeToggleD.getValue(), gpsToggleButton.getValue(), unitToggle.getValue()];
 	
-	Ti.API.info("OldProps : " + oldProps.toString() + " |||| NewProps : " + props.toString());
+	Ti.API.info("OldProps : " + oldProps.toString() + " |||| NewProps : " + propsArray.toString());
 	for(var i = 0, len = oldProps.length; i < len; i++){
-		if(oldProps[i] == props[i])
+		if(oldProps[i] == propsArray[i])
 		{
-			props[i] = -1;
+			propsArray[i] = -1;
 		}
 	}
-	Ti.App.fireEvent('settingsChanged', {data: props});
-	Ti.API.info("Newly changed props[] : " + props.toString());	
+	Ti.App.fireEvent('settingsChanged', {data: propsArray});
+	Ti.API.info("Newly changed propsArray[] : " + propsArray.toString());	
 	
 }

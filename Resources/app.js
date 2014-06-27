@@ -319,18 +319,10 @@ Ti.App.addEventListener('settingsChanged', function(e){
 });
 
 settingsButton.addEventListener('click', function(e){
-
-	settings = require('settings');
-	/*settingsWin = settings.createSettingsWin(props);
-	if(settings == null)
+	if(settings == null){
+		Ti.API.info("Settings was null... require statement now.");
 		settings = require('settings');
-	Ti.API.info("Sending props : " + props.toString());
-	settingsWin = settings.createSettingsWin(props);
-
-	Ti.API.info(settingsWin);
-	settingsWin.open();
-	*/
-	
+	}
 	settings.createSettingsWin(props);
 });
 
