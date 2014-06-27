@@ -81,6 +81,8 @@ var routeToggleA = Ti.UI.createSwitch({
   verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 });
 
+exports.rTA = routeToggleA;
+
 var routeToggleB = Ti.UI.createSwitch({
   style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
   font:{fontSize:16,fontFamily:'Helvetica Neue'},
@@ -221,11 +223,17 @@ mainSettingsWin.add(view3);
 
 
 exports.createSettingsWin = function(props){
+	
+	mainSettingsWin.open();
+	
+	
 	Ti.API.info("In settings.js.");
 	oldProps = props;
 	Ti.API.info("IN SETTINGS: props[] = " + props.toString());
 	setDefaults(props);
-	return mainSettingsWin;
+	//return mainSettingsWin;
+	
+	
 };
 
 function setDefaults(props){

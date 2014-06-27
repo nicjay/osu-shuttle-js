@@ -275,13 +275,10 @@ Ti.App.addEventListener('doneLoading', function(e){
 });
 
 
-//Make sure map.html is loaded into the window before beginning
+//Make sure map.html is loaded into the window before beginning the chain
 localWebview.addEventListener('load',function(e){
-		setStops();
-		e.source.removeEventListener('load', arguments.callee);
+	setStops();
 });
-
-	
 
 
 //===================================================================
@@ -317,9 +314,12 @@ Ti.App.addEventListener('settingsChanged', function(e){
 
 settingsButton.addEventListener('click', function(e){
 	settings = require('settings');
-	settingsWin = settings.createSettingsWin(props);
+	/*settingsWin = settings.createSettingsWin(props);
 	Ti.API.info(settingsWin);
 	settingsWin.open();
+	*/
+	
+	settings.createSettingsWin(props);
 });
 
 zoomInButton.addEventListener('click',function(e)
@@ -691,8 +691,11 @@ function updateTable(diffArray){
 
 //Set stopsArray
 function setStops(){
+	shuttleLocRequest();
+	
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
+			Ti.API.info("got to onload in setstops");
 			var routeNames = new Array(3);
 			var routesArray = [];
 			var id = 0;
@@ -747,12 +750,12 @@ function setStops(){
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
 			
 			Ti.API.info("LOADED HTTP");
+	
 			
 			updateRouteEstimates();
-			shuttleLocRequest();
+
 			setWebViewListener();
 			setTableClickListener();
-	
 		}
 	});
 	xhr.open("GET", url2);
