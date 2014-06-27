@@ -97,10 +97,6 @@ var distanceLabel = Ti.UI.createLabel({
 	width: Ti.UI.FILL,
 });
 
-/*var settingsButtonContainer Ti.UI.createView({
-	height:
-});*/
-
 var settingsButton = Ti.UI.createButton({
 	height: 36,
 	width: 36,
@@ -108,10 +104,7 @@ var settingsButton = Ti.UI.createButton({
 	backgroundSelectedImage: 'GeneralUI/settingsGearPressed.png',
 	
 });
-	
-Ti.API.info("Settings Button Width = " + settingsButton.width);
-settingsButton.width = settingsButton.height;
-Ti.API.info("Settings Button Height = " + settingsButton.height);
+
 var viewTopSection = Ti.UI.createView({
    	height: '50%',
 	width: '100%',
@@ -263,6 +256,7 @@ win.add(webviewContainer);
 win.add(bottomMenu);
 win.open();
 
+
 zoomButtonView.visible = false;
 selectedStopView.visible = false;
 bottomMenu.visible = false;
@@ -271,9 +265,14 @@ localWebview.visible = false;
 webviewContainer.add(activityIndicator);
 
 
+
 //Ti.App.addEventListener('doneLoading', function(e){
 	
 setTimeout(function(){
+setStops();
+
+Ti.App.addEventListener('doneLoading', function(e){
+
 	activityIndicator.visible = false;
 	webviewContainer.remove(activityIndicator);
 	
@@ -292,7 +291,6 @@ setTimeout(function(){
 
 
 
-setStops();
 
 //===================================================================
 //-------------------------------------------------------------------
@@ -317,100 +315,6 @@ zoomOutButton.addEventListener('click',function(e)
 
 win.addEventListener('android:back',function(e) {
 });
-
-
-
-
-
-
-//win.open();
-
-
-function setCheckBoxEventListeners(){
-	routeCheckboxA.addEventListener('change',function(){
-		Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
-		if(routeCheckboxA.value == false){
-			toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrangeOffD.png');
-		}
-		else{
-			toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrange.png');
-		}
-	});
-	
-	routeCheckboxB.addEventListener('change',function(){
-		Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
-		if(routeCheckboxB.value == false){
-			toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlueOffD.png');
-		}
-		else{
-			toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlue.png');
-		}
-	});
-	
-	routeCheckboxC.addEventListener('change',function(){
-		Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
-		if(routeCheckboxC.value == false){
-			toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreenOffD.png');
-		}
-		else{
-			toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreen.png');
-		}
-	});
-	
-	//'dbox' event not caught yet in webview.js
-	routeCheckboxD.addEventListener('change',function(){
-		Ti.App.fireEvent("dbox", {data: [routeCheckboxD.value]});
-		if(routeCheckboxD.value == false){
-			toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellowOffD.png');
-		}
-		else{
-			toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellow.png');
-		}
-	});
-	
-	/*toggleMenu1.addEventListener('click', function(){
-		if(routeCheckboxA.value == false){
-			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrangeOff.png');
-			routeCheckboxA.value = true;
-		}
-		else{
-			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrange.png');
-			routeCheckboxA.value = false;
-		}
-	});
-	toggleMenu2.addEventListener('click', function(){
-		if(routeCheckboxB.value == false){
-			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlueOff.png');
-			routeCheckboxB.value = true;
-		}
-		else{
-			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlue.png');
-			routeCheckboxB.value = false;
-		}
-	});
-	toggleMenu3.addEventListener('click', function(){
-		if(routeCheckboxC.value == false){
-			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreenOff.png');
-			routeCheckboxC.value = true;
-		}
-		else{
-			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreen.png');
-			routeCheckboxD.value = false;
-		}
-	});
-	toggleMenu4.addEventListener('click', function(){
-		if(routeCheckboxD.value == false){
-			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellowOff.png');
-			routeCheckboxD.value = true;
-		}
-		else{
-			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellow.png');
-			routeCheckboxD.value = false;
-		}
-	});*/
-}
-
-
 
 
 function setWebViewListener(){
@@ -446,9 +350,9 @@ function setWebViewListener(){
 			
 			if(deviceGPSOn){
 				diffArray = findNearest(userGPS);
-				updateTableGPSOn(diffArray);
+				updateTable(diffArray);
 			} else{
-				updateTable();
+				updateTable(-1);;
 			}
 			updateSelected();
 			setBackupShuttleData();
@@ -473,11 +377,11 @@ function setWebViewListener(){
 					
 					if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
 						Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
-						updateTableGPSOn(diffArray);
+						updateTable(diffArray);
 					} else {
 						Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
 						diffArray = findNearest(userGPS);
-						updateTableGPSOn(diffArray);
+						updateTable(diffArray);
 					}
 					gpsCounter = 0;
 					
@@ -486,7 +390,7 @@ function setWebViewListener(){
 				}
 			} else {
 				Ti.API.info("Device GPS off");
-				updateTable();
+				updateTable(-1);
 			}
 
 
@@ -545,28 +449,6 @@ function setTableClickListener(){
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
-
-
-function getUserGPS(){
-	Titanium.Geolocation.getCurrentPosition(function(e)
-		{
-			if (!e.success || e.error)
-			{
-				Ti.API.info("Failed to get UserGPS, error: " + e);
-				deviceGPSOn = false;
-				Ti.API.info("Failed to get userGPS...");
-				return;
-			}
-			else{
-				userGPS[0] = e.coords.latitude;
-				userGPS[1] = e.coords.longitude;
-				userGPS[2] = e.coords.timestamp;
-				deviceGPSOn = true;
-				Ti.API.info("Got userGPS. Lat: " + e.coords.latitude + ", Long: " + e.coords.longitude + ", at " + e.coords.timestamp);
-			}
-		});
-}
-
 
 //Updates selected stop text
 function updateSelected(stop){	
@@ -643,85 +525,74 @@ function findNearest(userLocation){
 	return diffArray;
 }
 	
-function updateTable(){
+function updateTable(diffArray){
 	nearestArray = [];
-	Ti.API.info("-- updateTable -- function starting...");
 	
-	//Iterate through stopsArray and create rows for ALL stops.
-	for(var index = 0; index < stopsArray.length; index++){
-		//Initalize row elements. Two child views within an overall rowView that is added to the row element. 
-		var tableRow = Ti.UI.createTableViewRow({
-			className: 'Stops',
-			layout: 'horizontal',
-		});
+	if(diffArray == -1){
+		//User GPS disabeled
+		for(var j = 0, len = stopsArray.length; j < len; j++){
+			var tableRow = Ti.UI.createTableViewRow({
+				className: 'Stops',
+				layout: 'horizontal',
+			});
+			tableRow.stopsArray = stopsArray[j];
+			tableRow.distance = -1;
+			var rowView = Ti.UI.createView({
+				width: Ti.UI.SIZE,
+				height: Ti.UI.SIZE,
+				layout: 'horizontal',
+			});
+			var rowViewSeg1 = Ti.UI.createView({
+				width: '80%',
+				height: Ti.UI.SIZE,
+				top: 0,
+			});
+			var rowViewSeg2 = Ti.UI.createView({
+				width: '20%',
+				//height: Ti.UI.SIZE,
+				//top: 0,
+			});
+			
+		   	var stopNameLabel = Ti.UI.createLabel({
+				font: { fontSize:18 },
+				text: stopsArray[j][0],
+				color: '#FFFFFF',
+				//left: 15,
+				//top: 10,
+			});
+		    var distanceLabel = Ti.UI.createLabel({
+				//color: '#C0C0C0',
+				//right: 0,
+			});
+			
+			var selectButton = Ti.UI.createButton({
+	   			backgroundImage:'GeneralUI/stopSelectButton.png',
+	   			width: '50',
+	   			height:'50',
+	   			right: 0,
+	   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+	   		});
+	   	
+	   		rowViewSeg1.add(stopNameLabel);
+	   		rowViewSeg1.add(distanceLabel);
+	   		rowViewSeg2.add(selectButton);
+	   		
+	   		rowView.add(rowViewSeg1);
+	   		rowView.add(rowViewSeg2);
+	   		
+	   		tableRow.add(rowView);
+	   		nearestArray.push(tableRow);			
+		}
 		
-		tableRow.stopsArray = stopsArray[index];
-		
-		var rowView = Ti.UI.createView({
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			layout: 'horizontal',
-		});
-		var rowViewSeg1 = Ti.UI.createView({
-			width: '80%',
-			height: Ti.UI.SIZE,
-			top: 0,
-		});
-		var rowViewSeg2 = Ti.UI.createView({
-			width: '20%',
-			//height: Ti.UI.SIZE,
-			//top: 0,
-		});
-	
-	   	var stopNameLabel = Ti.UI.createLabel({
-			font: { fontSize:16 },
-			text: stopsArray[index][0],
-			color: '#FFFFFF',
-		});
-	    var distanceLabel = Ti.UI.createLabel({
-			color: '#C0C0C0',
-			right: 0,
-		});
-		
-		var selectButton = Ti.UI.createButton({
-   			backgroundImage:'GeneralUI/stopSelectButton.png',
-   			width: '50',
-   			height:'50',
-   			right: 0,
-   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
-   		});
-   	
-   		rowViewSeg1.add(stopNameLabel);
-   		rowViewSeg1.add(distanceLabel);
-   		rowViewSeg2.add(selectButton);
-   		
-   		rowView.add(rowViewSeg1);
-   		rowView.add(rowViewSeg2);
-   		
-   		
-   		tableRow.add(rowView);
-   		nearestArray.push(tableRow);
 	}
-	//Set row data to newly set nearestArray
-	routeEstTable.setData(nearestArray);
-	Ti.API.info("Set Table in updateTable");
-	
-	Ti.API.info("firing doneloading event");
-	Ti.App.fireEvent('doneLoading');
-		
-}
-	
-function updateTableGPSOn(diffArray){
-	nearestArray = [];
-	Ti.API.info(diffArray + ", diffArray.toString() = " + diffArray.toString());
 	
 	for(var j = 0; j < diffArray.length; j++){
 		var index = diffArray[j][1], distance = diffArray[j][0];
 	   	
-	   	var tableRow = Ti.UI.createTableViewRow({
+		var tableRow = Ti.UI.createTableViewRow({
+			className: 'Stops',
 			layout: 'horizontal',
 		});
-	   
 	   	tableRow.stopsArray = stopsArray[index];
 		tableRow.distance = distance;
 	 
@@ -777,9 +648,15 @@ function updateTableGPSOn(diffArray){
    		nearestArray.push(tableRow);
 	}
 	routeEstTable.setData(nearestArray);
+
 	Ti.API.info("Set Table in updateTableGPSOn");
 	
 		Ti.API.info("firing doneloading event");
+
+	Ti.API.info("Set Table in updateTable");
+
+	Ti.API.info("firing doneloading event");
+
 	Ti.App.fireEvent('doneLoading');
 }
 
