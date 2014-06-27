@@ -4,6 +4,15 @@
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
+
+if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
+   Titanium.API.info(' no connection ');
+   alert('no connection');
+} else {
+   Titanium.API.info(' connection present ');
+}
+
+
 var props = [];
 var tmp = Ti.App.Properties.getString('showExpress', ['true']);
 props.push(tmp);
@@ -270,7 +279,7 @@ webviewContainer.add(activityIndicator);
 	
 	
 //setTimeout(function(){
-setStops();
+
 
 Ti.App.addEventListener('doneLoading', function(e){
 
@@ -285,7 +294,7 @@ Ti.App.addEventListener('doneLoading', function(e){
 	Ti.API.info("recieved doneLoading event");
 	
 //}, 5000);
-	
+	setStops();
 	
 	
 //});
