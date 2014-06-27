@@ -274,25 +274,26 @@ webviewContainer.add(activityIndicator);
 
 //Show elements when done loading
 Ti.App.addEventListener('doneLoading', function(e){
+	Ti.API.info("recieved doneLoading event");
 
 	activityIndicator.visible = false;
 	webviewContainer.remove(activityIndicator);
-	
 	zoomButtonView.visible = true;
 	selectedStopView.visible = true;
 	bottomMenu.visible = true;
 	localWebview.visible = true;
-	
-	Ti.API.info("recieved doneLoading event");
 
 	initialLaunch = false;
+	
+	e.source.removeEventListener('doneLoading', arguments.callee);
 	
 });
 
 
 //Make sure map.html is loaded into the window before beginning
-localWebview.addEventListener('load',function(){
+localWebview.addEventListener('load',function(e){
 		setStops();
+		e.source.removeEventListener('load', arguments.callee);
 });
 
 	
@@ -698,13 +699,15 @@ function updateTable(diffArray){
 
 	Ti.API.info("Set Table in updateTableGPSOn");
 	
-		Ti.API.info("firing doneloading event");
-
 	Ti.API.info("Set Table in updateTable");
 	
 	if(initialLaunch){
-		Ti.API.info("firing doneloading event");
+		Ti.API.info("firing doneloading event 1");
 		Ti.App.fireEvent('doneLoading');
+		
+		Ti.API.info("firing doneloading event 2 TEST");
+			Ti.App.fireEvent('doneLoading');
+		
 	}
 
 }

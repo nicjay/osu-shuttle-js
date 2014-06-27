@@ -162,3 +162,20 @@ function adjustTable(e){
 	}
 	
 }*/
+
+
+map.graphics.on("click", myGraphicsClickHandler);
+	        		function myGraphicsClickHandler(evt) {
+	    				if(clickProcessing == false){
+		    				Ti.API.info("Click sent...");
+		    				clickProcessing = true;
+		    				var obj = evt.graphic.attributes;
+		    				var str = JSON.stringify(obj);
+		    				//Ti.App.fireEvent("adjustTable", {data: [obj.StopId]});
+		    				setTimeout(function(){ clickProcessing = false; }, 1500);
+	    				}
+	    				else{
+	    					Ti.API.info("______Click Skipped...");
+	    				}
+	  				}
+

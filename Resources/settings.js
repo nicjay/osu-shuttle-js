@@ -222,30 +222,31 @@ mainSettingsWin.add(view3);
 exports.createSettingsWin = function(props){
 	Ti.API.info("In settings.js.");
 	oldProps = props;
+	Ti.API.info("IN SETTINGS: props[] = " + props.toString());
 	setDefaults(props);
 	return mainSettingsWin;
 };
 
 function setDefaults(props){
-	routeToggleA.value = props[0];
-	routeToggleB.value = props[1];
-	routeToggleC.value = props[2];
-	routeToggleD.value = props[3];
-	gpsToggleButton.value = props[4];
-	unitToggle.value = props[5];
+	routeToggleA.setValue(props[0]);
+	routeToggleB.setValue(props[1]);
+	routeToggleC.setValue(props[2]);
+	routeToggleD.setValue(props[3]);
+	gpsToggleButton.setValue(props[4]);
+	unitToggle.setValue(props[5]);
 }
 
 function setProperties(){
-	Ti.App.Properties.setString('showExpress', routeToggleA.value);
-	Ti.App.Properties.setString('showSouthCentral', routeToggleB.value);
-	Ti.App.Properties.setString('showNorthCentral', routeToggleC.value);
-	Ti.App.Properties.setString('showCentralCampus', routeToggleD.value);
+	Ti.App.Properties.setString('showExpress', routeToggleA.getValue());
+	Ti.App.Properties.setString('showSouthCentral', routeToggleB.getValue());
+	Ti.App.Properties.setString('showNorthCentral', routeToggleC.getValue());
+	Ti.App.Properties.setString('showCentralCampus', routeToggleD.getValue());
 	
-	Ti.App.Properties.setString('gpsEnabled', gpsToggleButton.value);
+	Ti.App.Properties.setString('gpsEnabled', gpsToggleButton.getValue());
 	
-	Ti.App.Properties.setString('unitMi', unitToggle.value);
+	Ti.App.Properties.setString('unitMi', unitToggle.getValue());
 	
-	var props = [routeToggleA.value, routeToggleB.value, routeToggleC.value, routeToggleD.value, gpsToggleButton.value, unitToggle.value];
+	var props = [routeToggleA.getValue(), routeToggleB.getValue(), routeToggleC.getValue(), routeToggleD.getValue(), gpsToggleButton.getValue(), unitToggle.getValue()];
 	
 	for(var i = 0, len = oldProps.length; i < len; i++){
 		if(oldProps[i] == props[i])

@@ -28,6 +28,8 @@
   		data = event.data[0]; //Hold stop info -- not used currently
 		UserGPS = event.data[1]; //Holds user GPS data
     	createMap();
+    	
+    	event.source.removeEventListener("startmap", arguments.callee);
     });
     
     Ti.App.addEventListener('centerMap', function(event){
@@ -149,7 +151,7 @@
         		
         		function loadUserAndStops(){
         			
-        			Ti.App.fireEvent('maploaded', {});
+        			//Ti.App.fireEvent('maploaded', {});
         			
         			
 	        		var ExpressRoute = [
@@ -266,20 +268,7 @@
           			});
           			
           			
-          			map.graphics.on("click", myGraphicsClickHandler);
-	        		function myGraphicsClickHandler(evt) {
-	    				if(clickProcessing == false){
-		    				Ti.API.info("Click sent...");
-		    				clickProcessing = true;
-		    				var obj = evt.graphic.attributes;
-		    				var str = JSON.stringify(obj);
-		    				Ti.App.fireEvent("adjustTable", {data: [obj.StopId]});
-		    				setTimeout(function(){ clickProcessing = false; }, 1500);
-	    				}
-	    				else{
-	    					Ti.API.info("______Click Skipped...");
-	    				}
-	  				}
+          			
           			
           			
         		}
