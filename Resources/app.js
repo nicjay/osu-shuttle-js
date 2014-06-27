@@ -4,6 +4,15 @@
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
+
+if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
+   Titanium.API.info(' no connection ');
+   alert('no connection');
+} else {
+   Titanium.API.info(' connection present ');
+}
+
+
 var props = [];
 var tmp = Ti.App.Properties.getString('showExpress', ['true']);
 props.push(tmp);
@@ -255,7 +264,7 @@ win.add(webviewContainer);
 win.add(bottomMenu);
 win.open();
 
-
+//Hide elements temporarily for load indicator
 zoomButtonView.visible = false;
 selectedStopView.visible = false;
 bottomMenu.visible = false;
@@ -263,10 +272,9 @@ localWebview.visible = false;
 
 webviewContainer.add(activityIndicator);
 
-
-setStops();
-
+//Show elements when done loading
 Ti.App.addEventListener('doneLoading', function(e){
+
 	activityIndicator.visible = false;
 	webviewContainer.remove(activityIndicator);
 	
@@ -276,11 +284,18 @@ Ti.App.addEventListener('doneLoading', function(e){
 	localWebview.visible = true;
 	
 	Ti.API.info("recieved doneLoading event");
+
 	initialLaunch = false;
 	
 });
 
 
+//Make sure map.html is loaded into the window before beginning
+localWebview.addEventListener('load',function(){
+		setStops();
+});
+
+	
 
 
 //===================================================================
@@ -315,6 +330,7 @@ Ti.App.addEventListener('settingsChanged', function(e){
 
 settingsButton.addEventListener('click', function(e){
 	settingsWin = settings.createSettingsWin(props);
+	Ti.API.info(settingsWin);
 	settingsWin.open();
 });
 
@@ -338,7 +354,9 @@ function setWebViewListener(){
 	
 	//Event listener to start when webview loads
 	var lastGPS;
-	localWebview.addEventListener('load',function(){
+//	localWebview.addEventListener('load',function(){
+	
+		
 		var gpsCounter = getGPSInterval, nearestCounter = 0;
 		var stops = [];
 		//Start the create map event
@@ -423,10 +441,10 @@ function setWebViewListener(){
 			}
 		}, updateInterval);
 		
-		
 	
-	});	
+//	});	
 	
+	Ti.API.info("end of webview listener function");
 }
 
 
@@ -677,12 +695,18 @@ function updateTable(diffArray){
    		nearestArray.push(tableRow);
 	}
 	routeEstTable.setData(nearestArray);
+
+	Ti.API.info("Set Table in updateTableGPSOn");
+	
+		Ti.API.info("firing doneloading event");
+
 	Ti.API.info("Set Table in updateTable");
 	
 	if(initialLaunch){
 		Ti.API.info("firing doneloading event");
 		Ti.App.fireEvent('doneLoading');
 	}
+
 }
 
 
