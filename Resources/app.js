@@ -292,7 +292,7 @@ Ti.App.addEventListener('doneLoading', function(e){
 	localWebview.visible = true;
 	
 	Ti.API.info("recieved doneLoading event");
-	
+});
 //}, 5000);
 	setStops();
 	
