@@ -25,6 +25,8 @@ Titanium.UI.setBackgroundColor('#fff');
 Ti.UI.Android.hideSoftKeyboard();
 Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
 
+var initialLaunch = true;
+
 var url = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimates";
 var url2 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetRoutesForMapWithSchedule";
 var url3 = "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapVehiclePoints";
@@ -51,9 +53,6 @@ var shuttleLocs;
 var updateInterval = 4000;
 //Number of update cycles between getting GPS     4 * 4 = 16 seconds
 var getGPSInterval = 4;
-
-//Route visibility toggle checkboxes
-var routeCheckboxA, routeCheckBoxB, routeCheckboxC, routeCheckboxD;
 
 //Create main window
 var win = Ti.UI.createWindow({
@@ -277,6 +276,7 @@ Ti.App.addEventListener('doneLoading', function(e){
 	localWebview.visible = true;
 	
 	Ti.API.info("recieved doneLoading event");
+	initialLaunch = false;
 	
 });
 
@@ -286,6 +286,32 @@ Ti.App.addEventListener('doneLoading', function(e){
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
+Ti.App.addEventListener('settingsChanged', function(e){
+	props = e.data;
+	for(var i = 0, len = props.length; i < len; i++){
+		if(props[i] != -1){
+			switch(i){
+				case 0:
+					Ti.App.fireEvent('abox', {data: [props[i]]});
+					break;
+				case 1:
+					Ti.App.fireEvent('bbox', {data: [props[i]]});
+					break;
+				case 2:
+					Ti.App.fireEvent('cbox', {data: [props[i]]});
+					break;
+				case 3:
+					props[4] = props[i];
+					break;
+				case 4:
+					props[5] = props[5];
+					break;
+				case 5:
+					
+			}
+		}
+	}
+});
 
 settingsButton.addEventListener('click', function(e){
 	settingsWin = settings.createSettingsWin(props);
@@ -317,12 +343,12 @@ function setWebViewListener(){
 		var stops = [];
 		//Start the create map event
 		
-		getUserGPS();
-		if(deviceGPSOn){
-			diffArray = findNearest(userGPS);
+		if(props[4] == 'true'){
+			getUserGPS();
+			if(deviceGPSOn){
+				diffArray = findNearest(userGPS);
+			}	
 		}
-		
-		updateRouteEstimates();
 		
 		if (stopsArray.length > 0)
 			updateSelected(stopsArray[0]);
@@ -359,24 +385,28 @@ function setWebViewListener(){
 			shuttleLocRequest();
 			updateRouteEstimates();
 			
-			if(deviceGPSOn){
-				if(gpsCounter == getGPSInterval){
-					lastGPS = userGPS;
-					userGPS.length = 0;
-					getUserGPS();
-					
-					if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
-						Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
-						updateTable(diffArray);
+			if(props[4]){ 
+				if(deviceGPSOn){
+					if(gpsCounter == getGPSInterval){
+						lastGPS = userGPS;
+						userGPS.length = 0;
+						getUserGPS();
+						
+						if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
+							Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
+							updateTable(diffArray);
+						} else {
+							Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
+							diffArray = findNearest(userGPS);
+							updateTable(diffArray);
+						}
+						gpsCounter = 0;
+						
 					} else {
-						Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
-						diffArray = findNearest(userGPS);
-						updateTable(diffArray);
+						gpsCounter++;
 					}
-					gpsCounter = 0;
-					
 				} else {
-					gpsCounter++;
+					updateTable(-1);
 				}
 			} else {
 				Ti.API.info("Device GPS off");
@@ -610,14 +640,23 @@ function updateTable(diffArray){
 			left: 15,
 			top: 10,
 		});
-		var distanceLabel = Ti.UI.createLabel({
-			font: { fontSize:16 },
-			text: distance.toFixed(2.2) + " mi",
-			color: '#C0C0C0',
-			right: 0,
-			top: 10,
-		});
-		
+		if(props[5]){
+			var distanceLabel = Ti.UI.createLabel({
+				font: { fontSize:16 },
+				text: distance.toFixed(2.2) + " mi",
+				color: '#C0C0C0',
+				right: 0,
+				top: 10,
+			});
+		} else {
+			var distanceLabel = Ti.UI.createLabel({
+				font: { fontSize:16 },
+				text: distance.toFixed(2.2) + " km",
+				color: '#C0C0C0',
+				right: 0,
+				top: 10,
+			});	
+		}
 		var selectButton = Ti.UI.createButton({
    			backgroundImage:'GeneralUI/stopSelectButton.png',
    			width: '50',
@@ -639,9 +678,11 @@ function updateTable(diffArray){
 	}
 	routeEstTable.setData(nearestArray);
 	Ti.API.info("Set Table in updateTable");
-
-	Ti.API.info("firing doneloading event");
-	Ti.App.fireEvent('doneLoading');
+	
+	if(initialLaunch){
+		Ti.API.info("firing doneloading event");
+		Ti.App.fireEvent('doneLoading');
+	}
 }
 
 
@@ -714,7 +755,8 @@ function setStops(){
 			
 			Ti.API.info("LOADED HTTP");
 			
-			
+			updateRouteEstimates();
+			shuttleLocRequest();
 			setWebViewListener();
 			setTableClickListener();
 	
@@ -792,6 +834,7 @@ function getUserGPS(){
 			}
 		});
 }
+
 function getDistanceFromLatLon(lat1,lon1,lat2,lon2) {
   var miConversion = 0.621371;
   var R = 6371; // Radius of the earth in km
@@ -803,7 +846,11 @@ function getDistanceFromLatLon(lat1,lon1,lat2,lon2) {
     Math.sin(dLon/2) * Math.sin(dLon/2)
     ; 
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  var d = R * c * miConversion; // Distance in km
+  if(props[5]){
+ 	var d = R * c * miConversion; // Distance in km
+  } else {
+  	var d = R * c;
+  }
   return d;
 }
 

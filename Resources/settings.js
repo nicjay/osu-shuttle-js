@@ -4,6 +4,8 @@
 //===========================================================================================
 //===========================================================================================
 
+var oldProps;
+
 var mainSettingsWin = Ti.UI.createWindow({
 	layout: 'vertical',
 	width: '100%',
@@ -219,7 +221,7 @@ mainSettingsWin.add(view3);
 
 exports.createSettingsWin = function(props){
 	Ti.API.info("In settings.js.");
-	Ti.API.info('The value of the givenName property is: ' + Ti.App.Properties.getString('sentEmail'));
+	oldProps = props;
 	setDefaults(props);
 	return mainSettingsWin;
 };
@@ -242,4 +244,16 @@ function setProperties(){
 	Ti.App.Properties.setString('gpsEnabled', gpsToggleButton.value);
 	
 	Ti.App.Properties.setString('unitMi', unitToggle.value);
+	
+	var props = [routeToggleA.value, routeToggleB.value, routeToggleC.value, routeToggleD.value, gpsToggleButton.value, unitToggle.value];
+	
+	for(var i = 0, len = oldProps.length; i < len; i++){
+		if(oldProps[i] == props[i])
+		{
+			props[i] = -1;
+		}
+	}
+	Ti.App.fireEvent('settingsChanged', {data: props});
+	Ti.API.info("Newly changed props[] : " + props.toString());	
+	
 }
