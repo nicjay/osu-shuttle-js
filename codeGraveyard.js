@@ -1,3 +1,25 @@
+		//Want to wait until map is started and ready before doing this stuff
+		/*
+		Ti.App.addEventListener('maploaded', function(){
+			Ti.API.info("--Map Loaded--");
+			updateRouteEstimates();
+			shuttleLocRequest();
+			
+			if(deviceGPSOn){
+				diffArray = findNearest(userGPS);
+				updateTable(diffArray);
+			} else{
+				updateTable(-1);;
+			}
+			updateSelected();
+			setBackupShuttleData();
+			Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
+
+			
+		});
+		*/
+
+
 function createRouteCheckBox(){
 	routeCheckboxB = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,

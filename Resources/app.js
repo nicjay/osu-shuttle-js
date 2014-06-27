@@ -12,23 +12,8 @@ if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
    Titanium.API.info(' connection present ');
 }
 
-
 var props = [];
-var tmp = Ti.App.Properties.getString('showExpress', ['true']);
-props.push(tmp);
-tmp = Ti.App.Properties.getString('showSouthCentral', ['true']);
-props.push(tmp);
-tmp = Ti.App.Properties.getString('showNorthCentral', ['true']);
-props.push(tmp);
-tmp = Ti.App.Properties.getString('showCentralCampus', ['true']);
-props.push(tmp);
-tmp = Ti.App.Properties.getString('gpsEnabled', ['true']);
-props.push(tmp);
-tmp = Ti.App.Properties.getString('unitMi', ['true']);
-props.push(tmp);
-
-Ti.API.info("props[] = " + props.toString());
-
+initProperties();
 
 Titanium.UI.setBackgroundColor('#fff');
 Ti.UI.Android.hideSoftKeyboard();
@@ -45,8 +30,7 @@ var deviceGPSOn = false;
 var gpsOffPhrase = "GPS: Off";
 var gpsOnPhrase = "GPS: On";
 
-var settings = require('settings');
-var settingsWin;
+var settingsWin, settings;
 var toggleMenuOn = false;
 var loadedHTTP = false;
 
@@ -213,7 +197,7 @@ var routeEstTable = Ti.UI.createTableView({
 	color: '#ffffff',
 	separatorColor: '#838383',
 	showVerticalScrollIndicator: true,
-	softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
+	//softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS,
 });
 
 var zoomButtonView = Ti.UI.createView({
@@ -303,6 +287,7 @@ localWebview.addEventListener('load',function(e){
 //-------------------------------------------------------------------
 //===================================================================
 Ti.App.addEventListener('settingsChanged', function(e){
+	settingsWin = null;
 	props = e.data;
 	for(var i = 0, len = props.length; i < len; i++){
 		if(props[i] != -1){
@@ -330,6 +315,7 @@ Ti.App.addEventListener('settingsChanged', function(e){
 });
 
 settingsButton.addEventListener('click', function(e){
+	settings = require('settings');
 	settingsWin = settings.createSettingsWin(props);
 	Ti.API.info(settingsWin);
 	settingsWin.open();
@@ -362,7 +348,8 @@ function setWebViewListener(){
 		var stops = [];
 		//Start the create map event
 		
-		if(props[4] == 'true'){
+		if(props[4]){
+			Ti.API.info("initialSetWebView: Props[4] : " + props[4] + ", and deviceGPSOn : " + deviceGPSOn);
 			getUserGPS();
 			if(deviceGPSOn){
 				diffArray = findNearest(userGPS);
@@ -376,28 +363,7 @@ function setWebViewListener(){
 		
 		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
 		
-		//Want to wait until map is started and ready before doing this stuff
-		/*
-		Ti.App.addEventListener('maploaded', function(){
-			Ti.API.info("--Map Loaded--");
-			updateRouteEstimates();
-			shuttleLocRequest();
-			
-			if(deviceGPSOn){
-				diffArray = findNearest(userGPS);
-				updateTable(diffArray);
-			} else{
-				updateTable(-1);;
-			}
-			updateSelected();
-			setBackupShuttleData();
-			Ti.App.fireEvent("updatemap", {data: [shuttlecoords, heading]});
-
-			
-		});
-		*/
 		
-	
 		//Request the shuttle data, and start the update event, repeats every 5 seconds
 		setInterval(function() {
 			Ti.API.info("--Interval Function--");
@@ -405,6 +371,7 @@ function setWebViewListener(){
 			updateRouteEstimates();
 			
 			if(props[4]){ 
+				Ti.API.info("SetInterval: Props[4] : " + props[4] + ", and deviceGPSOn : " + deviceGPSOn);
 				if(deviceGPSOn){
 					if(gpsCounter == getGPSInterval){
 						lastGPS = userGPS;
@@ -623,43 +590,42 @@ function updateTable(diffArray){
 	   		nearestArray.push(tableRow);			
 		}
 		
-	}
-	
-	for(var j = 0; j < diffArray.length; j++){
-		var index = diffArray[j][1], distance = diffArray[j][0];
-	   	
-		var tableRow = Ti.UI.createTableViewRow({
-			className: 'Stops',
-			layout: 'horizontal',
-		});
-	   	tableRow.stopsArray = stopsArray[index];
-		tableRow.distance = distance;
-	 
-		
-		var rowView = Ti.UI.createView({
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			layout: 'horizontal',
-		});
-		var rowViewSeg1 = Ti.UI.createView({
-			width: '80%',
-			height: Ti.UI.SIZE,
-			top: 0,
-		});
-		var rowViewSeg2 = Ti.UI.createView({
-			width: '20%',
-			//height: Ti.UI.SIZE,
-			//top: 0,
-		});
-		
-	   	var stopNameLabel = Ti.UI.createLabel({
-			font: { fontSize:18 },
-			text: stopsArray[index][0],
-			color: '#FFFFFF',
-			left: 15,
-			top: 10,
-		});
-		if(props[5]){
+	} else {
+		for(var j = 0; j < diffArray.length; j++){
+			var index = diffArray[j][1], distance = diffArray[j][0];
+		   	
+			var tableRow = Ti.UI.createTableViewRow({
+				className: 'Stops',
+				layout: 'horizontal',
+			});
+		   	tableRow.stopsArray = stopsArray[index];
+			tableRow.distance = distance;
+		 
+			
+			var rowView = Ti.UI.createView({
+				width: Ti.UI.SIZE,
+				height: Ti.UI.SIZE,
+				layout: 'horizontal',
+			});
+			var rowViewSeg1 = Ti.UI.createView({
+				width: '80%',
+				height: Ti.UI.SIZE,
+				top: 0,
+			});
+			var rowViewSeg2 = Ti.UI.createView({
+				width: '20%',
+				//height: Ti.UI.SIZE,
+				//top: 0,
+			});
+			
+		   	var stopNameLabel = Ti.UI.createLabel({
+				font: { fontSize:18 },
+				text: stopsArray[index][0],
+				color: '#FFFFFF',
+				left: 15,
+				top: 10,
+			});
+			
 			var distanceLabel = Ti.UI.createLabel({
 				font: { fontSize:16 },
 				text: distance.toFixed(2.2) + " mi",
@@ -667,38 +633,37 @@ function updateTable(diffArray){
 				right: 0,
 				top: 10,
 			});
-		} else {
-			var distanceLabel = Ti.UI.createLabel({
-				font: { fontSize:16 },
-				text: distance.toFixed(2.2) + " km",
-				color: '#C0C0C0',
-				right: 0,
-				top: 10,
-			});	
+			
+			if(props[5] == 'true'){
+				Ti.API.info("TRUE Props[5] is " + props[5]);
+				distanceLabel.text = distance.toFixed(2.2) + " mi";
+			} else {
+				Ti.API.info("FALSE Props[5] is " + props[5]);
+				distanceLabel.text = distance.toFixed(2.2) + " km";
+			}
+			var selectButton = Ti.UI.createButton({
+	   			backgroundImage:'GeneralUI/stopSelectButton.png',
+	   			width: '50',
+	   			height:'50',
+	   			right: 10,
+	   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+	   		});
+	   		
+			
+	   		rowViewSeg1.add(stopNameLabel);
+	   		rowViewSeg1.add(distanceLabel);
+	   		rowViewSeg2.add(selectButton);
+	   		
+	   		rowView.add(rowViewSeg1);
+	   		rowView.add(rowViewSeg2);
+	   		
+	   		tableRow.add(rowView);
+	   		nearestArray.push(tableRow);
 		}
-		var selectButton = Ti.UI.createButton({
-   			backgroundImage:'GeneralUI/stopSelectButton.png',
-   			width: '50',
-   			height:'50',
-   			right: 10,
-   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
-   		});
-   		
-		
-   		rowViewSeg1.add(stopNameLabel);
-   		rowViewSeg1.add(distanceLabel);
-   		rowViewSeg2.add(selectButton);
-   		
-   		rowView.add(rowViewSeg1);
-   		rowView.add(rowViewSeg2);
-   		
-   		tableRow.add(rowView);
-   		nearestArray.push(tableRow);
 	}
+	
 	routeEstTable.setData(nearestArray);
 
-	Ti.API.info("Set Table in updateTableGPSOn");
-	
 	Ti.API.info("Set Table in updateTable");
 	
 	if(initialLaunch){
@@ -860,6 +825,21 @@ function getUserGPS(){
 				Ti.API.info("Got userGPS. Lat: " + e.coords.latitude + ", Long: " + e.coords.longitude + ", at " + e.coords.timestamp);
 			}
 		});
+}
+
+function initProperties(){
+	var tmp = Ti.App.Properties.getString('showExpress', ['true']);
+	props.push(tmp);
+	tmp = Ti.App.Properties.getString('showSouthCentral', ['true']);
+	props.push(tmp);
+	tmp = Ti.App.Properties.getString('showNorthCentral', ['true']);
+	props.push(tmp);
+	tmp = Ti.App.Properties.getString('showCentralCampus', ['true']);
+	props.push(tmp);
+	tmp = Ti.App.Properties.getString('gpsEnabled', ['true']);
+	props.push(tmp);
+	tmp = Ti.App.Properties.getString('unitMi', ['true']);
+	props.push(tmp);
 }
 
 function getDistanceFromLatLon(lat1,lon1,lat2,lon2) {
