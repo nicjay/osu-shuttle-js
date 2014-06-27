@@ -14,6 +14,7 @@ if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
 
 var props = [];
 initProperties();
+Ti.API.info("Properties init to : " + props.toString());
 
 Titanium.UI.setBackgroundColor('#fff');
 Ti.UI.Android.hideSoftKeyboard();
@@ -288,27 +289,27 @@ localWebview.addEventListener('load',function(e){
 //===================================================================
 Ti.App.addEventListener('settingsChanged', function(e){
 	settingsWin = null;
-	props = e.data;
-	for(var i = 0, len = props.length; i < len; i++){
-		if(props[i] != -1){
+	var propsChanged = e.data;
+	for(var i = 0, len = propsChanged.length; i < len; i++){
+		if(propsChanged[i] != -1){
 			switch(i){
 				case 0:
-					Ti.App.fireEvent('abox', {data: [props[i]]});
+					Ti.App.fireEvent('abox', {data: [propsChanged[i]]});
 					break;
 				case 1:
-					Ti.App.fireEvent('bbox', {data: [props[i]]});
+					Ti.App.fireEvent('bbox', {data: [propsChanged[i]]});
 					break;
 				case 2:
-					Ti.App.fireEvent('cbox', {data: [props[i]]});
+					Ti.App.fireEvent('cbox', {data: [propsChanged[i]]});
 					break;
 				case 3:
-					props[4] = props[i];
+					
 					break;
 				case 4:
-					props[5] = props[5];
+					props[4] = propsChanged[4];
 					break;
 				case 5:
-					
+					props[5] = propsChanged[5];
 			}
 		}
 	}

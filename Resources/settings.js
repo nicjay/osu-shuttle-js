@@ -249,6 +249,7 @@ function setProperties(){
 	
 	var props = [routeToggleA.getValue(), routeToggleB.getValue(), routeToggleC.getValue(), routeToggleD.getValue(), gpsToggleButton.getValue(), unitToggle.getValue()];
 	
+	Ti.API.info("OldProps : " + oldProps.toString() + " |||| NewProps : " + props.toString());
 	for(var i = 0, len = oldProps.length; i < len; i++){
 		if(oldProps[i] == props[i])
 		{
