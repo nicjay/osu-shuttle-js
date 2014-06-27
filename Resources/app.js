@@ -14,7 +14,7 @@ if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
 
 var props = [];
 initProperties();
-Ti.API.info("Properties init to : " + props.toString());
+//Ti.API.info("Properties init to : " + props.toString());
 
 Titanium.UI.setBackgroundColor('#fff');
 Ti.UI.Android.hideSoftKeyboard();
@@ -31,7 +31,7 @@ var deviceGPSOn = false;
 var gpsOffPhrase = "GPS: Off";
 var gpsOnPhrase = "GPS: On";
 
-var settingsWin, settings;
+var settings;
 var toggleMenuOn = false;
 var loadedHTTP = false;
 
@@ -260,7 +260,7 @@ webviewContainer.add(activityIndicator);
 
 //Show elements when done loading
 Ti.App.addEventListener('doneLoading', function(e){
-	Ti.API.info("recieved doneLoading event");
+	//Ti.API.info("recieved doneLoading event");
 
 	activityIndicator.visible = false;
 	webviewContainer.remove(activityIndicator);
@@ -288,20 +288,22 @@ localWebview.addEventListener('load',function(e){
 //-------------------------------------------------------------------
 //===================================================================
 Ti.App.addEventListener('settingsChanged', function(e){
-	settingsWin = null;
 	var propsChanged = e.data;
 	for(var i = 0, len = propsChanged.length; i < len; i++){
 		if(propsChanged[i] != -1){
 			switch(i){
 				case 0:
 					props[0] = propsChanged[0];
+					//Ti.API.info("Firing abox");
 					Ti.App.fireEvent('abox', {data: [propsChanged[0]]});
 					break;
 				case 1:
+					//Ti.API.info("Firing bbox");
 					props[1] = propsChanged[1];
 					Ti.App.fireEvent('bbox', {data: [propsChanged[1]]});
 					break;
 				case 2:
+					//Ti.API.info("Firing cbox");
 					props[2] = propsChanged[2];
 					Ti.App.fireEvent('cbox', {data: [propsChanged[2]]});
 					break;
@@ -313,6 +315,8 @@ Ti.App.addEventListener('settingsChanged', function(e){
 					break;
 				case 5:
 					props[5] = propsChanged[5];
+					diffArray = findNearest(userGPS);
+					updateTable(diffArray);
 			}
 		}
 	}
@@ -320,7 +324,7 @@ Ti.App.addEventListener('settingsChanged', function(e){
 
 settingsButton.addEventListener('click', function(e){
 	if(settings == null){
-		Ti.API.info("Settings was null... require statement now.");
+		//Ti.API.info("Settings was null... require statement now.");
 		settings = require('settings');
 	}
 	settings.createSettingsWin(props);
@@ -342,7 +346,7 @@ win.addEventListener('android:back',function(e) {
 
 
 function setWebViewListener(){
-	Ti.API.info("Starting webviewlistener");
+	//Ti.API.info("Starting webviewlistener");
 	
 	//Event listener to start when webview loads
 	var lastGPS;
@@ -354,7 +358,6 @@ function setWebViewListener(){
 		//Start the create map event
 		
 		if(props[4]){
-			Ti.API.info("initialSetWebView: Props[4] : " + props[4] + ", and deviceGPSOn : " + deviceGPSOn);
 			getUserGPS();
 			if(deviceGPSOn){
 				diffArray = findNearest(userGPS);
@@ -366,17 +369,15 @@ function setWebViewListener(){
 		else 
 			updateSelected(["No selection", 0,0,0,0,0,0]);
 		
-		Ti.App.fireEvent("startmap", {data: [stops, userGPS]});
+		Ti.App.fireEvent("startmap", {data: [stops, userGPS, props]});
 		
 		
 		//Request the shuttle data, and start the update event, repeats every 5 seconds
 		setInterval(function() {
-			Ti.API.info("--Interval Function--");
 			shuttleLocRequest();
 			updateRouteEstimates();
 			
 			if(props[4]){ 
-				Ti.API.info("SetInterval: Props[4] : " + props[4] + ", and deviceGPSOn : " + deviceGPSOn);
 				if(deviceGPSOn){
 					if(gpsCounter == getGPSInterval){
 						lastGPS = userGPS;
@@ -384,10 +385,10 @@ function setWebViewListener(){
 						getUserGPS();
 						
 						if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
-							Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
+							//Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
 							updateTable(diffArray);
 						} else {
-							Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
+							//Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
 							diffArray = findNearest(userGPS);
 							updateTable(diffArray);
 						}
@@ -400,7 +401,7 @@ function setWebViewListener(){
 					updateTable(-1);
 				}
 			} else {
-				Ti.API.info("Device GPS off");
+				//Ti.API.info("Device GPS off");
 				updateTable(-1);
 			}
 
@@ -417,12 +418,12 @@ function setWebViewListener(){
 	
 //	});	
 	
-	Ti.API.info("end of webview listener function");
+	//Ti.API.info("end of webview listener function");
 }
 
 
 function setTableClickListener(){
-	Ti.API.info("Starting settableclicklistener");
+	//Ti.API.info("Starting settableclicklistener");
 
 	
 	routeEstTable.addEventListener('click', function(e){
@@ -443,14 +444,14 @@ function setTableClickListener(){
     		}, 1200);
 			var stopsArray = e.row.stopsArray;
 
-			Ti.API.info(stopsArray);
+			//Ti.API.info(stopsArray);
 			
 			
 			var distance = e.row.distance;
 			updateSelected(stopsArray);//Does this include seconds to stop for each shuttle?
 
 			Ti.App.fireEvent("centerMap", {latitude: stopsArray[1], longitude: stopsArray[2]});
-			Ti.API.info("StopsArray[0] = " + stopsArray[6] + ", and distance: " + distance);
+			//Ti.API.info("StopsArray[0] = " + stopsArray[6] + ", and distance: " + distance);
 			//UstopNameLabel.text = stopsArray[0];
 		}
 	});
@@ -467,7 +468,7 @@ function updateSelected(stop){
 	UstopNameLabel.setText(stop[0]);
 	//distanceLabel.setText()
 	
-	Ti.API.info(stop[3]+''+stop[4]+''+stop[5]);
+	//Ti.API.info(stop[3]+''+stop[4]+''+stop[5]);
 	
 	updateSelectedTimes(stop[3], stop[4], stop[5], stop[6]);
 	
@@ -478,7 +479,7 @@ function updateSelected(stop){
 //Takes in 4 times, updates label
 //Should be called when selectedStop is changed, and when new data is pulled
 function updateSelectedTimes(t0, t1, t2, t3){
-	Ti.API.info("TimeA:"+ t0);
+	//Ti.API.info("TimeA:"+ t0);
 	var times = new Array(4);
 	times[0] = t0;
 	times[1] = t1;
@@ -639,7 +640,7 @@ function updateTable(diffArray){
 				top: 10,
 			});
 			
-			if(props[5] == 'true'){
+			if(props[5] == 'true' || props[5]){
 				distanceLabel.text = distance.toFixed(2.2) + " mi";
 			} else {
 				distanceLabel.text = distance.toFixed(2.2) + " km";
@@ -667,15 +668,12 @@ function updateTable(diffArray){
 	
 	routeEstTable.setData(nearestArray);
 
-	Ti.API.info("Set Table in updateTable");
+	//Ti.API.info("Set Table in updateTable");
 	
 	if(initialLaunch){
-		Ti.API.info("firing doneloading event 1");
+		//Ti.API.info("firing doneloading event 1");
+		//Ti.App.fireEvent('doneLoading');
 		Ti.App.fireEvent('doneLoading');
-		
-		Ti.API.info("firing doneloading event 2 TEST");
-			Ti.App.fireEvent('doneLoading');
-		
 	}
 
 }
@@ -696,7 +694,6 @@ function setStops(){
 
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
-			Ti.API.info("got to onload in setstops");
 			var routeNames = new Array(3);
 			var routesArray = [];
 			var id = 0;
@@ -719,7 +716,6 @@ function setStops(){
 				}
 				routesArray.push(routeArray);
 			}
-			Ti.API.info("ROUTES Names: " + routeNames);
 	
 			//Sort and remove duplicates. Add flags for which shuttles stop at each stop.
 			for(var k = 0; k < routesArray.length; k++){
@@ -750,7 +746,6 @@ function setStops(){
 			 * 		Example
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
 			
-			Ti.API.info("LOADED HTTP");
 	
 			
 			updateRouteEstimates();
@@ -798,7 +793,7 @@ function shuttleLocRequest(){
 			shuttleLocs = JSON.parse(this.responseText);
 			
 			if(shuttleLocs.length == 0){
-				Ti.API.info("No shuttles active...");
+				//Ti.API.info("No shuttles active...");
 			}
 
 			for (var x = 0; x < shuttleLocs.length; x++){
@@ -830,23 +825,23 @@ function getUserGPS(){
 				userGPS[1] = e.coords.longitude;
 				userGPS[2] = e.coords.timestamp;
 				deviceGPSOn = true;
-				Ti.API.info("Got userGPS. Lat: " + e.coords.latitude + ", Long: " + e.coords.longitude + ", at " + e.coords.timestamp);
+				//Ti.API.info("Got userGPS. Lat: " + e.coords.latitude + ", Long: " + e.coords.longitude + ", at " + e.coords.timestamp);
 			}
 		});
 }
 
 function initProperties(){
-	var tmp = Ti.App.Properties.getString('showExpress', [true]);
+	var tmp = Ti.App.Properties.getString('showExpress', true);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('showSouthCentral', [true]);
+	tmp = Ti.App.Properties.getString('showSouthCentral', true);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('showNorthCentral', [true]);
+	tmp = Ti.App.Properties.getString('showNorthCentral', true);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('showCentralCampus', [true]);
+	tmp = Ti.App.Properties.getString('showCentralCampus', true);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('gpsEnabled', [true]);
+	tmp = Ti.App.Properties.getString('gpsEnabled', true);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('unitMi', [true]);
+	tmp = Ti.App.Properties.getString('unitMi', true);
 	props.push(tmp);
 }
 
@@ -861,7 +856,7 @@ function getDistanceFromLatLon(lat1,lon1,lat2,lon2) {
     Math.sin(dLon/2) * Math.sin(dLon/2)
     ; 
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  if(props[5]){
+  if(props[5] == 'true' || props[5]){
  	var d = R * c * miConversion; // Distance in km
   } else {
   	var d = R * c;

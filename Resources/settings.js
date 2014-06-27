@@ -4,12 +4,10 @@
 //===========================================================================================
 //===========================================================================================
 
-Ti.API.info("In Settings!");
+//Ti.API.info("In Settings!");
 var oldProps;
 
 var mainSettingsWin;
-
-
 
 var view0, settingsLabel, closeSettingsButton, view1, routeToggleLabel, view2, gpsToggleLabel, gpsToggleButton, view3, feedbackLabel;
 var feedbackEmail, feedbackSendButton, view4, unitLabel, unitToggle;
@@ -244,18 +242,16 @@ function destroyWindow(){
 }
 
 function setProperties(){
-	Ti.App.Properties.setString('showExpress', routeToggleA.getValue());
-	Ti.App.Properties.setString('showSouthCentral', routeToggleB.getValue());
-	Ti.App.Properties.setString('showNorthCentral', routeToggleC.getValue());
-	Ti.App.Properties.setString('showCentralCampus', routeToggleD.getValue());
-	
-	Ti.App.Properties.setString('gpsEnabled', gpsToggleButton.getValue());
-	
-	Ti.App.Properties.setString('unitMi', unitToggle.getValue());
-	
 	var propsArray = [routeToggleA.getValue(), routeToggleB.getValue(), routeToggleC.getValue(), routeToggleD.getValue(), gpsToggleButton.getValue(), unitToggle.getValue()];
 	
-	Ti.API.info("OldProps : " + oldProps.toString() + " |||| NewProps : " + propsArray.toString());
+	Ti.App.Properties.setString('showExpress', propsArray[0]);
+	Ti.App.Properties.setString('showSouthCentral', propsArray[1]);
+	Ti.App.Properties.setString('showNorthCentral', propsArray[2]);
+	Ti.App.Properties.setString('showCentralCampus', propsArray[3]);
+	Ti.App.Properties.setString('gpsEnabled', propsArray[4]);
+	Ti.App.Properties.setString('unitMi', propsArray[5]);
+	
+
 	for(var i = 0, len = oldProps.length; i < len; i++){
 		if(oldProps[i] == propsArray[i])
 		{
@@ -263,6 +259,4 @@ function setProperties(){
 		}
 	}
 	Ti.App.fireEvent('settingsChanged', {data: propsArray});
-	Ti.API.info("Newly changed propsArray[] : " + propsArray.toString());	
-	
 }

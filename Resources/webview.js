@@ -6,6 +6,7 @@
   	var GS1, GS2, GS3;
   	var shuttleData;
   	var heading = new Array(3);
+  	var props;
   	
   	var ExprRouteGraphic;
   	var NorthRouteGraphic;
@@ -27,6 +28,7 @@
    	Ti.App.addEventListener("startmap", function (event) {
   		data = event.data[0]; //Hold stop info -- not used currently
 		UserGPS = event.data[1]; //Holds user GPS data
+    	props = event.data[2];
     	createMap();
     	
     	event.source.removeEventListener("startmap", arguments.callee);
@@ -50,7 +52,7 @@
 		
 		
 	Ti.App.addEventListener('abox', function(event){
-		Ti.API.info('aSwitch value: ' + event.data[0]);
+		//Ti.API.info('aSwitch value: ' + event.data[0]);
 		enableNorth = event.data[0]; 
 		updateMap();
 		ShowNorth();
@@ -58,7 +60,7 @@
 		});
 		
 	Ti.App.addEventListener('bbox', function(event){
-		Ti.API.info('bSwitch value: ' + event.data[0]);
+		//Ti.API.info('bSwitch value: ' + event.data[0]);
 		enableSouth = event.data[0]; 
 		updateMap();
 		ShowSouth();
@@ -67,7 +69,7 @@
 		
 
 	Ti.App.addEventListener('cbox', function(event){
-		Ti.API.info('cSwitch value: ' + event.data[0]);
+		//Ti.API.info('cSwitch value: ' + event.data[0]);
 		enableExpress = event.data[0]; 
 		updateMap();
 		ShowExpress();
@@ -267,6 +269,26 @@
         			    map.graphics.add(tempStop);
           			});
           			
+          			for(var i = 0; i < 4; i++){
+          				if(props[i] == 'false' || props[i] == false){
+          					switch(i){
+          						case 0:
+          							enableNorth = false;
+          							ShowNorth();
+          							break;
+          						case 1:
+          							enableSouth = false;
+          							ShowSouth();
+          							break;
+          						case 2:
+          							enableExpress = false;
+          							ShowExpress();
+          							break;
+          						case 3:
+          							
+          					}
+          				}
+          			}
           			
           			
           			
@@ -291,9 +313,11 @@
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Graphic, arrayUtils, domStyle, Color) {
 					
-					Ti.API.info("Map Graphics: " + JSON.parse(map.graphics));
+		
+					if(map.getLayer(shuttleLayer) != null){
+						map.removeLayer(shuttleLayer);
+					}
 					
-					map.removeLayer(shuttleLayer);
 					var shuttleLayer = new esri.layers.GraphicsLayer();
     				
     				/*//Clear the outdated positions
@@ -306,7 +330,6 @@
 					var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('Shuttle/greentriangle.png', 20, 20); //*north central
 					var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('Shuttle/orangetriangle.png', 20, 20); //express
     				
-    				Ti.API.info("ShuttleData length is : " + shuttleData.length);
     				for(var i = 0; i < shuttleData.length; i++){
     					var shuttleGraphic;
     					
@@ -386,7 +409,6 @@
       			
    				//test
    				if (enableExpress == true){
-	          		Ti.API.info("express enabled!");
 	          		ExprRouteGraphic.show();
 	          		
 	          		arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
@@ -396,7 +418,6 @@
 	          		
 	      		}
 	      		else{
-	      			Ti.API.info("express disabled!");
 	      			ExprRouteGraphic.hide();
 	      			
 	      			arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
@@ -445,6 +466,7 @@
     		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
+      	
       			
    				//test
    				if (enableSouth == true){
