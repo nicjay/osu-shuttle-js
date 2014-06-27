@@ -4,6 +4,7 @@
 //===========================================================================================
 //===========================================================================================
 
+Ti.API.info("In Settings!");
 var oldProps;
 
 var mainSettingsWin = Ti.UI.createWindow({
@@ -49,7 +50,12 @@ var closeSettingsButton = Ti.UI.createButton({
 closeSettingsButton.addEventListener('click', function(e){
 	setProperties();
 	view0 = null;
+	Ti.API.info("PRE Children: " + mainSettingsWin.children);
+	mainSettingsWin.remove(view0);
+	mainSettingsWin.remove(view1);
+	Ti.API.info("Children: " + mainSettingsWin.children);
 	mainSettingsWin.close();
+	mainSettingsWin = null;
 });
 
 view0.add(settingsLabel);
@@ -221,12 +227,16 @@ mainSettingsWin.add(view3);
 
 
 exports.createSettingsWin = function(props){
-	Ti.API.info("In settings.js.");
+	//Ti.API.info("In settings.js.");
 	oldProps = props;
-	Ti.API.info("IN SETTINGS: props[] = " + props.toString());
+	//Ti.API.info("IN SETTINGS: props[] = " + props.toString());
 	setDefaults(props);
 	return mainSettingsWin;
 };
+
+function createWindow(){
+	
+}
 
 function setDefaults(props){
 	routeToggleA.setValue(props[0]);
