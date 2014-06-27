@@ -256,12 +256,14 @@ win.add(webviewContainer);
 win.add(bottomMenu);
 win.open();
 
+
 zoomButtonView.visible = false;
 selectedStopView.visible = false;
 bottomMenu.visible = false;
 localWebview.visible = false;
 
 webviewContainer.add(activityIndicator);
+
 
 setStops();
 
@@ -338,9 +340,9 @@ function setWebViewListener(){
 			
 			if(deviceGPSOn){
 				diffArray = findNearest(userGPS);
-				updateTableGPSOn(diffArray);
+				updateTable(diffArray);
 			} else{
-				updateTable();
+				updateTable(-1);;
 			}
 			updateSelected();
 			setBackupShuttleData();
@@ -365,11 +367,11 @@ function setWebViewListener(){
 					
 					if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
 						Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
-						updateTableGPSOn(diffArray);
+						updateTable(diffArray);
 					} else {
 						Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
 						diffArray = findNearest(userGPS);
-						updateTableGPSOn(diffArray);
+						updateTable(diffArray);
 					}
 					gpsCounter = 0;
 					
@@ -378,7 +380,7 @@ function setWebViewListener(){
 				}
 			} else {
 				Ti.API.info("Device GPS off");
-				updateTable();
+				updateTable(-1);
 			}
 
 
@@ -513,85 +515,74 @@ function findNearest(userLocation){
 	return diffArray;
 }
 	
-function updateTable(){
+function updateTable(diffArray){
 	nearestArray = [];
-	Ti.API.info("-- updateTable -- function starting...");
 	
-	//Iterate through stopsArray and create rows for ALL stops.
-	for(var index = 0; index < stopsArray.length; index++){
-		//Initalize row elements. Two child views within an overall rowView that is added to the row element. 
-		var tableRow = Ti.UI.createTableViewRow({
-			className: 'Stops',
-			layout: 'horizontal',
-		});
+	if(diffArray == -1){
+		//User GPS disabeled
+		for(var j = 0, len = stopsArray.length; j < len; j++){
+			var tableRow = Ti.UI.createTableViewRow({
+				className: 'Stops',
+				layout: 'horizontal',
+			});
+			tableRow.stopsArray = stopsArray[j];
+			tableRow.distance = -1;
+			var rowView = Ti.UI.createView({
+				width: Ti.UI.SIZE,
+				height: Ti.UI.SIZE,
+				layout: 'horizontal',
+			});
+			var rowViewSeg1 = Ti.UI.createView({
+				width: '80%',
+				height: Ti.UI.SIZE,
+				top: 0,
+			});
+			var rowViewSeg2 = Ti.UI.createView({
+				width: '20%',
+				//height: Ti.UI.SIZE,
+				//top: 0,
+			});
+			
+		   	var stopNameLabel = Ti.UI.createLabel({
+				font: { fontSize:18 },
+				text: stopsArray[j][0],
+				color: '#FFFFFF',
+				//left: 15,
+				//top: 10,
+			});
+		    var distanceLabel = Ti.UI.createLabel({
+				//color: '#C0C0C0',
+				//right: 0,
+			});
+			
+			var selectButton = Ti.UI.createButton({
+	   			backgroundImage:'GeneralUI/stopSelectButton.png',
+	   			width: '50',
+	   			height:'50',
+	   			right: 0,
+	   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+	   		});
+	   	
+	   		rowViewSeg1.add(stopNameLabel);
+	   		rowViewSeg1.add(distanceLabel);
+	   		rowViewSeg2.add(selectButton);
+	   		
+	   		rowView.add(rowViewSeg1);
+	   		rowView.add(rowViewSeg2);
+	   		
+	   		tableRow.add(rowView);
+	   		nearestArray.push(tableRow);			
+		}
 		
-		tableRow.stopsArray = stopsArray[index];
-		
-		var rowView = Ti.UI.createView({
-			width: Ti.UI.SIZE,
-			height: Ti.UI.SIZE,
-			layout: 'horizontal',
-		});
-		var rowViewSeg1 = Ti.UI.createView({
-			width: '80%',
-			height: Ti.UI.SIZE,
-			top: 0,
-		});
-		var rowViewSeg2 = Ti.UI.createView({
-			width: '20%',
-			//height: Ti.UI.SIZE,
-			//top: 0,
-		});
-	
-	   	var stopNameLabel = Ti.UI.createLabel({
-			font: { fontSize:16 },
-			text: stopsArray[index][0],
-			color: '#FFFFFF',
-		});
-	    var distanceLabel = Ti.UI.createLabel({
-			color: '#C0C0C0',
-			right: 0,
-		});
-		
-		var selectButton = Ti.UI.createButton({
-   			backgroundImage:'GeneralUI/stopSelectButton.png',
-   			width: '50',
-   			height:'50',
-   			right: 0,
-   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
-   		});
-   	
-   		rowViewSeg1.add(stopNameLabel);
-   		rowViewSeg1.add(distanceLabel);
-   		rowViewSeg2.add(selectButton);
-   		
-   		rowView.add(rowViewSeg1);
-   		rowView.add(rowViewSeg2);
-   		
-   		
-   		tableRow.add(rowView);
-   		nearestArray.push(tableRow);
 	}
-	//Set row data to newly set nearestArray
-	routeEstTable.setData(nearestArray);
-	Ti.API.info("Set Table in updateTable");
-	
-	Ti.API.info("firing doneloading event");
-	Ti.App.fireEvent('doneLoading');
-		
-}
-	
-function updateTableGPSOn(diffArray){
-	nearestArray = [];
-	Ti.API.info(diffArray + ", diffArray.toString() = " + diffArray.toString());
 	
 	for(var j = 0; j < diffArray.length; j++){
 		var index = diffArray[j][1], distance = diffArray[j][0];
 	   	
-	   	var tableRow = Ti.UI.createTableViewRow({
+		var tableRow = Ti.UI.createTableViewRow({
+			className: 'Stops',
 			layout: 'horizontal',
 		});
-	   
 	   	tableRow.stopsArray = stopsArray[index];
 		tableRow.distance = distance;
 	 
@@ -647,7 +638,10 @@ function updateTableGPSOn(diffArray){
    		nearestArray.push(tableRow);
 	}
 	routeEstTable.setData(nearestArray);
-	Ti.API.info("Set Table in updateTableGPSOn");
+	Ti.API.info("Set Table in updateTable");
+
+	Ti.API.info("firing doneloading event");
+	Ti.App.fireEvent('doneLoading');
 }
 
 
