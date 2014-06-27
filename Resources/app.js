@@ -97,10 +97,6 @@ var distanceLabel = Ti.UI.createLabel({
 	width: Ti.UI.FILL,
 });
 
-/*var settingsButtonContainer Ti.UI.createView({
-	height:
-});*/
-
 var settingsButton = Ti.UI.createButton({
 	height: 36,
 	width: 36,
@@ -108,10 +104,7 @@ var settingsButton = Ti.UI.createButton({
 	backgroundSelectedImage: 'GeneralUI/settingsGearPressed.png',
 	
 });
-	
-Ti.API.info("Settings Button Width = " + settingsButton.width);
-settingsButton.width = settingsButton.height;
-Ti.API.info("Settings Button Height = " + settingsButton.height);
+
 var viewTopSection = Ti.UI.createView({
    	height: '50%',
 	width: '100%',
@@ -270,6 +263,8 @@ localWebview.visible = false;
 
 webviewContainer.add(activityIndicator);
 
+setStops();
+
 Ti.App.addEventListener('doneLoading', function(e){
 	activityIndicator.visible = false;
 	webviewContainer.remove(activityIndicator);
@@ -285,7 +280,6 @@ Ti.App.addEventListener('doneLoading', function(e){
 
 
 
-setStops();
 
 //===================================================================
 //-------------------------------------------------------------------
@@ -309,100 +303,6 @@ zoomOutButton.addEventListener('click',function(e)
 
 win.addEventListener('android:back',function(e) {
 });
-
-
-
-
-
-
-//win.open();
-
-
-function setCheckBoxEventListeners(){
-	routeCheckboxA.addEventListener('change',function(){
-		Ti.App.fireEvent("abox", {data: [routeCheckboxA.value]});
-		if(routeCheckboxA.value == false){
-			toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrangeOffD.png');
-		}
-		else{
-			toggleMenus[0].setBackgroundImage('GeneralUI/toggleBgOrange.png');
-		}
-	});
-	
-	routeCheckboxB.addEventListener('change',function(){
-		Ti.App.fireEvent("bbox", {data: [routeCheckboxB.value]});
-		if(routeCheckboxB.value == false){
-			toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlueOffD.png');
-		}
-		else{
-			toggleMenus[1].setBackgroundImage('GeneralUI/toggleBgBlue.png');
-		}
-	});
-	
-	routeCheckboxC.addEventListener('change',function(){
-		Ti.App.fireEvent("cbox", {data: [routeCheckboxC.value]});
-		if(routeCheckboxC.value == false){
-			toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreenOffD.png');
-		}
-		else{
-			toggleMenus[2].setBackgroundImage('GeneralUI/toggleBgGreen.png');
-		}
-	});
-	
-	//'dbox' event not caught yet in webview.js
-	routeCheckboxD.addEventListener('change',function(){
-		Ti.App.fireEvent("dbox", {data: [routeCheckboxD.value]});
-		if(routeCheckboxD.value == false){
-			toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellowOffD.png');
-		}
-		else{
-			toggleMenus[3].setBackgroundImage('GeneralUI/toggleBgYellow.png');
-		}
-	});
-	
-	/*toggleMenu1.addEventListener('click', function(){
-		if(routeCheckboxA.value == false){
-			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrangeOff.png');
-			routeCheckboxA.value = true;
-		}
-		else{
-			toggleMenu1.setBackgroundImage('GeneralUI/toggleBgOrange.png');
-			routeCheckboxA.value = false;
-		}
-	});
-	toggleMenu2.addEventListener('click', function(){
-		if(routeCheckboxB.value == false){
-			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlueOff.png');
-			routeCheckboxB.value = true;
-		}
-		else{
-			toggleMenu2.setBackgroundImage('GeneralUI/toggleBgBlue.png');
-			routeCheckboxB.value = false;
-		}
-	});
-	toggleMenu3.addEventListener('click', function(){
-		if(routeCheckboxC.value == false){
-			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreenOff.png');
-			routeCheckboxC.value = true;
-		}
-		else{
-			toggleMenu3.setBackgroundImage('GeneralUI/toggleBgGreen.png');
-			routeCheckboxD.value = false;
-		}
-	});
-	toggleMenu4.addEventListener('click', function(){
-		if(routeCheckboxD.value == false){
-			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellowOff.png');
-			routeCheckboxD.value = true;
-		}
-		else{
-			toggleMenu4.setBackgroundImage('GeneralUI/toggleBgYellow.png');
-			routeCheckboxD.value = false;
-		}
-	});*/
-}
-
-
 
 
 function setWebViewListener(){
@@ -537,28 +437,6 @@ function setTableClickListener(){
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
-
-
-function getUserGPS(){
-	Titanium.Geolocation.getCurrentPosition(function(e)
-		{
-			if (!e.success || e.error)
-			{
-				Ti.API.info("Failed to get UserGPS, error: " + e);
-				deviceGPSOn = false;
-				Ti.API.info("Failed to get userGPS...");
-				return;
-			}
-			else{
-				userGPS[0] = e.coords.latitude;
-				userGPS[1] = e.coords.longitude;
-				userGPS[2] = e.coords.timestamp;
-				deviceGPSOn = true;
-				Ti.API.info("Got userGPS. Lat: " + e.coords.latitude + ", Long: " + e.coords.longitude + ", at " + e.coords.timestamp);
-			}
-		});
-}
-
 
 //Updates selected stop text
 function updateSelected(stop){	
