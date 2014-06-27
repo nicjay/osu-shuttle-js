@@ -250,6 +250,7 @@ win.add(bottomMenu);
 win.open();
 
 //Hide elements temporarily for load indicator
+
 zoomButtonView.visible = false;
 selectedStopView.visible = false;
 bottomMenu.visible = false;
@@ -275,10 +276,12 @@ Ti.App.addEventListener('doneLoading', function(e){
 });
 
 
+
 //Make sure map.html is loaded into the window before beginning the chain
 localWebview.addEventListener('load',function(e){
 	setStops();
 });
+
 
 
 //===================================================================
@@ -291,13 +294,16 @@ Ti.App.addEventListener('settingsChanged', function(e){
 		if(propsChanged[i] != -1){
 			switch(i){
 				case 0:
-					Ti.App.fireEvent('abox', {data: [propsChanged[i]]});
+					props[0] = propsChanged[0];
+					Ti.App.fireEvent('abox', {data: [propsChanged[0]]});
 					break;
 				case 1:
-					Ti.App.fireEvent('bbox', {data: [propsChanged[i]]});
+					props[1] = propsChanged[1];
+					Ti.App.fireEvent('bbox', {data: [propsChanged[1]]});
 					break;
 				case 2:
-					Ti.App.fireEvent('cbox', {data: [propsChanged[i]]});
+					props[2] = propsChanged[2];
+					Ti.App.fireEvent('cbox', {data: [propsChanged[2]]});
 					break;
 				case 3:
 					
@@ -313,8 +319,14 @@ Ti.App.addEventListener('settingsChanged', function(e){
 });
 
 settingsButton.addEventListener('click', function(e){
+
 	settings = require('settings');
 	/*settingsWin = settings.createSettingsWin(props);
+	if(settings == null)
+		settings = require('settings');
+	Ti.API.info("Sending props : " + props.toString());
+	settingsWin = settings.createSettingsWin(props);
+
 	Ti.API.info(settingsWin);
 	settingsWin.open();
 	*/
@@ -636,10 +648,8 @@ function updateTable(diffArray){
 			});
 			
 			if(props[5] == 'true'){
-				Ti.API.info("TRUE Props[5] is " + props[5]);
 				distanceLabel.text = distance.toFixed(2.2) + " mi";
 			} else {
-				Ti.API.info("FALSE Props[5] is " + props[5]);
 				distanceLabel.text = distance.toFixed(2.2) + " km";
 			}
 			var selectButton = Ti.UI.createButton({
@@ -684,7 +694,6 @@ function updateTable(diffArray){
 //====================================================================================================================================
 
 
-
 //====================================================================================================================================
 //------------------------------------------------------------------------------------------------------------------------------------
 //====================================================================================================================================
@@ -692,7 +701,7 @@ function updateTable(diffArray){
 //Set stopsArray
 function setStops(){
 	shuttleLocRequest();
-	
+
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
 			Ti.API.info("got to onload in setstops");
@@ -754,8 +763,11 @@ function setStops(){
 			
 			updateRouteEstimates();
 
+
 			setWebViewListener();
 			setTableClickListener();
+
+
 		}
 	});
 	xhr.open("GET", url2);
@@ -832,17 +844,17 @@ function getUserGPS(){
 }
 
 function initProperties(){
-	var tmp = Ti.App.Properties.getString('showExpress', ['true']);
+	var tmp = Ti.App.Properties.getString('showExpress', [true]);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('showSouthCentral', ['true']);
+	tmp = Ti.App.Properties.getString('showSouthCentral', [true]);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('showNorthCentral', ['true']);
+	tmp = Ti.App.Properties.getString('showNorthCentral', [true]);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('showCentralCampus', ['true']);
+	tmp = Ti.App.Properties.getString('showCentralCampus', [true]);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('gpsEnabled', ['true']);
+	tmp = Ti.App.Properties.getString('gpsEnabled', [true]);
 	props.push(tmp);
-	tmp = Ti.App.Properties.getString('unitMi', ['true']);
+	tmp = Ti.App.Properties.getString('unitMi', [true]);
 	props.push(tmp);
 }
 

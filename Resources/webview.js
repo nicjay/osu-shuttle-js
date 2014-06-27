@@ -50,7 +50,7 @@
 		
 		
 	Ti.App.addEventListener('abox', function(event){
-		//Ti.API.info('Switch value: ' + event.data[0]);
+		Ti.API.info('aSwitch value: ' + event.data[0]);
 		enableNorth = event.data[0]; 
 		updateMap();
 		ShowNorth();
@@ -58,7 +58,7 @@
 		});
 		
 	Ti.App.addEventListener('bbox', function(event){
-		//Ti.API.info('Switch value: ' + event.data[0]);
+		Ti.API.info('bSwitch value: ' + event.data[0]);
 		enableSouth = event.data[0]; 
 		updateMap();
 		ShowSouth();
@@ -67,7 +67,7 @@
 		
 
 	Ti.App.addEventListener('cbox', function(event){
-		//Ti.API.info('Switch value: ' + event.data[0]);
+		Ti.API.info('cSwitch value: ' + event.data[0]);
 		enableExpress = event.data[0]; 
 		updateMap();
 		ShowExpress();
@@ -386,7 +386,7 @@
       			
    				//test
    				if (enableExpress == true){
-	          		
+	          		Ti.API.info("express enabled!");
 	          		ExprRouteGraphic.show();
 	          		
 	          		arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
@@ -396,6 +396,7 @@
 	          		
 	      		}
 	      		else{
+	      			Ti.API.info("express disabled!");
 	      			ExprRouteGraphic.hide();
 	      			
 	      			arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
