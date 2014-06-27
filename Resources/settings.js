@@ -48,6 +48,7 @@ var closeSettingsButton = Ti.UI.createButton({
 
 closeSettingsButton.addEventListener('click', function(e){
 	setProperties();
+	view0 = null;
 	mainSettingsWin.close();
 });
 

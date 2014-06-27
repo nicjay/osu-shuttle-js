@@ -286,6 +286,7 @@ localWebview.addEventListener('load',function(){
 //-------------------------------------------------------------------
 //===================================================================
 Ti.App.addEventListener('settingsChanged', function(e){
+	settingsWin = null;
 	props = e.data;
 	for(var i = 0, len = props.length; i < len; i++){
 		if(props[i] != -1){
