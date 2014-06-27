@@ -270,7 +270,10 @@ localWebview.visible = false;
 
 webviewContainer.add(activityIndicator);
 
-Ti.App.addEventListener('doneLoading', function(e){
+
+//Ti.App.addEventListener('doneLoading', function(e){
+	
+setTimeout(function(){
 	activityIndicator.visible = false;
 	webviewContainer.remove(activityIndicator);
 	
@@ -281,7 +284,11 @@ Ti.App.addEventListener('doneLoading', function(e){
 	
 	Ti.API.info("recieved doneLoading event");
 	
-});
+}, 5000);
+	
+	
+	
+//});
 
 
 
@@ -293,6 +300,7 @@ setStops();
 
 settingsButton.addEventListener('click', function(e){
 	settingsWin = settings.createSettingsWin(props);
+	Ti.API.info(settingsWin);
 	settingsWin.open();
 });
 
@@ -770,6 +778,9 @@ function updateTableGPSOn(diffArray){
 	}
 	routeEstTable.setData(nearestArray);
 	Ti.API.info("Set Table in updateTableGPSOn");
+	
+		Ti.API.info("firing doneloading event");
+	Ti.App.fireEvent('doneLoading');
 }
 
 
