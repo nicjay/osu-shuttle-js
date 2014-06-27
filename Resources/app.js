@@ -265,7 +265,7 @@ win.add(webviewContainer);
 win.add(bottomMenu);
 win.open();
 
-
+//Hide elements temporarily for load indicator
 zoomButtonView.visible = false;
 selectedStopView.visible = false;
 bottomMenu.visible = false;
@@ -273,14 +273,7 @@ localWebview.visible = false;
 
 webviewContainer.add(activityIndicator);
 
-
-
-//Ti.App.addEventListener('doneLoading', function(e){
-	
-	
-//setTimeout(function(){
-
-
+//Show elements when done loading
 Ti.App.addEventListener('doneLoading', function(e){
 
 	activityIndicator.visible = false;
@@ -293,13 +286,14 @@ Ti.App.addEventListener('doneLoading', function(e){
 	
 	Ti.API.info("recieved doneLoading event");
 });
-//}, 5000);
-	setStops();
-	
-	
-//});
 
 
+//Make sure map.html is loaded into the window before beginning
+localWebview.addEventListener('load',function(){
+		setStops();
+});
+
+	
 
 
 //===================================================================
@@ -332,7 +326,9 @@ function setWebViewListener(){
 	
 	//Event listener to start when webview loads
 	var lastGPS;
-	localWebview.addEventListener('load',function(){
+//	localWebview.addEventListener('load',function(){
+	
+		
 		var gpsCounter = getGPSInterval, nearestCounter = 0;
 		var stops = [];
 		//Start the create map event
@@ -413,10 +409,10 @@ function setWebViewListener(){
 			}
 		}, updateInterval);
 		
-		
 	
-	});	
+//	});	
 	
+	Ti.API.info("end of webview listener function");
 }
 
 
