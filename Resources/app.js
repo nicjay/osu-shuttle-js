@@ -422,8 +422,8 @@ function setWebViewListener(){
 
 			Ti.App.fireEvent("updatemap", {data: [shuttleData]});
 			
-			for(var i = 0; i < stopsArray.length; i++){
-				if (stopsArray[0] == UstopNameLabel.getText()){
+			for(var i = 0, len = stopsArray.length; i < len; i++){
+				if (stopsArray[i] == UstopNameLabel.getText()){
 					updateSelectedTimes(stopsArray[i][3],stopsArray[i][4],stopsArray[i][5],stopsArray[i][6]);
 				}
 			}
@@ -537,7 +537,7 @@ function findNearest(userLocation){
 	diffArray = [];
 	
 	//Calculate differences between stops and UserGPS
-	for(var i = 0; i < stopsArray.length; i++){
+	for(var i = 0, len = stopsArray.length; i < len; i++){
 		var tmpStop = stopsArray[i];
 		var latitude = tmpStop[1];
 		var longitude = tmpStop[2];
@@ -612,7 +612,7 @@ function updateTable(diffArray){
 		}
 		
 	} else {
-		for(var j = 0; j < diffArray.length; j++){
+		for(var j = 0, len = diffArray.length; j < len; j++){
 			var index = diffArray[j][1], distance = diffArray[j][0];
 		   	
 			var tableRow = Ti.UI.createTableViewRow({
@@ -655,9 +655,7 @@ function updateTable(diffArray){
 				top: 10,
 			});
 			
-			if(props[5] == 'true' || props[5]){
-				distanceLabel.text = distance.toFixed(2.2) + " mi";
-			} else {
+			if(props[5] != 'true' || !props[5]){
 				distanceLabel.text = distance.toFixed(2.2) + " km";
 			}
 			var selectButton = Ti.UI.createButton({
@@ -718,14 +716,14 @@ function setStops(){
 			//Retrieve initial route info
 			var routes = JSON.parse(this.responseText);
 			var routeArray = [], landmarkArray = [], route, data;
-			for(var i = 0; i < routes.length; i++){
+			for(var i = 0, routesLen = routes.length; i < routesLen; i++){
 				route = routes[i];
 				routeArray = [];
 				
 				routeNames[i] = route.Description;
 
 		
-				for (var j = 0; j < route.Landmarks.length; j++){
+				for (var j = 0, landmarksLen = route.Landmarks.length; j < landmarksLen; j++){
 					landmarkArray = [];
 					data = route.Landmarks[j];
 					landmarkArray.push(data.Label, data.Latitude, data.Longitude);
@@ -735,13 +733,13 @@ function setStops(){
 			}
 	
 			//Sort and remove duplicates. Add flags for which shuttles stop at each stop.
-			for(var k = 0; k < routesArray.length; k++){
-				for(var l = 0; l < routesArray[k].length; l++){
+			for(var k = 0, len = routesArray.length; k < len; k++){
+				for(var l = 0, len1 = routesArray[k].length; l < len1; l++){
 					var cur = routesArray[k][l];
 					var skip = 0;
 					
 					
-					for(var i = 0; i < stopsArray.length; i++){
+					for(var i = 0, len2 = stopsArray.length; i < len2; i++){
 						if(stopsArray[i][0] == cur[0]){
 							skip = 1;
 							break;
@@ -784,10 +782,10 @@ function updateRouteEstimates(){
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
 			var shuttles = JSON.parse(this.responseText);
-			for(var i = 0; i < shuttles.length; i++){
+			for(var i = 0, shuttlesLen = shuttles.length; i < shuttlesLen; i++){
 				var shuttle = shuttles[i];
-				for(var j = 0; j < stopsArray.length; j++){
-					for(var k = 0; k < shuttle.RouteStops.length; k++){
+				for(var j = 0, stopsArrayLen = stopsArray.length; j < stopsArrayLen; j++){
+					for(var k = 0, routeStopsLen = shuttle.RouteStops.length; k < routeStopsLen; k++){
 						if(shuttle.RouteStops[k].Description == stopsArray[j][0]){
 							stopsArray[j][i+3] = shuttle.RouteStops[k].Estimates[0].SecondsToStop;
 						}
@@ -801,7 +799,7 @@ function updateRouteEstimates(){
 		onerror: function(e){
 			Ti.API.info("UPDATE ROUTE EST ERROR: "+e);
 		},
-		timeout : 5000
+		timeout : 3000
 	});
 	xhr.open("GET", url);
 	xhr.send();
