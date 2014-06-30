@@ -242,6 +242,16 @@ var activityIndicator = Ti.UI.createActivityIndicator({
 	visible: true
 });
 
+var loadBar = Ti.UI.createProgressBar({
+	top: '60%',
+	min: 0,
+	max: 4,
+	value: 0,
+	height: '10%',
+	width: '80%',
+	style: 3
+});
+
 
 
 win.add(selectedStopView);
@@ -257,6 +267,8 @@ bottomMenu.visible = false;
 localWebview.visible = false;
 
 webviewContainer.add(activityIndicator);
+webviewContainer.add(loadBar);
+loadBar.show();
 
 //Show elements when done loading
 Ti.App.addEventListener('doneLoading', function(e){
@@ -264,6 +276,8 @@ Ti.App.addEventListener('doneLoading', function(e){
 
 	activityIndicator.visible = false;
 	webviewContainer.remove(activityIndicator);
+	webviewContainer.remove(loadBar);
+	
 	zoomButtonView.visible = true;
 	selectedStopView.visible = true;
 	bottomMenu.visible = true;
@@ -456,6 +470,7 @@ function setTableClickListener(){
 		}
 	});
 	
+	loadBar.setValue(loadBar.getValue()+1);
 }
 
 //===================================================================
@@ -666,6 +681,8 @@ function updateTable(diffArray){
 		}
 	}
 	
+	loadBar.setValue(loadBar.getValue()+1);
+	
 	routeEstTable.setData(nearestArray);
 
 	//Ti.API.info("Set Table in updateTable");
@@ -747,6 +764,7 @@ function setStops(){
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
 			
 	
+			loadBar.setValue(loadBar.getValue()+1);
 			
 			updateRouteEstimates();
 
@@ -776,6 +794,9 @@ function updateRouteEstimates(){
 					}
 				}
 			}
+			
+		loadBar.setValue(loadBar.getValue()+1);
+		
 		},
 		onerror: function(e){
 			Ti.API.info("UPDATE ROUTE EST ERROR: "+e);
