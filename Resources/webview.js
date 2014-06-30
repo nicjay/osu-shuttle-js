@@ -1,6 +1,7 @@
   	
 //===================================================================
   	//Set up variables and event listeners
+ 
   	var data, UserGPS, map, pt, symbol;
   	var selectStop;
   	var GS1, GS2, GS3;
@@ -30,11 +31,12 @@
 		UserGPS = event.data[1]; //Holds user GPS data
     	props = event.data[2];
     	createMap();
-    	
+    	//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
     	event.source.removeEventListener("startmap", arguments.callee);
     });
     
     Ti.App.addEventListener('centerMap', function(event){
+		//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
 		var pointArray = [event.latitude, event.longitude];
 		centerMap(pointArray);
     });
@@ -85,7 +87,6 @@
     		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/Deferred", "dojo/_base/Color",
     		"dojo/domReady!"], 
     		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
-      			var clickProcessing = false;
       			
       			map = new Map("mapDiv", {
         			center: [-123.280, 44.562],
@@ -141,14 +142,6 @@
        
         		//When the map loads, load in user and stops graphics
         		map.on("load", loadUserAndStops);
-        		
-        		
-        		
-        		/*map.on("click", myClickHandler);
-  
-  				function myClickHandler(evt) {
-    				Ti.API.info("Map Clicked!!!");
-  				}*/
         		
         		
         		function loadUserAndStops(){
@@ -289,10 +282,7 @@
           					}
           				}
           			}
-          			
-          			
-          			
-          			
+          				
         		}
         		
         		
@@ -538,6 +528,5 @@
    				
         	});
        }
-     
 //===================================================================
 

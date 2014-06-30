@@ -39,17 +39,25 @@ function createWindow(props){
 		height: 56,
 		backgroundGradient: {
 			type:'linear',
-			colors:[{color:'#2370a1', position:0.0},{color:'#09557c', position: 1.0}]
+			//colors:[{color:'#2370a1', position:0.0},{color:'#09557c', position: 1.0}]
+			colors:[{color:'#36588D', position:0.0},{color:'#1F4F9B', position: 1.0}]
 		},
 		bottom: 10,
 	});
 	
-	settingsLabel = Ti.UI.createLabel({
+	view0.add(Ti.UI.createLabel({
 		font:{fontSize:22},
 		color: '#FFFFFF',
 		text: 'Settings',
 		left: 10,
-	});
+	}));
+	
+	/*settingsLabel = Ti.UI.createLabel({
+		font:{fontSize:22},
+		color: '#FFFFFF',
+		text: 'Settings',
+		left: 10,
+	});*/
 	
 	closeSettingsButton = Ti.UI.createButton({
 		backgroundImage: 'GeneralUI/settingsGoBack.png',
@@ -64,21 +72,22 @@ function createWindow(props){
 		destroyWindow();
 	});
 	
-	view0.add(settingsLabel);
+	//view0.add(settingsLabel);
 	view0.add(closeSettingsButton);
 	
 	//===========================================================================================
 	
 	view1 = Ti.UI.createView({
-		height: Ti.UI.SIZE,
 		layout: 'horizontal',
+		height: Ti.UI.SIZE,
 	});
 	
-	routeToggleLabel = Ti.UI.createLabel({
+	var routeToggleLabel = Ti.UI.createLabel({
 		font: {fontSize: 20},
 		color: '#FFFFFF',
 		text: "Shuttle/Route Display",
 		width: '100%',
+		left: 10,
 	});
 	
 	routeToggleA = Ti.UI.createSwitch({
@@ -231,6 +240,8 @@ function createWindow(props){
 }
 
 function destroyWindow(){
+	var pre = Ti.Platform.getAvailableMemory();
+	Ti.API.info("PreDestroy : " + pre);
 	setProperties();
 	
 	view0 = null; settingsLabel = null; closeSettingsButton = null; view1 = null; routeToggleLabel = null; view2 = null; gpsToggleLabel = null; gpsToggleButton = null; view3 = null; feedbackLabel = null;
@@ -239,6 +250,10 @@ function destroyWindow(){
 	
 	mainSettingsWin.close();
 	mainSettingsWin = null;
+	var post = Ti.Platform.getAvailableMemory();
+	Ti.API.info("PostDestroy : " + post);
+	var total = post-pre;
+	Ti.API.info("DIFF : " + total);
 }
 
 function setProperties(){
