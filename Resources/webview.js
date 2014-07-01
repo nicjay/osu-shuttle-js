@@ -33,6 +33,7 @@
     	createMap();
     	//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
     	event.source.removeEventListener("startmap", arguments.callee);
+    	//event.source.removeEventListener("startmap", arguments.callee);
     });
     
     Ti.App.addEventListener('centerMap', function(event){
@@ -82,11 +83,10 @@
 
     function createMap(){
     	require([
-    		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/Deferred", "dojo/_base/Color",
-    		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
+    		"esri/map", "esri/graphic", "dojo/_base/array", 
+    		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol"], 
+    		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol) {
+      			var clickProcessing = false;
       			
       			map = new Map("mapDiv", {
         			center: [-123.280, 44.562],
@@ -101,13 +101,20 @@
         			showAttribution: false,
        			});
        		
+   				var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
    				
-   				var UserMarkerSymbol = new esri.symbol.PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
+
+
    				//var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
         		//UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
         		//UserMarkerSymbol.setOutline(null);
         		
-        		var StopMarkerSymbol = new esri.symbol.PictureMarkerSymbol('GeneralUI/stopSign.png', 20, 20);
+        		
+        		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/stopSign.png', 20, 20);
+        		
+        		
+        		
+        		
         		//Cusom picture example for marker
         		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
         			
@@ -142,7 +149,6 @@
        
         		//When the map loads, load in user and stops graphics
         		map.on("load", loadUserAndStops);
-        		
         		
         		function loadUserAndStops(){
         			
@@ -283,13 +289,11 @@
           				}
           			}
           				
+          		}	
+          			
         		}
         		
-        		
-        		
-
-        		
-        	});
+        	);
        }
        
        
@@ -298,10 +302,8 @@
        function updateMap(){
        	require([
     		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color", "dojo/Deferred",
-    		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Graphic, arrayUtils, domStyle, Color) {
+    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
+    		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
 					
 		
 					if(map.getLayer(shuttleLayer) != null){
@@ -388,24 +390,15 @@
        }
        
        
-       
        function ShowExpress(){
-    	require([
-    		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color",
-    		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
-      			
-   				//test
+    	require(["dojo/_base/array"], 
+    		function(arrayUtils) {
    				if (enableExpress == true){
 	          		ExprRouteGraphic.show();
 	          		
 	          		arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
         				StopGraphic.show();
-          			});
-	          		
-	          		
+          			});	
 	      		}
 	      		else{
 	      			ExprRouteGraphic.hide();
@@ -415,20 +408,13 @@
           			});
 	      			
 	      		}
-   				
-   				
-   					
-   				
+	
         	});
        }
        
        function ShowNorth(){
-    	require([
-    		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
-    		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
+    	require(["dojo/_base/array"], 
+    		function(arrayUtils) {
    				if (enableNorth == true){
 	      			
 	          		NorthRouteGraphic.show();
@@ -445,20 +431,12 @@
           			});
 	      			
 	      		}
-   			
-   				
+
         	});
        }
        function ShowSouth(){
-    	require([
-    		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
-    		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, arrayUtils, domStyle, Color) {
-      	
-      			
-   				//test
+    	require(["dojo/_base/array"], 
+    		function(arrayUtils) {
    				if (enableSouth == true){
 
 	          		SouthRouteGraphic.show();
@@ -484,26 +462,18 @@
        
        function centerMap(data){
        	 require([
-    		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic", "esri/symbols/PictureMarkerSymbol",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
-    		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, PictureMarkerSymbol, arrayUtils, domStyle, Color) {
+    		"esri/map", "esri/geometry/Point", "esri/graphic", "esri/symbols/PictureMarkerSymbol"
+    		], 
+    		function(Map, Point, Graphic, PictureMarkerSymbol) {
+    			
       			var centerPoint = new esri.geometry.Point({
 					latitude: data[0],
 					longitude: data[1]
 				});
       			
-      			
       			map.centerAt(centerPoint);
-      			
-
 				map.graphics.remove(selectStop);
-				
-
       			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/stopSignSelected.png', 45, 45);
-
-
       			selectStop = new Graphic(centerPoint, selectStopSymbol);
       			map.graphics.add(selectStop);		
    				
@@ -513,19 +483,15 @@
        
        function zoomMap(zoom){
        	 require([
-    		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/graphic", "esri/symbols/PictureMarkerSymbol",
-    		"dojo/_base/array", "dojo/dom-style", "dojox/widget/ColorPicker", "dojo/_base/Color","dojo/Deferred",
-    		"dojo/domReady!"], 
-    		function(Map, Point, SimpleMarkerSymbol, SimpleLineSymbol, Graphic, PictureMarkerSymbol, arrayUtils, domStyle, Color) {
+    		"esri/map"], 
+    		function(Map) {
       		
       			if (zoom == true){
 					map.setZoom(map.getZoom()+1);
       			}
       			else if (zoom == false){
       				map.setZoom(map.getZoom()-1);
-      			}
-   				
+      			}	
         	});
        }
 //===================================================================
