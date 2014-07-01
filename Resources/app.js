@@ -506,9 +506,12 @@ function setTableClickListener(){
 		}
 	});
 	Ti.API.info("setTableClick");
-	if(loadBar != null){
+	//if(loadBar != null){
 		loadBar.setValue(loadBar.getValue()+1);
-	}
+		if (loadBar.getValue() == loarBar.getMax()){
+			Ti.App.fireevent("doneLoading");	
+		}
+	//}
 	//Ti.API.info("Load tblClick: " + loadBar.getValue());
 	info("END setTableClickListener");
 }
@@ -589,9 +592,11 @@ function findNearest(userLocation){
 function updateTable(diffArray){
 	Ti.API.info("FUNC: updateTable");
 	var nearestArray = [];
-	if(loadBar != null){
+	/*if(loadBar != null){
 		loadBar.setValue(loadBar.getValue()+1);
-	}
+	}*/
+	
+		
 	var selectedRowScheme = ['#FFA94C', '#FFA94C', 'GeneralUI/stopSelectButton3.png'];
 	var normalRowScheme = ['#FFFFFF', '#C0C0C0', 'GeneralUI/stopSelectButton.png'];
 	var currentScheme;
@@ -740,17 +745,22 @@ function updateTable(diffArray){
 		}
 	}
 	
-	if(loadBar != null){
-		loadBar.setValue(loadBar.getValue()+1);
-	}
+	
+	
 	//Ti.API.info("Load updateTbl : " + loadBar.getValue());
 	//Ti.API.info("updateTable");
 	routeEstTable.setData(nearestArray);
 
 	//Ti.API.info("Set Table in updateTable");
 	
-	if(initialLaunch){
-		Ti.App.fireEvent('doneLoading');
+	if(initialLaunch){	
+		if(loadBar != null){
+			loadBar.setValue(loadBar.getValue()+1);
+		}
+		
+		if (loadBar.getValue() == loarBar.getMax()){
+			Ti.App.fireEvent('doneLoading');	
+		}
 	}
 }
 
@@ -824,6 +834,8 @@ function setStops(){
 			if(loadBar != null){
 				loadBar.setValue(loadBar.getValue()+1);
 			}
+							
+
 			//Ti.API.info("Load setStops: " + loadBar.getValue());
 			//Ti.API.info("setStops");
 			//stopTimer();
@@ -856,6 +868,12 @@ function updateRouteEstimates(){
 			
 		//Ti.API.info("Load routeESt : " + loadBar.getValue());
 		//Ti.API.info("UpdateRouteEstimates");
+	loadBar.setValue(loadBar.getValue()+1);
+	if (loadBar.getValue() == loarBar.getMax()){
+		Ti.App.fireEvent('doneLoading');	
+	}
+		
+		
 		},
 		onerror: function(e){
 			Ti.API.info("UPDATE ROUTE EST ERROR: "+e);
