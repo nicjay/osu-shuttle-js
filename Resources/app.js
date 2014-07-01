@@ -47,7 +47,14 @@ var toggleMenuOn = false;
 var loadedHTTP = false;
 
 //Array of nearest stops
-var stopsArray = [], diffArray = [];
+var stopsArray = [];
+/*var stopsArray = new Array(20);
+for (var i = 0; i < stopsArray.length; i++){
+	stopsArray[i] = new Array(8);
+	
+}*/
+
+var diffArray = [];
 //var nearestArray = [];
 
 //Variables and function for shuttle coordinates data
@@ -816,7 +823,9 @@ function setStops(){
 			//Ti.API.info("Load setStops: " + loadBar.getValue());
 			//Ti.API.info("setStops");
 			//stopTimer();
+			
 			updateRouteEstimates();
+			
 			info("STOP setStops");
 		}
 	});
