@@ -380,7 +380,6 @@ win.addEventListener('android:back',function(e) {
 
 function setWebViewListener(){
 	//Ti.API.info("FUNC: setWebViewListener");
-	info("START setWebViewListener");
 	//localWebview.addEventListener('load',function(){
 	
 	if(props[4]){
@@ -400,12 +399,10 @@ function setWebViewListener(){
 		intervalUpdate();
 		setInterval(intervalUpdate, updateInterval);
 	}, 1000);
-	info("STOP setWebViewListener");
 }
 
 var gpsCounter = getGPSInterval;
 function intervalUpdate(){
-	info("START intervalUpdate");
 	//Ti.API.info("FUNC: intervalUpdate");
 	var lastGPS; 
 	var shuttleData = shuttleLocRequest();
@@ -443,7 +440,6 @@ function intervalUpdate(){
 			updateSelectedTimes(stopsArray[i][3],stopsArray[i][4],stopsArray[i][5],stopsArray[i][6]);
 		}
 	}
-	info("STOP intervalUpdate");
 }
 
 
@@ -477,10 +473,9 @@ function intervalUpdate(){
 }*/
 var lastClickedRow, lastClickedChildren, lastClickedStopName;
 function setTableClickListener(){
-	info("START setTableClickListener");
 	routeEstTable.addEventListener('click', function(e){
 		if(e.source == '[object Button]'){
-			info("TableClicked");
+			info("TableClicked, lastClickedRow: " + lastClickedRow + ", lastClickedStopName : " + lastClickedStopName);
 			if(lastClickedRow != null){
 				lastClickedChildren[0].color = '#FFFFFF';
 				lastClickedChildren[1].color = '#C0C0C0';
@@ -517,7 +512,6 @@ function setTableClickListener(){
 
 //Updates selected stop text
 function updateSelected(stop){	
-	Ti.API.info("FUNC: updateSelected");
 	UstopNameLabel.setText(stop[0]);
 	//distanceLabel.setText()
 	updateSelectedTimes(stop[3], stop[4], stop[5], stop[6]);
@@ -586,7 +580,6 @@ function findNearest(userLocation){
 }
 	
 function updateTable(diffArray){
-	info("-XXX--XXX---XXXX---XXXX-xxxx-x-x-x-XXXX--START updateTable");
 	Ti.API.info("FUNC: updateTable");
 	var nearestArray = [];
 	if(loadBar != null){
@@ -649,7 +642,14 @@ function updateTable(diffArray){
 	   		
 	   		tableRow.add(rowViewSeg1);
 	   		tableRow.add(rowViewSeg2);
-	   		nearestArray.push(tableRow);			
+	   		nearestArray.push(tableRow);
+	   		
+	   		if(lastClickedStopName == stopsArray[j][0]){
+	   			lastClickedRow = selectButton;
+	   			var childViews = tableRow.getChildren();
+				childViews = childViews[0].getChildren();
+				lastClickedChildren = childViews;
+	   		}		
 		}
 		
 	} else {
@@ -723,6 +723,13 @@ function updateTable(diffArray){
 	   		tableRow.add(rowViewSeg1);
 	   		tableRow.add(rowViewSeg2);
 	   		nearestArray.push(tableRow);
+	   		
+	   		if(lastClickedStopName == stopsArray[j][0]){
+	   			lastClickedRow = selectButton;
+	   			var childViews = tableRow.getChildren();
+				childViews = childViews[0].getChildren();
+				lastClickedChildren = childViews;
+	   		}
 		}
 	}
 	
@@ -738,7 +745,6 @@ function updateTable(diffArray){
 	if(initialLaunch){
 		Ti.App.fireEvent('doneLoading');
 	}
-	info("---STOP updateTable");
 }
 
 //====================================================================================================================================
@@ -752,8 +758,6 @@ function updateTable(diffArray){
 
 //Set stopsArray
 function setStops(){
-	info("START setStops");
-	Ti.API.info("FUNC: setStops");
 
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
@@ -817,7 +821,6 @@ function setStops(){
 			//Ti.API.info("setStops");
 			//stopTimer();
 			updateRouteEstimates();
-			info("STOP setStops");
 		}
 	});
 	xhr.open("GET", url[1]);
@@ -826,7 +829,6 @@ function setStops(){
 	
 }
 function updateRouteEstimates(){
-	info("START updateRouteEstimates");
 	//Ti.API.info("FUNC: updateRouteEstimates");
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
@@ -844,7 +846,6 @@ function updateRouteEstimates(){
 			
 		//Ti.API.info("Load routeESt : " + loadBar.getValue());
 		//Ti.API.info("UpdateRouteEstimates");
-			info("STOP updateRouteEstimates");
 		},
 		onerror: function(e){
 			Ti.API.info("UPDATE ROUTE EST ERROR: "+e);
@@ -855,8 +856,6 @@ function updateRouteEstimates(){
 	xhr.send();
 }
 function shuttleLocRequest(){
-	info("START shuttleLocRequest");
-	Ti.API.info("FUNC: shuttleLocRequest");
 	var shuttleData = [];
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
@@ -871,7 +870,6 @@ function shuttleLocRequest(){
 				var loc = shuttleLocs[x];
 				shuttleData.push([loc.RouteID, loc.Latitude, loc.Longitude, loc.Heading]);
 			}
-			info("STOP shuttleLocRequest");
 			return shuttleData;
 		},
 		onerror : function(e) {

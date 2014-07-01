@@ -21,7 +21,6 @@ var enabledRouteIDs = [4, 5];
 
 
 Ti.App.addEventListener('updatemap', function(event){
-	Ti.API.info("THIS IS THE ID: " + event.id);
 	switch(event.id){
 		case 0:		//createMap(userGPS, props)
 			Ti.API.info("------------------EVENT: createMap");
