@@ -244,9 +244,9 @@ function destroyWindow(){
 	Ti.API.info("PreDestroy : " + pre);
 	setProperties();
 	
-	view0 = null; settingsLabel = null; closeSettingsButton = null; view1 = null; routeToggleLabel = null; view2 = null; gpsToggleLabel = null; gpsToggleButton = null; view3 = null; feedbackLabel = null;
+	/*view0 = null; settingsLabel = null; closeSettingsButton = null; view1 = null; routeToggleLabel = null; view2 = null; gpsToggleLabel = null; gpsToggleButton = null; view3 = null; feedbackLabel = null;
 	feedbackEmail = null; feedbackSendButton = null; view4 = null; unitLabel = null; unitToggle;
-	routeToggleA = null; routeToggleB = null; routeToggleC = null; routeToggleD = null;
+	routeToggleA = null; routeToggleB = null; routeToggleC = null; routeToggleD = null;*/
 	
 	mainSettingsWin.close();
 	mainSettingsWin = null;

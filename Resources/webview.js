@@ -1,498 +1,430 @@
-  	
+
 //===================================================================
-  	//Set up variables and event listeners
+//Set up variables and event listeners
  
-  	var data, UserGPS, map, pt, symbol;
-  	var selectStop;
-  	var GS1, GS2, GS3;
-  	var shuttleData;
-  	var heading = new Array(3);
-  	var props;
-  	
-  	var ExprRouteGraphic;
-  	var NorthRouteGraphic;
-  	var SouthRouteGraphic;
-  	
-  	var ExprStopGraphics = [];
-  	var NorthStopGraphics = [];
-  	var SouthStopGraphics = [];
-  	
-  	var enableExpress = true;
-  	var enableNorth = true;
-  	var enableSouth = true;
-  	
-  	//TODO: expand to set this array
-  	var enabledRouteIDs = [4, 5];
+var data, UserGPS, map, pt, symbol;
+var selectStop;
+var GS1, GS2, GS3;
+var shuttleData;
+var heading = new Array(3);
+var props;
+
+var ExprRouteGraphic;
+var NorthRouteGraphic;
+var SouthRouteGraphic;
+
+var ExprStopGraphics = [];
+var NorthStopGraphics = [];
+var SouthStopGraphics = [];
+
+var enableExpress = true;
+var enableNorth = true;
+var enableSouth = true;
+
+//TODO: expand to set this array
+var enabledRouteIDs = [4, 5];
 
   
-  	//When this event occurs, fill up variables and create map.
-   	Ti.App.addEventListener("startmap", function (event) {
-  		data = event.data[0]; //Hold stop info -- not used currently
-		UserGPS = event.data[1]; //Holds user GPS data
-    	props = event.data[2];
-    	createMap();
-    	//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
-    	event.source.removeEventListener("startmap", arguments.callee);
-    	//event.source.removeEventListener("startmap", arguments.callee);
-    });
-    
-    Ti.App.addEventListener('centerMap', function(event){
-		//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
-		var pointArray = [event.latitude, event.longitude];
-		centerMap(pointArray);
-    });
-    
-    Ti.App.addEventListener('zoomMap', function(event){
-		zoomMap(event.data[0]);
-    });
-    
-    //When this event occurs, fill up shuttle coords and update map.
-    Ti.App.addEventListener('updatemap', function(event){
-    	shuttleData = [];
-		shuttleData = event.data[0];
-		updateMap();
-		});
-		
-		
-	Ti.App.addEventListener('abox', function(event){
-		//Ti.API.info('aSwitch value: ' + event.data[0]);
-		enableNorth = event.data[0]; 
-		updateMap();
-		ShowNorth();
-		
-		});
-		
-	Ti.App.addEventListener('bbox', function(event){
-		//Ti.API.info('bSwitch value: ' + event.data[0]);
-		enableSouth = event.data[0]; 
-		updateMap();
-		ShowSouth();
-		
-		});
-		
+//When this event occurs, fill up variables and create map.
+Ti.App.addEventListener("startmap", function (event) {
+	data = event.data[0]; //Hold stop info -- not used currently
+	UserGPS = event.data[1]; //Holds user GPS data
+	props = event.data[2];
+	createMap();
+	//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
+	event.source.removeEventListener("startmap", arguments.callee);
+	//event.source.removeEventListener("startmap", arguments.callee);
+});
 
-	Ti.App.addEventListener('cbox', function(event){
-		//Ti.API.info('cSwitch value: ' + event.data[0]);
-		enableExpress = event.data[0]; 
-		updateMap();
-		ShowExpress();
-		});
+Ti.App.addEventListener('centerMap', function(event){
+	//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
+	var pointArray = [event.latitude, event.longitude];
+	centerMap(pointArray);
+});
+
+Ti.App.addEventListener('zoomMap', function(event){
+	zoomMap(event.data[0]);
+});
+
+//When this event occurs, fill up shuttle coords and update map.
+Ti.App.addEventListener('updatemap', function(event){
+	shuttleData = [];
+	shuttleData = event.data[0];
+	updateMap();
+	});
+	
+	
+Ti.App.addEventListener('abox', function(event){
+	//Ti.API.info('aSwitch value: ' + event.data[0]);
+	enableNorth = event.data[0]; 
+	updateMap();
+	ShowNorth();
+	
+	});
+	
+Ti.App.addEventListener('bbox', function(event){
+	//Ti.API.info('bSwitch value: ' + event.data[0]);
+	enableSouth = event.data[0]; 
+	updateMap();
+	ShowSouth();
+	
+	});
+	
+
+Ti.App.addEventListener('cbox', function(event){
+	//Ti.API.info('cSwitch value: ' + event.data[0]);
+	enableExpress = event.data[0]; 
+	updateMap();
+	ShowExpress();
+	});
 	//===================================================================	
 
 //===================================================================
 
-    function createMap(){
-    	require([
-    		"esri/map", "esri/graphic", "dojo/_base/array", 
-    		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol"], 
-    		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol) {
-      			var clickProcessing = false;
+function createMap(){
+	require([
+		"esri/map", "esri/graphic", "dojo/_base/array", 
+		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol"], 
+		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol) {
+  			var clickProcessing = false;
+  			
+  			map = new Map("mapDiv", {
+    			center: [-123.280, 44.562],
+    			zoom: 15,
+    			basemap: "osm",
+    			minZoom: 12,
+    			slider: false,
+    			showAttribution:false,
+    			logo: false,
+    			displayGraphicsOnPan: true,
+    			optimizePanAnimation: true,
+    			showAttribution: false,
+   			});
+   		
+			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
+			
+
+
+			//var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
+    		//UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
+    		//UserMarkerSymbol.setOutline(null);
+    		
+    		
+    		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/stopSign.png', 20, 20);
+    		
+    		
+    		
+    		
+    		//Cusom picture example for marker
+    		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
+    			
+    		//Hardcoded stops for one route
+    		var StopPtsSouthCentral = [
+				[44.55832, -123.28162, 0],
+				[44.560524, -123.282411, 1],
+				[44.56344, -123.27964, 2],
+				[44.564578, -123.279934, 3],
+				[44.56675, -123.27719, 4 ],
+				[44.56673, -123.273, 5],
+				[44.55901, -123.27962, 6]];
+				
+    		var StopPtsNorthCentral = [
+                [44.564578, -123.279934, 3],
+                [44.56344, -123.27964, 2],
+                [44.56458, -123.28654, 7],
+                [44.56785, -123.28934, 8],
+                [44.56792, -123.28146, 9],
+                [44.56675, -123.27719, 4],
+                [44.56673, -123.273, 5],
+                [44.562588, -123.274155, 10]];
+                
+    		var StopPtsExpress = [
+                [44.564578,-123.279934, 3],
+                [44.568107, -123.279461, 11],
+                [44.55901, -123.27962, 6],
+                [44.55832, -123.28162, 0],
+                [44.560524, -123.282411, 1],
+                [44.56344, -123.27964, 2]];
+    
+   
+    		//When the map loads, load in user and stops graphics
+    		map.on("load", loadUserAndStops);
+    		
+    		function loadUserAndStops(){
+    			var ExpressRoute = [
+		        		[-123.279941,44.567899],
+	        			[-123.279925,44.568082],
+	        			[-123.278972,44.568080],
+	        			[-123.278948,44.567910],
+	        			[-123.278970,44.567910],
+	        			[-123.279941,44.567899],
+	        			[-123.279925,44.566813],
+	        			[-123.279927,44.564193],
+	        			[-123.279619,44.563330],
+	        			[-123.279600,44.562070],
+	        			[-123.279630,44.561896],
+	        			[-123.279624,44.560423],
+	        			[-123.279691,44.560283],
+	        			[-123.279697,44.558999],
+	        			[-123.280711,44.558405],
+	        			[-123.281620,44.558320],
+	        			[-123.282811,44.558928],
+	        			[-123.283133,44.559555],
+	        			[-123.282934,44.560071],
+	        			[-123.282411,44.560524],
+	        			[-123.281993,44.560645],
+	        			[-123.279631,44.560708]
+	        		];
+        				
+	        	var NorthRoute = [
+        			[-123.279962,44.567940],
+					[-123.279919,44.566794],
+					[-123.272396,44.566737],
+					[-123.274016,44.564612],
+					[-123.275786,44.564558],
+					[-123.275850,44.561952],
+					[-123.279601,44.561970],
+					[-123.279612,44.563323],
+					[-123.279955,44.564179],
+					[-123.279955,44.564561],
+					[-123.289707,44.564592],
+					[-123.289718,44.567855],
+					[-123.279962,44.567940]
+        		];
+        		
+        		var SouthRoute = [
+        			[-123.279565,44.560802],
+					[-123.281916,44.560664],
+					[-123.282957,44.560014],
+					[-123.283054,44.559303],
+					[-123.282260,44.558722],
+					[-123.282013,44.558478],
+					[-123.280511,44.558478],
+					[-123.279663,44.559013],
+					[-123.279631,44.561420],
+					[-123.279556,44.563347],
+					[-123.279867,44.564020],
+					[-123.279899,44.564547],
+					[-123.279889,44.566741],
+					[-123.272507,44.566718],
+					[-123.274095,44.564669],
+					[-123.274068,44.564511],
+					[-123.275731,44.564511],
+					[-123.275844,44.561887],
+					[-123.279567,44.561956]
+        		];
+        		/*
+        		var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#0000FF"), 4); 
+          		var runningRoute = new esri.geometry.Polyline(ExpressRoute);
+          		ExprRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
+          		map.graphics.add(ExprRouteGraphic);
       			
-      			map = new Map("mapDiv", {
-        			center: [-123.280, 44.562],
-        			zoom: 15,
-        			basemap: "osm",
-        			minZoom: 12,
-        			slider: false,
-        			showAttribution:false,
-        			logo: false,
-        			displayGraphicsOnPan: true,
-        			optimizePanAnimation: true,
-        			showAttribution: false,
-       			});
-       		
-   				var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
-   				
-
-
-   				//var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
-        		//UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
-        		//UserMarkerSymbol.setOutline(null);
-        		
-        		
-        		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/stopSign.png', 20, 20);
-        		
-        		
-        		
-        		
-        		//Cusom picture example for marker
-        		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
-        			
-        		//Hardcoded stops for one route
-        		var StopPtsSouthCentral = [
-					[44.55832, -123.28162, 0],
-					[44.560524, -123.282411, 1],
-					[44.56344, -123.27964, 2],
-					[44.564578, -123.279934, 3],
-					[44.56675, -123.27719, 4 ],
-					[44.56673, -123.273, 5],
-					[44.55901, -123.27962, 6]];
-					
-        		var StopPtsNorthCentral = [
-                    [44.564578, -123.279934, 3],
-                    [44.56344, -123.27964, 2],
-                    [44.56458, -123.28654, 7],
-                    [44.56785, -123.28934, 8],
-                    [44.56792, -123.28146, 9],
-                    [44.56675, -123.27719, 4],
-                    [44.56673, -123.273, 5],
-                    [44.562588, -123.274155, 10]];
-                    
-        		var StopPtsExpress = [
-                    [44.564578,-123.279934, 3],
-                    [44.568107, -123.279461, 11],
-                    [44.55901, -123.27962, 6],
-                    [44.55832, -123.28162, 0],
-                    [44.560524, -123.282411, 1],
-                    [44.56344, -123.27964, 2]];
-        
-       
-        		//When the map loads, load in user and stops graphics
-        		map.on("load", loadUserAndStops);
-        		
-        		function loadUserAndStops(){
-        			
-        			//Ti.App.fireEvent('maploaded', {});
-        			
-        			
-	        		var ExpressRoute = [
-			        		[-123.279941,44.567899],
-		        			[-123.279925,44.568082],
-		        			[-123.278972,44.568080],
-		        			[-123.278948,44.567910],
-		        			[-123.278970,44.567910],
-		        			[-123.279941,44.567899],
-		        			[-123.279925,44.566813],
-		        			[-123.279927,44.564193],
-		        			[-123.279619,44.563330],
-		        			[-123.279600,44.562070],
-		        			[-123.279630,44.561896],
-		        			[-123.279624,44.560423],
-		        			[-123.279691,44.560283],
-		        			[-123.279697,44.558999],
-		        			[-123.280711,44.558405],
-		        			[-123.281620,44.558320],
-		        			[-123.282811,44.558928],
-		        			[-123.283133,44.559555],
-		        			[-123.282934,44.560071],
-		        			[-123.282411,44.560524],
-		        			[-123.281993,44.560645],
-		        			[-123.279631,44.560708]
-		        		];
-	        				
-		        	var NorthRoute = [
-	        			[-123.279962,44.567940],
-						[-123.279919,44.566794],
-						[-123.272396,44.566737],
-						[-123.274016,44.564612],
-						[-123.275786,44.564558],
-						[-123.275850,44.561952],
-						[-123.279601,44.561970],
-						[-123.279612,44.563323],
-						[-123.279955,44.564179],
-						[-123.279955,44.564561],
-						[-123.289707,44.564592],
-						[-123.289718,44.567855],
-						[-123.279962,44.567940]
-	        		];
-	        		
-	        		var SouthRoute = [
-	        			[-123.279565,44.560802],
-						[-123.281916,44.560664],
-						[-123.282957,44.560014],
-						[-123.283054,44.559303],
-						[-123.282260,44.558722],
-						[-123.282013,44.558478],
-						[-123.280511,44.558478],
-						[-123.279663,44.559013],
-						[-123.279631,44.561420],
-						[-123.279556,44.563347],
-						[-123.279867,44.564020],
-						[-123.279899,44.564547],
-						[-123.279889,44.566741],
-						[-123.272507,44.566718],
-						[-123.274095,44.564669],
-						[-123.274068,44.564511],
-						[-123.275731,44.564511],
-						[-123.275844,44.561887],
-						[-123.279567,44.561956]
-	        		];
-	        		/*
-	        		var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#0000FF"), 4); 
-	          		var runningRoute = new esri.geometry.Polyline(ExpressRoute);
-	          		ExprRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
-	          		map.graphics.add(ExprRouteGraphic);
-          			
-          			*/
-          			
-          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#576fff"), 3); 
-          			var runningRoute = new esri.geometry.Polyline(ExpressRoute);
-          			ExprRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
-          			map.graphics.add(ExprRouteGraphic);
-          			
-          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#FF6600"), 3); 
-          			var runningRoute = new esri.geometry.Polyline(NorthRoute);
-          			NorthRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
-          			map.graphics.add(NorthRouteGraphic);
-          			
-          			//00FF00
-          			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#36c636"), 3); 
-          			var runningRoute = new esri.geometry.Polyline(SouthRoute);
-          			SouthRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
-          			map.graphics.add(SouthRouteGraphic);
-          			
-          			
-          			if(UserGPS[0] != 0 && UserGPS[1] != 0){
-        			    User = new esri.geometry.Point({
-  								latitude: UserGPS[0],
-  								longitude: UserGPS[1]
-						});
-						map.graphics.add(new Graphic(User, UserMarkerSymbol));		
-        			}
-        			
-        			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
-        			  	var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
-        				SouthStopGraphics.push(tempStop);
-        			    map.graphics.add(tempStop);
-        			});
-        			
-        			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
-        			    var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
-        				NorthStopGraphics.push(tempStop);
-        			    map.graphics.add(tempStop);
-        			});
-        			
-        			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
-        				var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
-        				ExprStopGraphics.push(tempStop);
-        			    map.graphics.add(tempStop);
-          			});
-          			
-          			for(var i = 0; i < 4; i++){
-          				if(props[i] == 'false' || props[i] == false){
-          					switch(i){
-          						case 0:
-          							enableNorth = false;
-          							ShowNorth();
-          							break;
-          						case 1:
-          							enableSouth = false;
-          							ShowSouth();
-          							break;
-          						case 2:
-          							enableExpress = false;
-          							ShowExpress();
-          							break;
-          						case 3:
-          							
-          					}
-          				}
-          			}
-          				
-          		}	
-          			
-        		}
-        		
-        	);
-       }
+      			*/
+      			
+      			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#576fff"), 3); 
+      			var runningRoute = new esri.geometry.Polyline(ExpressRoute);
+      			ExprRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
+      			map.graphics.add(ExprRouteGraphic);
+      			
+      			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#FF6600"), 3); 
+      			var runningRoute = new esri.geometry.Polyline(NorthRoute);
+      			NorthRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
+      			map.graphics.add(NorthRouteGraphic);
+      			
+      			//00FF00
+      			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#36c636"), 3); 
+      			var runningRoute = new esri.geometry.Polyline(SouthRoute);
+      			SouthRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
+      			map.graphics.add(SouthRouteGraphic);
+      			
+      			
+      			if(UserGPS[0] != 0 && UserGPS[1] != 0){
+    			    User = new esri.geometry.Point({
+							latitude: UserGPS[0],
+							longitude: UserGPS[1]
+					});
+					map.graphics.add(new Graphic(User, UserMarkerSymbol));		
+    			}
+    			
+    			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
+    			  	var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+    				SouthStopGraphics.push(tempStop);
+    			    map.graphics.add(tempStop);
+    			});
+    			
+    			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
+    			    var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+    				NorthStopGraphics.push(tempStop);
+    			    map.graphics.add(tempStop);
+    			});
+    			
+    			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
+    				var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+    				ExprStopGraphics.push(tempStop);
+    			    map.graphics.add(tempStop);
+      			});
+      			
+      			for(var i = 0; i < 4; i++){
+      				if(props[i] == 'false' || props[i] == false){
+      					switch(i){
+      						case 0:
+      							enableNorth = false;
+      							ShowNorth();
+      							break;
+      						case 1:
+      							enableSouth = false;
+      							ShowSouth();
+      							break;
+      						case 2:
+      							enableExpress = false;
+      							ShowExpress();
+      							break;
+      						case 3:
+      							
+      					}
+      				}
+      			}
+      				
+      		}	
+      			
+    		}
+    		
+    	);
+   }
        
        
 //===================================================================
 
-       function updateMap(){
-       	require([
-    		"esri/map", "esri/geometry/Point",
-    		"esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
-    		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
-					
-		
-					if(map.getLayer(shuttleLayer) != null){
-						map.removeLayer(shuttleLayer);
-					}
-					
-					var shuttleLayer = new esri.layers.GraphicsLayer();
-    				
-    				/*//Clear the outdated positions
-					map.graphics.remove(GS1);
-        			map.graphics.remove(GS2);
-   					map.graphics.remove(GS3);
-   					*/
-   					
-   					var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20); //south central
-					var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('Shuttle/greentriangle.png', 20, 20); //*north central
-					var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('Shuttle/orangetriangle.png', 20, 20); //express
-    				
-    				for(var i = 0; i < shuttleData.length; i++){
-    					var shuttleGraphic;
-    					
-    					//Check if route is enabled, if not, don't display shuttle graphic.
-    					if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
-    						continue;
-    					}
-    					
-    					//Assign graphic based on RouteID
-    					switch(shuttleData[i][0]){
-    						case 4: //Express
-    							shuttleGraphic = ShuttleMarkerSymbol1;
-    							break;
-    						case 5:	//South-Central
-    							shuttleGraphic = ShuttleMarkerSymbol2;
-    					}
-    					shuttleGraphic.setAngle(shuttleData[i][3]);
-    					var newShuttle = new esri.geometry.Point({
- 							latitude: shuttleData[i][1],
- 							longitude: shuttleData[i][2],
-    					});
-    					var newGraphic = new Graphic(newShuttle, shuttleGraphic);
-    					shuttleLayer.add(newGraphic);
-    				}
-    				map.addLayer(shuttleLayer);
-    				
-    				/*
-    				//Set up the point coordinates
-       				Shuttle1 = new esri.geometry.Point({
-  								latitude: shuttleData[0][1],
-  								longitude: shuttleData[0][2]
-								});
-										
-
-					Shuttle2 = new esri.geometry.Point({
-  								latitude: shuttleData[1][1],
-  								longitude: shuttleData[1][2]
-								});
+function updateMap(){
+	require(["esri/map", "esri/geometry/Point","esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
+		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
+			if(map.getLayer(shuttleLayer) != null){
+				map.removeLayer(shuttleLayer);
+			}
+			
+			var shuttleLayer = new esri.layers.GraphicsLayer();
+			
+			var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20); //south central
+			var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('Shuttle/greentriangle.png', 20, 20); //*north central
+			var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('Shuttle/orangetriangle.png', 20, 20); //express
+			
+			for(var i = 0; i < shuttleData.length; i++){
+				var shuttleGraphic;
 				
-					Shuttle3 = new esri.geometry.Point({
-  								latitude: shuttleData[2][1],
-  								longitude: shuttleData[2][2]
-								});
-								
-        			ShuttleMarkerSymbol1.setAngle(shuttleData[0][3]);
-        			ShuttleMarkerSymbol2.setAngle(shuttleData[1][3]);
-        			ShuttleMarkerSymbol3.setAngle(shuttleData[2][3]);
-        			
-       				GS3 = new Graphic(Shuttle1, ShuttleMarkerSymbol1);
-       				GS2 = new Graphic(Shuttle2, ShuttleMarkerSymbol2);
-					GS1 = new Graphic(Shuttle3, ShuttleMarkerSymbol3);
-  
-  					if (enableNorth){
-       					map.graphics.add(GS1);
-       				}
-       				
-       				if (enableSouth){
-       					map.graphics.add(GS2);
-       				}
-       				
-       				if (enableExpress){
-       					map.graphics.add(GS3);
-       				} */
-
-      		});
-       }
-       
-       
-       function ShowExpress(){
-    	require(["dojo/_base/array"], 
-    		function(arrayUtils) {
-   				if (enableExpress == true){
-	          		ExprRouteGraphic.show();
-	          		
-	          		arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
-        				StopGraphic.show();
-          			});	
-	      		}
-	      		else{
-	      			ExprRouteGraphic.hide();
-	      			
-	      			arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
-        				StopGraphic.hide();
-          			});
-	      			
-	      		}
-	
-        	});
-       }
-       
-       function ShowNorth(){
-    	require(["dojo/_base/array"], 
-    		function(arrayUtils) {
-   				if (enableNorth == true){
-	      			
-	          		NorthRouteGraphic.show();
-	          		
-	          		arrayUtils.forEach(NorthStopGraphics, function(StopGraphic) {
-        				StopGraphic.show();
-          			});
-	      		}
-	      		else{
-	      			NorthRouteGraphic.hide();
-	      			
-	      			arrayUtils.forEach(NorthStopGraphics, function(StopGraphic) {
-        				StopGraphic.hide();
-          			});
-	      			
-	      		}
-
-        	});
-       }
-       function ShowSouth(){
-    	require(["dojo/_base/array"], 
-    		function(arrayUtils) {
-   				if (enableSouth == true){
-
-	          		SouthRouteGraphic.show();
-	          		
-	          		arrayUtils.forEach(SouthStopGraphics, function(StopGraphic) {
-        				StopGraphic.show();
-          			});
-	      		}
-	      		else{
-	      			SouthRouteGraphic.hide();
-	      			
-	      			arrayUtils.forEach(SouthStopGraphics, function(StopGraphic) {
-        				StopGraphic.hide();
-          			});
-	      		}
-   				
-   				
-   					
-   				
-        	});
-       }
-       
-       
-       function centerMap(data){
-       	 require([
-    		"esri/map", "esri/geometry/Point", "esri/graphic", "esri/symbols/PictureMarkerSymbol"
-    		], 
-    		function(Map, Point, Graphic, PictureMarkerSymbol) {
-    			
-      			var centerPoint = new esri.geometry.Point({
-					latitude: data[0],
-					longitude: data[1]
+				//Check if route is enabled, if not, don't display shuttle graphic.
+				if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
+					continue;
+				}
+				
+				//Assign graphic based on RouteID
+				switch(shuttleData[i][0]){
+					case 4: //Express
+						shuttleGraphic = ShuttleMarkerSymbol1;
+						break;
+					case 5:	//South-Central
+						shuttleGraphic = ShuttleMarkerSymbol2;
+				}
+				shuttleGraphic.setAngle(shuttleData[i][3]);
+				var newShuttle = new esri.geometry.Point({
+					latitude: shuttleData[i][1],
+					longitude: shuttleData[i][2],
 				});
-      			
-      			map.centerAt(centerPoint);
-				map.graphics.remove(selectStop);
-      			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/stopSignSelected.png', 45, 45);
-      			selectStop = new Graphic(centerPoint, selectStopSymbol);
-      			map.graphics.add(selectStop);		
-   				
-        	});
-       }
+				var newGraphic = new Graphic(newShuttle, shuttleGraphic);
+				shuttleLayer.add(newGraphic);
+			}
+			map.addLayer(shuttleLayer);
+  		});
+   }
        
+function ShowExpress(){
+	require(["dojo/_base/array"], 
+    	function(arrayUtils) {
+			if (enableExpress == true){
+	      		ExprRouteGraphic.show();
+	      		
+	      		arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
+					StopGraphic.show();
+	  			});	
+	  		}
+	  		else{
+	  			ExprRouteGraphic.hide();
+	  			
+	  			arrayUtils.forEach(ExprStopGraphics, function(StopGraphic) {
+					StopGraphic.hide();
+	  			});
+	  			
+	  		}
+	
+        });
+}
        
-       function zoomMap(zoom){
-       	 require([
-    		"esri/map"], 
-    		function(Map) {
-      		
-      			if (zoom == true){
-					map.setZoom(map.getZoom()+1);
-      			}
-      			else if (zoom == false){
-      				map.setZoom(map.getZoom()-1);
-      			}	
-        	});
-       }
+function ShowNorth(){
+	require(["dojo/_base/array"], 
+    	function(arrayUtils) {
+			if (enableNorth == true){
+	  			
+	      		NorthRouteGraphic.show();
+	      		
+	      		arrayUtils.forEach(NorthStopGraphics, function(StopGraphic) {
+					StopGraphic.show();
+	  			});
+	  		}
+	  		else{
+	  			NorthRouteGraphic.hide();
+	  			
+	  			arrayUtils.forEach(NorthStopGraphics, function(StopGraphic) {
+					StopGraphic.hide();
+	  			});
+	  			
+	  		}
+        });
+}
+function ShowSouth(){
+	require(["dojo/_base/array"], 
+    	function(arrayUtils) {
+			if (enableSouth == true){
+	
+	      		SouthRouteGraphic.show();
+	      		
+	      		arrayUtils.forEach(SouthStopGraphics, function(StopGraphic) {
+					StopGraphic.show();
+	  			});
+	  		}
+	  		else{
+	  			SouthRouteGraphic.hide();
+	  			
+	  			arrayUtils.forEach(SouthStopGraphics, function(StopGraphic) {
+					StopGraphic.hide();
+	  			});
+	  		}	
+       });
+}
+function centerMap(data){
+	require(["esri/map", "esri/geometry/Point", "esri/graphic", "esri/symbols/PictureMarkerSymbol"], 
+		function(Map, Point, Graphic, PictureMarkerSymbol) {
+			
+			var centerPoint = new esri.geometry.Point({
+				latitude: data[0],
+				longitude: data[1]
+			});
+			
+			map.centerAt(centerPoint);
+			map.graphics.remove(selectStop);
+			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/stopSignSelected.png', 45, 45);
+			selectStop = new Graphic(centerPoint, selectStopSymbol);
+			map.graphics.add(selectStop);
+    	});
+}   
+function zoomMap(zoom){
+	require(["esri/map"], 
+    	function(Map) {
+			if (zoom == true){
+				map.setZoom(map.getZoom()+1);
+			}
+			else if (zoom == false){
+				map.setZoom(map.getZoom()-1);
+			}	
+       });
+}
 //===================================================================
 

@@ -1,3 +1,48 @@
+
+						/*//Clear the outdated positions
+			map.graphics.remove(GS1);
+			map.graphics.remove(GS2);
+			map.graphics.remove(GS3);
+			*/
+			/*
+    				//Set up the point coordinates
+       				Shuttle1 = new esri.geometry.Point({
+  								latitude: shuttleData[0][1],
+  								longitude: shuttleData[0][2]
+								});
+										
+
+					Shuttle2 = new esri.geometry.Point({
+  								latitude: shuttleData[1][1],
+  								longitude: shuttleData[1][2]
+								});
+				
+					Shuttle3 = new esri.geometry.Point({
+  								latitude: shuttleData[2][1],
+  								longitude: shuttleData[2][2]
+								});
+								
+        			ShuttleMarkerSymbol1.setAngle(shuttleData[0][3]);
+        			ShuttleMarkerSymbol2.setAngle(shuttleData[1][3]);
+        			ShuttleMarkerSymbol3.setAngle(shuttleData[2][3]);
+        			
+       				GS3 = new Graphic(Shuttle1, ShuttleMarkerSymbol1);
+       				GS2 = new Graphic(Shuttle2, ShuttleMarkerSymbol2);
+					GS1 = new Graphic(Shuttle3, ShuttleMarkerSymbol3);
+  
+  					if (enableNorth){
+       					map.graphics.add(GS1);
+       				}
+       				
+       				if (enableSouth){
+       					map.graphics.add(GS2);
+       				}
+       				
+       				if (enableExpress){
+       					map.graphics.add(GS3);
+       				} */
+
+
 		//Want to wait until map is started and ready before doing this stuff
 		/*
 		Ti.App.addEventListener('maploaded', function(){
