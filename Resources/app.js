@@ -7,6 +7,7 @@
 
 var firstTime = true;
 var baseTime;
+var firstIntervalUpdate = true;
 
 // Gradients : [TopMenu, BottomMenu]
 var color1 = [['#113a7c', '#082b62'],['#006151', '#00463B']];
@@ -308,14 +309,13 @@ Ti.App.addEventListener('doneLoading', doneLoading);
 
 //Make sure map.html is loaded into the window before beginning the chain
 
-setTableClickListener();
-
 setStops();
 
 localWebview.addEventListener('load',function(e){
 	info("localWebview.addEvent(load)");
 	Ti.API.info("FIRST! WEBLOAD");
 	setWebViewListener();
+	setTableClickListener();
 });
 
 //===================================================================
@@ -329,17 +329,17 @@ Ti.App.addEventListener('settingsChanged', function(e){
 				case 0:
 					props[0] = propsChanged[0];
 					//Ti.API.info("Firing abox");
-					Ti.App.fireEvent('abox', {data: [propsChanged[0]]});
+					Ti.App.fireEvent('updatemap', {id: 6, routeBool: propsChanged[0]});
 					break;
 				case 1:
 					//Ti.API.info("Firing bbox");
 					props[1] = propsChanged[1];
-					Ti.App.fireEvent('bbox', {data: [propsChanged[1]]});
+					Ti.App.fireEvent('updatemap', {id: 5, routeBool: propsChanged[1]});
 					break;
 				case 2:
 					//Ti.API.info("Firing cbox");
 					props[2] = propsChanged[2];
-					Ti.App.fireEvent('cbox', {data: [propsChanged[2]]});
+					Ti.App.fireEvent('updatemap', {id: 4, routeBool:propsChanged[2]});
 					break;
 				case 3:
 					
@@ -367,9 +367,9 @@ settingsButton.addEventListener('click', function(e){
 zoomButtonView.addEventListener('click', function(e){
 	var children = zoomButtonView.getChildren();
 	if(e.source == children[0]){
-		Ti.App.fireEvent("zoomMap", {data: [true]});
+		Ti.App.fireEvent("updatemap", {id: 3, zoomBool: true});
 	}else if(e.source == children[1]){
-		Ti.App.fireEvent("zoomMap", {data: [false]});
+		Ti.App.fireEvent("updatemap", {id: 3, zoomBool: false});
 	}
 });
 
@@ -385,17 +385,16 @@ function setWebViewListener(){
 	
 	if(props[4]){
 		getUserGPS();
+		Ti.App.fireEvent("updatemap", {id: 0, userGPS: userGPS, props: props});
 		if(deviceGPSOn){
 			diffArray = findNearest(userGPS);
 			var index = diffArray[0][1];
 			updateSelected(stopsArray[index]);
 		}	
 	}else {
+		Ti.App.fireEvent("updatemap", {id: 0, userGPS: userGPS, props: props});
 		updateSelected(stopsArray[0]);
 	}
-	
-	var stops = [];
-	Ti.App.fireEvent("startmap", {data: [stops, userGPS, props]});
 	
 	setTimeout(function(){
 		intervalUpdate();
@@ -408,37 +407,36 @@ var gpsCounter = getGPSInterval;
 function intervalUpdate(){
 	info("START intervalUpdate");
 	//Ti.API.info("FUNC: intervalUpdate");
-	var lastGPS, shuttleData = shuttleLocRequest();
+	var lastGPS; 
+	var shuttleData = shuttleLocRequest();
 	updateRouteEstimates();
 	
 	info("GPS COUNTER: " + gpsCounter);
-	if(props[4]){ //if(gpsEnabled)
-		if(deviceGPSOn){
-			if(gpsCounter >= getGPSInterval){
-				lastGPS = userGPS;
-				userGPS.length = 0;
-				getUserGPS();
-				if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
-					//Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
-					//updateTable(diffArray);
-				} else {
-					//Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
-					diffArray = findNearest(userGPS);
+	if(gpsCounter >= getGPSInterval){ //if(gpsEnabled)
+		if(props[4]){
+			lastGPS = userGPS;
+			userGPS.length = 0;
+			getUserGPS();
+			if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
+				//Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
+				if(firstIntervalUpdate){
 					updateTable(diffArray);
 				}
-				gpsCounter = 0;
-				
 			} else {
-				gpsCounter++;
+				//Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
+				diffArray = findNearest(userGPS);
+				updateTable(diffArray);
 			}
+			gpsCounter = 0;
 		} else {
 			updateTable(-1);
+			gpsCounter = 0;
 		}
-	} else {
-		updateTable(-1);
+	}else{
+		gpsCounter++;
 	}
-
-	Ti.App.fireEvent("updatemap", {data: [shuttleData]});
+	
+	Ti.App.fireEvent("updatemap", {id: 1,shuttleData: shuttleData});
 	
 	for(var i = 0, len = stopsArray.length; i < len; i++){
 		if (stopsArray[i] == UstopNameLabel.getText()){
@@ -502,7 +500,7 @@ function setTableClickListener(){
 			lastClickedRow = e.source;
 			lastClickedStopName = stopsRow[0];
 
-			Ti.App.fireEvent("centerMap", {latitude: stopsRow[1], longitude: stopsRow[2]});
+			Ti.App.fireEvent("updatemap", {id: 2, latitude: stopsRow[1], longitude: stopsRow[2]});
 		}
 	});
 	Ti.API.info("setTableClick");
@@ -588,7 +586,7 @@ function findNearest(userLocation){
 }
 	
 function updateTable(diffArray){
-	info("---START updateTable");
+	info("-XXX--XXX---XXXX---XXXX-xxxx-x-x-x-XXXX--START updateTable");
 	Ti.API.info("FUNC: updateTable");
 	var nearestArray = [];
 	if(loadBar != null){
@@ -756,7 +754,6 @@ function updateTable(diffArray){
 function setStops(){
 	info("START setStops");
 	Ti.API.info("FUNC: setStops");
-	shuttleLocRequest();
 
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
@@ -869,6 +866,7 @@ function shuttleLocRequest(){
 				//Ti.API.info("No shuttles active...");
 			}
 
+			Ti.API.info("WHAT IS SHUTTLEDATA :" + shuttleData);
 			for (var x = 0, len = shuttleLocs.length; x < len; x++){
 				var loc = shuttleLocs[x];
 				shuttleData.push([loc.RouteID, loc.Latitude, loc.Longitude, loc.Heading]);

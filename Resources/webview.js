@@ -2,12 +2,10 @@
 //===================================================================
 //Set up variables and event listeners
  
-var data, UserGPS, map, pt, symbol;
+var map, pt, symbol;
 var selectStop;
 var GS1, GS2, GS3;
-var shuttleData;
 var heading = new Array(3);
-var props;
 
 var ExprRouteGraphic;
 var NorthRouteGraphic;
@@ -17,77 +15,55 @@ var ExprStopGraphics = [];
 var NorthStopGraphics = [];
 var SouthStopGraphics = [];
 
-var enableExpress = true;
-var enableNorth = true;
-var enableSouth = true;
 
 //TODO: expand to set this array
 var enabledRouteIDs = [4, 5];
 
-  
-//When this event occurs, fill up variables and create map.
-Ti.App.addEventListener("startmap", function (event) {
-	data = event.data[0]; //Hold stop info -- not used currently
-	UserGPS = event.data[1]; //Holds user GPS data
-	props = event.data[2];
-	createMap();
-	//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
-	event.source.removeEventListener("startmap", arguments.callee);
-	//event.source.removeEventListener("startmap", arguments.callee);
-});
 
-Ti.App.addEventListener('centerMap', function(event){
-	//Ti.API.info("MEMORY --9-- : " + Ti.Platform.getAvailableMemory());
-	var pointArray = [event.latitude, event.longitude];
-	centerMap(pointArray);
-});
-
-Ti.App.addEventListener('zoomMap', function(event){
-	zoomMap(event.data[0]);
-});
-
-//When this event occurs, fill up shuttle coords and update map.
 Ti.App.addEventListener('updatemap', function(event){
-	shuttleData = [];
-	shuttleData = event.data[0];
-	updateMap();
-	});
+	Ti.API.info("THIS IS THE ID: " + event.id);
+	switch(event.id){
+		case 0:		//createMap(userGPS, props)
+			Ti.API.info("------------------EVENT: createMap");
+			createMap(event.userGPS, event.props);
+			break;
+		case 1:		//updateMap(shuttleData)
+			Ti.API.info("------------------EVENT: updateMap");
+			updateMap(event.shuttleData);
+			break;
+		case 2:
+			Ti.API.info("------------------EVENT: centerMap");
+			centerMap(event.latitude, event.longitude);
+			break;
+		case 3:
+			Ti.API.info("------------------EVENT: zoomMap");
+			zoomMap(event.zoomBool);
+			break;
+		case 4:
+			showNorth(event.routeBool);
+			break;
+		case 5:
+			showSouth(event.routeBool);
+			break;
+		case 6:
+			showExpress(event.routeBool);
+			break;
+		case 7: //TODO: add in 4th route
+			break;
+	}
 	
+});
 	
-Ti.App.addEventListener('abox', function(event){
-	//Ti.API.info('aSwitch value: ' + event.data[0]);
-	enableNorth = event.data[0]; 
-	updateMap();
-	ShowNorth();
-	
-	});
-	
-Ti.App.addEventListener('bbox', function(event){
-	//Ti.API.info('bSwitch value: ' + event.data[0]);
-	enableSouth = event.data[0]; 
-	updateMap();
-	ShowSouth();
-	
-	});
-	
-
-Ti.App.addEventListener('cbox', function(event){
-	//Ti.API.info('cSwitch value: ' + event.data[0]);
-	enableExpress = event.data[0]; 
-	updateMap();
-	ShowExpress();
-	});
-	//===================================================================	
+//===================================================================	
 
 //===================================================================
 
-function createMap(){
+function createMap(userGPS, props){
 	require([
 		"esri/map", "esri/graphic", "dojo/_base/array", 
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol"], 
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol) {
-  			var clickProcessing = false;
-  			
+  			Ti.API.info("YAHHHHH : " + userGPS + ", " + props);
   			map = new Map("mapDiv", {
     			center: [-123.280, 44.562],
     			zoom: 15,
@@ -102,21 +78,7 @@ function createMap(){
    			});
    		
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
-			
-
-
-			//var UserMarkerSymbol = new esri.symbol.SimpleMarkerSymbol();
-    		//UserMarkerSymbol.setColor(new dojo.Color("#00FF00"));
-    		//UserMarkerSymbol.setOutline(null);
-    		
-    		
     		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/stopSign.png', 20, 20);
-    		
-    		
-    		
-    		
-    		//Cusom picture example for marker
-    		//symbol = new PictureMarkerSymbol("images/bluedot.png", 40, 40);
     			
     		//Hardcoded stops for one route
     		var StopPtsSouthCentral = [
@@ -238,10 +200,10 @@ function createMap(){
       			map.graphics.add(SouthRouteGraphic);
       			
       			
-      			if(UserGPS[0] != 0 && UserGPS[1] != 0){
+      			if(userGPS[0] != 0 && userGPS[1] != 0){
     			    User = new esri.geometry.Point({
-							latitude: UserGPS[0],
-							longitude: UserGPS[1]
+							latitude: userGPS[0],
+							longitude: userGPS[1]
 					});
 					map.graphics.add(new Graphic(User, UserMarkerSymbol));		
     			}
@@ -268,16 +230,13 @@ function createMap(){
       				if(props[i] == 'false' || props[i] == false){
       					switch(i){
       						case 0:
-      							enableNorth = false;
-      							ShowNorth();
+      							showNorth(false);
       							break;
       						case 1:
-      							enableSouth = false;
-      							ShowSouth();
+      							showSouth(false);
       							break;
       						case 2:
-      							enableExpress = false;
-      							ShowExpress();
+      							showExpress(false);
       							break;
       						case 3:
       							
@@ -295,7 +254,7 @@ function createMap(){
        
 //===================================================================
 
-function updateMap(){
+function updateMap(shuttleData){
 	require(["esri/map", "esri/geometry/Point","esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
 		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
 			if(map.getLayer(shuttleLayer) != null){
@@ -336,7 +295,7 @@ function updateMap(){
   		});
    }
        
-function ShowExpress(){
+function showExpress(enableExpress){
 	require(["dojo/_base/array"], 
     	function(arrayUtils) {
 			if (enableExpress == true){
@@ -358,7 +317,7 @@ function ShowExpress(){
         });
 }
        
-function ShowNorth(){
+function showNorth(enableNorth){
 	require(["dojo/_base/array"], 
     	function(arrayUtils) {
 			if (enableNorth == true){
@@ -379,7 +338,7 @@ function ShowNorth(){
 	  		}
         });
 }
-function ShowSouth(){
+function showSouth(enableSouth){
 	require(["dojo/_base/array"], 
     	function(arrayUtils) {
 			if (enableSouth == true){
@@ -399,13 +358,13 @@ function ShowSouth(){
 	  		}	
        });
 }
-function centerMap(data){
+function centerMap(lat, lon){
 	require(["esri/map", "esri/geometry/Point", "esri/graphic", "esri/symbols/PictureMarkerSymbol"], 
 		function(Map, Point, Graphic, PictureMarkerSymbol) {
 			
 			var centerPoint = new esri.geometry.Point({
-				latitude: data[0],
-				longitude: data[1]
+				latitude: lat,
+				longitude: lon
 			});
 			
 			map.centerAt(centerPoint);
