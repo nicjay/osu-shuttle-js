@@ -77,8 +77,9 @@ function createMap(userGPS, props){
    			});
    		
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
-    		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/stopSign.png', 20, 20);
+    		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/orangeDot.png', 15, 15);
     			
+ 
     		//Hardcoded stops for one route
     		var StopPtsSouthCentral = [
 				[44.55832, -123.28162, 0],
@@ -113,29 +114,29 @@ function createMap(userGPS, props){
     		
     		function loadUserAndStops(){
     			var ExpressRoute = [
-		        		[-123.279941,44.567899],
-	        			[-123.279925,44.568082],
-	        			[-123.278972,44.568080],
-	        			[-123.278948,44.567910],
-	        			[-123.278970,44.567910],
-	        			[-123.279941,44.567899],
-	        			[-123.279925,44.566813],
-	        			[-123.279927,44.564193],
-	        			[-123.279619,44.563330],
-	        			[-123.279600,44.562070],
-	        			[-123.279630,44.561896],
-	        			[-123.279624,44.560423],
-	        			[-123.279691,44.560283],
-	        			[-123.279697,44.558999],
-	        			[-123.280711,44.558405],
-	        			[-123.281620,44.558320],
-	        			[-123.282811,44.558928],
-	        			[-123.283133,44.559555],
-	        			[-123.282934,44.560071],
-	        			[-123.282411,44.560524],
-	        			[-123.281993,44.560645],
-	        			[-123.279631,44.560708]
-	        		];
+	        		[-123.279941,44.567899],
+        			[-123.279925,44.568082],
+        			[-123.278972,44.568080],
+        			[-123.278948,44.567910],
+        			[-123.278970,44.567910],
+        			[-123.279941,44.567899],
+        			[-123.279925,44.566813],
+        			[-123.279927,44.564193],
+        			[-123.279619,44.563330],
+        			[-123.279600,44.562070],
+        			[-123.279630,44.561896],
+        			[-123.279624,44.560423],
+        			[-123.279691,44.560283],
+        			[-123.279697,44.558999],
+        			[-123.280711,44.558405],
+        			[-123.281620,44.558320],
+        			[-123.282811,44.558928],
+        			[-123.283133,44.559555],
+        			[-123.282934,44.560071],
+        			[-123.282411,44.560524],
+        			[-123.281993,44.560645],
+        			[-123.279631,44.560708]
+        		];
         				
 	        	var NorthRoute = [
         			[-123.279962,44.567940],
@@ -174,13 +175,6 @@ function createMap(userGPS, props){
 					[-123.275844,44.561887],
 					[-123.279567,44.561956]
         		];
-        		/*
-        		var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#0000FF"), 4); 
-          		var runningRoute = new esri.geometry.Polyline(ExpressRoute);
-          		ExprRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
-          		map.graphics.add(ExprRouteGraphic);
-      			
-      			*/
       			
       			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#576fff"), 3); 
       			var runningRoute = new esri.geometry.Polyline(ExpressRoute);
@@ -191,15 +185,14 @@ function createMap(userGPS, props){
       			var runningRoute = new esri.geometry.Polyline(NorthRoute);
       			NorthRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
       			map.graphics.add(NorthRouteGraphic);
-      			
-      			//00FF00
+
       			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#36c636"), 3); 
       			var runningRoute = new esri.geometry.Polyline(SouthRoute);
       			SouthRouteGraphic = new esri.Graphic(runningRoute,polylineSymbol);
       			map.graphics.add(SouthRouteGraphic);
       			
       			
-      			if(userGPS[0] != 0 && userGPS[1] != 0){
+      			if(userGPS != null){
     			    User = new esri.geometry.Point({
 							latitude: userGPS[0],
 							longitude: userGPS[1]
@@ -244,11 +237,11 @@ function createMap(userGPS, props){
       			}
       				
       		}	
-      			
-    		}
+			
+		}
     		
-    	);
-   }
+	);
+}
        
        
 //===================================================================
@@ -259,7 +252,7 @@ function updateMap(shuttleData){
 			if(map.getLayer(shuttleLayer) != null){
 				map.removeLayer(shuttleLayer);
 			}
-			
+			map.graphics.remove(GS3);
 			var shuttleLayer = new esri.layers.GraphicsLayer();
 			
 			var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20); //south central
@@ -368,7 +361,7 @@ function centerMap(lat, lon){
 			
 			map.centerAt(centerPoint);
 			map.graphics.remove(selectStop);
-			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/stopSignSelected.png', 45, 45);
+			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangeDotSelected2.png', 45, 45);
 			selectStop = new Graphic(centerPoint, selectStopSymbol);
 			map.graphics.add(selectStop);
     	});
