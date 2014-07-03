@@ -23,7 +23,7 @@ exports.createSettingsWin = function(props){
 
 function createWindow(props){
 	mainSettingsWin = Ti.UI.createWindow({
-		layout: 'vertical',
+		layout: 'horizontal',
 		width: '100%',
 		height: '100%',
 		navBarHidden:true,
@@ -42,12 +42,12 @@ function createWindow(props){
 			//colors:[{color:'#2370a1', position:0.0},{color:'#09557c', position: 1.0}]
 			colors:[{color:'#36588D', position:0.0},{color:'#1F4F9B', position: 1.0}]
 		},
-		bottom: 10,
+		//bottom: 10,
 	});
 	
 	view0.add(Ti.UI.createLabel({
 		font:{fontSize:22},
-		color: '#FFFFFF',
+		color: '#FFEEDB',
 		text: 'Settings',
 		left: 10,
 	}));
@@ -80,14 +80,23 @@ function createWindow(props){
 	view1 = Ti.UI.createView({
 		layout: 'horizontal',
 		height: Ti.UI.SIZE,
+		top: 10,
+		bottom: 10,
+	});
+	
+	innerView1 = Ti.UI.createView({
+		width: '100%',
+		height: Ti.UI.SIZE,
+		top: 10,
+		bottom: 10,
 	});
 	
 	var routeToggleLabel = Ti.UI.createLabel({
 		font: {fontSize: 20},
-		color: '#FFFFFF',
+		color: '#FFEEDB',
 		text: "Shuttle/Route Display",
-		width: '100%',
-		left: 10,
+		//width: '100%',
+		height: Ti.UI.SIZE,
 	});
 	
 	routeToggleA = Ti.UI.createSwitch({
@@ -138,7 +147,8 @@ function createWindow(props){
 	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
 	
-	view1.add(routeToggleLabel);
+	innerView1.add(routeToggleLabel);
+	view1.add(innerView1);
 	view1.add(routeToggleA);
 	view1.add(routeToggleB);
 	view1.add(routeToggleC);
@@ -149,13 +159,21 @@ function createWindow(props){
 	view2 = Ti.UI.createView({
 		layout: 'horizontal',
 		height: Ti.UI.SIZE,
+		width: '50%',
 		top: 10,
 		bottom: 10,
 	});
 	
+	innerView2 = Ti.UI.createView({
+		height: Ti.UI.SIZE,
+	});
+	innerView2B = Ti.UI.createView({
+		height: Ti.UI.SIZE,
+	});
+	
 	gpsToggleLabel = Ti.UI.createLabel({
 		font: {fontSize: 20},
-		color: '#FFFFFF',
+		color: '#FFEEDB',
 		text: "User GPS",
 	});
 	
@@ -163,28 +181,81 @@ function createWindow(props){
 		style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 		font: {fontsize: 16},
 		value: props[4],
-		titleOff: "GPS Off",
-		titleOn: "GPS On",
+		width: '80%',
+		titleOff: "Off",
+		titleOn: "On",
+		top: 10,
+	  	bottom: 10,
 	});
 	
-	view2.add(gpsToggleLabel);
-	view2.add(gpsToggleButton);
+	innerView2B.add(gpsToggleLabel);
+	innerView2.add(gpsToggleButton);
+	view2.add(innerView2B);
+	view2.add(innerView2);
 	
-	//===========================================================================================
-	
+//===========================================================================================
+
 	view3 = Ti.UI.createView({
-		width: '100%',
 		height: Ti.UI.SIZE,
+		width: '50%',
 		layout: 'horizontal',
 		top: 10,
 		bottom: 10,
 	});
 	
+	innerView3 = Ti.UI.createView({
+		width: '100%',
+		height: Ti.UI.SIZE,
+	});
+	innerView3B = Ti.UI.createView({
+		height: Ti.UI.SIZE,
+	});
+	
+	unitLabel = Ti.UI.createLabel({
+		font: {fontSize: 20},
+		color: '#FFEEDB',
+		text: "Distance Unit",
+	});
+	
+	unitToggle = Ti.UI.createSwitch({
+	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
+	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
+	  value: props[5],
+  	  width: '80%',
+	  titleOff: 'Km',
+	  titleOn: 'Mi',
+	  top: 10,
+	  bottom: 10,
+	  //verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
+	});
+	innerView3B.add(unitLabel);
+	innerView3.add(unitToggle);
+	view3.add(innerView3B);
+	view3.add(innerView3);
+	//===========================================================================================
+	
+	view4 = Ti.UI.createView({
+		width: '100%',
+		height: '100%',
+		layout: 'vertical',
+		//top: 10,
+		//bottom: 10,
+	});
+	
+	innerView4B = Ti.UI.createView({
+		height: Ti.UI.SIZE,
+	});
+	
 	feedbackLabel = Ti.UI.createLabel({
 		font: {fontSize: 20},
-		color: '#FFFFFF',
-		width: '100%',
-		text: 'Help Improve the App!'
+		color: '#FFEEDB',
+		//width: '100%',
+		text: 'Help Improve the App!',
+	});
+	
+	innerView4 = Ti.UI.createView({
+		//width: '100%',
+		height: Ti.UI.SIZE,
 	});
 	
 	feedbackEmail = Ti.UI.createEmailDialog();
@@ -192,50 +263,29 @@ function createWindow(props){
 	feedbackEmail.toRecipients = ['sellers.kevin@gmail.com'];
 	
 	feedbackSendButton = Ti.UI.createButton({
-		//width: 100,
+		width: '50%',
+		left: '25%',
 		title: "Send Feedback",
+		backgroundColor: '#c65d15',
+		top: 10,
+		bottom: 10,
 	});
 	feedbackSendButton.addEventListener('click', function(e){
 		Ti.App.Properties.setString('sentEmail', 'yes');
 		feedbackEmail.open();
 	});
 	
-	view3.add(feedbackLabel);
-	view3.add(feedbackSendButton);
-	
+	innerView4B.add(feedbackLabel);
+	innerView4.add(feedbackSendButton);
+	view4.add(innerView4B);
+	view4.add(innerView4);
 	//===========================================================================================
 	
-	view4 = Ti.UI.createView({
-		width: '100%',
-		height: Ti.UI.SIZE,
-		layout: 'horizontal',
-		top: 10,
-		bottom: 10,
-	});
-	
-	unitLabel = Ti.UI.createLabel({
-		font: {fontSize: 20},
-		color: '#FFFFFF',
-		text: "Distance Unit"
-	});
-	
-	unitToggle = Ti.UI.createSwitch({
-	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value: props[5],
-	  titleOff: 'Km',
-	  titleOn: 'Mi',
-	  //verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
-	});
-	view4.add(unitLabel);
-	view4.add(unitToggle);
-
 	mainSettingsWin.add(view0);
 	mainSettingsWin.add(view1);
 	mainSettingsWin.add(view2);
-	mainSettingsWin.add(view4);
 	mainSettingsWin.add(view3);
-	
+	mainSettingsWin.add(view4);
 	mainSettingsWin.open();
 }
 

@@ -10,7 +10,10 @@ var color2 = [['#011431', '#000917'],['#002f27', '#001612']];
 var color3 = [['#3b3b3b','#1e1e1e'],['#1e1e1e','#5e2e0d']];
 var color4 = [['#1e1e1e','#5e2e0d'],['#3b3b3b','#1e1e1e']];
 var color5 = [['#1e1e1e','#5e2e0d'],['#5e2e0d','#1e1e1e']];
-var color6 = [['#3b3b3b','#1e1e1e'],['#3b3b3b','#1e1e1e']];
+
+var color6 = [['#3b3b3b','#1e1e1e'],['#3b3b3b','#1e1e1e']];//++
+
+var color7 = [['#1e1e1e','#0F0F0F'],['#3b3b3b','#1e1e1e']];
 var color = color6;
 //Ti.API.info("COLOR : " + color[0][0]);
 
@@ -34,7 +37,7 @@ var url = ["http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimat
 	"http://www.osushuttles.com/Services/JSONPRelay.svc/GetRoutesForMapWithSchedule","http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapVehiclePoints"];
 
 //var userGPS = [44.565, -123.277];
-var userGPS;
+var userGPS = [];
 var deviceGPSOn = false, gpsOffPhrase = "GPS: Off", gpsOnPhrase = "GPS: On";
 
 var firstTime = true, firstIntervalUpdate = true, initialLaunch = true;
@@ -338,10 +341,12 @@ function setWebViewListener(){
 			diffArray = findNearest(userGPS);
 			var index = diffArray[0][1];
 			updateSelected(stopsArray[index]);
+			lastClickedStopName = stopsArray[index][0];
 		}	
 	}else {
 		Ti.App.fireEvent("updatemap", {id: 0, userGPS: userGPS, props: props});
 		updateSelected(stopsArray[0]);
+		lastClickedStopName = stopsArray[0][0];
 	}
 	
 	setTimeout(function(){
@@ -356,7 +361,7 @@ function intervalUpdate(){
 	var shuttleData = shuttleLocRequest();
 	updateRouteEstimates();
 	
-	info("GPS COUNTER: " + gpsCounter);
+	//info("GPS COUNTER: " + gpsCounter);
 	if(gpsCounter >= getGPSInterval){ //if(gpsEnabled)
 		if(props[4]){
 			lastGPS = userGPS;
@@ -396,7 +401,7 @@ function setTableClickListener(){
 		if(e.source == '[object Button]'){
 			info("TableClicked, lastClickedRow: " + lastClickedRow + ", lastClickedStopName : " + lastClickedStopName);
 			if(lastClickedRow != null){
-				lastClickedChildren[0].color = '#FFFFFF';
+				lastClickedChildren[0].color = '#FFEEDB';
 				lastClickedChildren[1].color = '#C0C0C0';
 				lastClickedRow.backgroundImage = 'GeneralUI/stopSelectButton.png';
 			}
@@ -405,7 +410,7 @@ function setTableClickListener(){
 			
 			childViews[0].color = '#FFA94C';
 			childViews[1].color = '#FFA94C';
-			e.source.backgroundImage = 'GeneralUI/stopSelectButton3.png';
+			e.source.backgroundImage = 'GeneralUI/stopSelectButtonBg2.png';
 			
 			var stopsRow = e.row.stopsArray, distance = e.row.distance;
 			updateSelected(stopsRow);
@@ -418,12 +423,10 @@ function setTableClickListener(){
 		}
 	});
 	Ti.API.info("setTableClick");
-	//if(loadBar != null){
+	if(loadBar != null){
 		loadBar.setValue(loadBar.getValue()+1);
-		if (loadBar.getValue() == loarBar.getMax()){
-			Ti.App.fireevent("doneLoading");	
-		}
-	//}
+		info("1 loadBar val: " + loadBar.getValue());
+	}
 	//Ti.API.info("Load tblClick: " + loadBar.getValue());
 	info("END setTableClickListener");
 }
@@ -509,8 +512,8 @@ function updateTable(diffArray){
 	}*/
 	
 		
-	var selectedRowScheme = ['#FFA94C', '#FFA94C', 'GeneralUI/stopSelectButton3.png'];
-	var normalRowScheme = ['#FFFFFF', '#C0C0C0', 'GeneralUI/stopSelectButton.png'];
+	var selectedRowScheme = ['#FFA94C', '#FFA94C', 'GeneralUI/stopSelectButtonBg2.png'];
+	var normalRowScheme = ['#FFEEDB', '#C0C0C0', 'GeneralUI/stopSelectButton.png'];
 	var currentScheme;
 	
 	if(diffArray == -1){
@@ -581,7 +584,7 @@ function updateTable(diffArray){
 			var index = diffArray[j][1], distance = diffArray[j][0];
 			if(lastClickedStopName == stopsArray[j][0]){
 				currentScheme = selectedRowScheme;
-				info("Table Update");
+				//info("Table Update");
 			}else{
 				currentScheme = normalRowScheme;
 			}
@@ -668,10 +671,10 @@ function updateTable(diffArray){
 	if(initialLaunch){	
 		if(loadBar != null){
 			loadBar.setValue(loadBar.getValue()+1);
-		}
-		
-		if (loadBar.getValue() == loarBar.getMax()){
-			Ti.App.fireEvent('doneLoading');	
+			info("2 loadBar val: " + loadBar.getValue());
+			if (loadBar.getValue() == 4){
+				Ti.App.fireEvent('doneLoading');	
+			}
 		}
 	}
 }
@@ -745,6 +748,7 @@ function setStops(){
 	
 			if(loadBar != null){
 				loadBar.setValue(loadBar.getValue()+1);
+				info("4 loadBar val: " + loadBar.getValue());
 			}
 							
 
@@ -768,7 +772,7 @@ function setStops(){
 	
 }
 function updateRouteEstimates(){
-	info("updateRouteEstimates");
+	//info("updateRouteEstimates");
 	//Ti.API.info("FUNC: updateRouteEstimates");
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
@@ -783,18 +787,16 @@ function updateRouteEstimates(){
 					}
 				}
 			}
-			
-		//Ti.API.info("Load routeESt : " + loadBar.getValue());
-		//Ti.API.info("UpdateRouteEstimates");
-	loadBar.setValue(loadBar.getValue()+1);
-	if (loadBar.getValue() == loarBar.getMax()){
-		Ti.App.fireEvent('doneLoading');	
-	}
-		
-		
+			if(loadBar != null){
+				loadBar.setValue(loadBar.getValue()+1);
+				info("3 loadBar val: " + loadBar.getValue());
+				if (loadBar.getValue() == 4){
+					Ti.App.fireEvent('doneLoading');	
+				}
+			}
 		},
 		onerror: function(e){
-			Ti.API.info("UPDATE ROUTE EST ERROR: "+e);
+			Ti.API.info("ERROR updateRouteEstimates(): "+e.toString());
 		},
 		timeout : 3000
 	});
@@ -802,7 +804,7 @@ function updateRouteEstimates(){
 	xhr.send();
 }
 function shuttleLocRequest(){
-	info("shuttleLocRequest");
+	//info("shuttleLocRequest");
 	var shuttleData = [];
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
@@ -828,7 +830,9 @@ function shuttleLocRequest(){
 }
 function doneLoading(){
 	info("doneLoading");
+	initialLaunch = false;
 	Ti.App.removeEventListener('doneLoading', doneLoading);
+	
 	
 	activityIndicator.visible = false;
 	webviewContainer.remove(activityIndicator);
@@ -840,11 +844,10 @@ function doneLoading(){
 	bottomMenu.visible = true;
 	localWebview.visible = true;
 
-	initialLaunch = false;
 }
 function getUserGPS(){
-	info("getUserGPS");
-	Ti.API.info("FUNC: getUserGPS");
+	info("FUNC: getUserGPS");
+	//Ti.API.info("FUNC: getUserGPS");
 	Titanium.Geolocation.getCurrentPosition(function(e)
 		{
 			if (!e.success || e.error)

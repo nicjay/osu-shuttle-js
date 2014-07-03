@@ -10,6 +10,7 @@ var heading = new Array(3);
 var ExprRouteGraphic;
 var NorthRouteGraphic;
 var SouthRouteGraphic;
+var userGraphic;
 
 var ExprStopGraphics = [];
 var NorthStopGraphics = [];
@@ -28,7 +29,7 @@ Ti.App.addEventListener('updatemap', function(event){
 			break;
 		case 1:		//updateMap(shuttleData)
 			Ti.API.info("------------------EVENT: updateMap");
-			updateMap(event.shuttleData);
+			updateMap(event.shuttleData, event.userGPS);
 			break;
 		case 2:
 			Ti.API.info("------------------EVENT: centerMap");
@@ -197,7 +198,8 @@ function createMap(userGPS, props){
 							latitude: userGPS[0],
 							longitude: userGPS[1]
 					});
-					map.graphics.add(new Graphic(User, UserMarkerSymbol));		
+					userGraphic = new Graphic(User, UserMarkerSymbol);
+					map.graphics.add(userGraphic);		
     			}
     			
     			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
@@ -246,9 +248,21 @@ function createMap(userGPS, props){
        
 //===================================================================
 
-function updateMap(shuttleData){
+function updateMap(shuttleData, userGPS){
 	require(["esri/map", "esri/geometry/Point","esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
 		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
+			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
+			
+			map.graphics.remove(userGraphic);
+  			
+		    User = new esri.geometry.Point({
+					latitude: userGPS[0],
+					longitude: userGPS[1]
+			});
+			userGraphic = new Graphic(User, UserMarkerSymbol);
+			map.graphics.add(userGraphic);		
+			
+			Ti.API.info("Hello this is userGPS : " + userGPS);
 			if(map.getLayer(shuttleLayer) != null){
 				map.removeLayer(shuttleLayer);
 			}
