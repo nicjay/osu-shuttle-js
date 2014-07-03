@@ -29,7 +29,7 @@ initProperties();
 
 
 Titanium.UI.setBackgroundColor('#fff');
-Ti.UI.Android.hideSoftKeyboard();
+//sTi.UI.Android.hideSoftKeyboard();
 Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
 
 //url[0]:updateRouteEstimates , url[1]:setStops , url[2]:shuttleLocRequest
@@ -60,7 +60,7 @@ var gpsCounter = getGPSInterval;
 var win = Ti.UI.createWindow({
     backgroundColor:'#000000',
     navBarHidden:true,
-    windowSoftInputMode: Titanium.UI.Android.SOFT_INPUT_STATE_ALWAYS_HIDDEN,
+    //windowSoftInputMode: Titanium.UI.Android.SOFT_INPUT_STATE_ALWAYS_HIDDEN,
     layout: 'vertical',
 });
 
@@ -327,8 +327,8 @@ zoomButtonView.addEventListener('click', function(e){
 	}
 });
 
-win.addEventListener('android:back',function(e) {
-});
+//win.addEventListener('android:back',function(e) {
+//});
 
 function setWebViewListener(){
 	Ti.API.info("FUNC: setWebViewListener");
@@ -425,7 +425,9 @@ function setTableClickListener(){
 	Ti.API.info("setTableClick");
 	if(loadBar != null){
 		loadBar.setValue(loadBar.getValue()+1);
-		info("1 loadBar val: " + loadBar.getValue());
+		if (loadBar.getValue() == loadBar.getMax()){
+			Ti.App.fireevent("doneLoading");	
+		}
 	}
 	//Ti.API.info("Load tblClick: " + loadBar.getValue());
 	info("END setTableClickListener");
@@ -794,6 +796,7 @@ function updateRouteEstimates(){
 					Ti.App.fireEvent('doneLoading');	
 				}
 			}
+
 		},
 		onerror: function(e){
 			Ti.API.info("ERROR updateRouteEstimates(): "+e.toString());
