@@ -237,6 +237,10 @@ function createMap(userGPS, props){
       					}
       				}
       			}
+      			
+      			
+
+      			
       				
       		}	
 			
@@ -244,23 +248,25 @@ function createMap(userGPS, props){
     		
 	);
 }
-       
-       
+    
 //===================================================================
 
 function updateMap(shuttleData, userGPS){
 	require(["esri/map", "esri/geometry/Point","esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
 		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
-			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
 			
-			map.graphics.remove(userGraphic);
-  			
-		    User = new esri.geometry.Point({
-					latitude: userGPS[0],
-					longitude: userGPS[1]
-			});
-			userGraphic = new Graphic(User, UserMarkerSymbol);
-			map.graphics.add(userGraphic);		
+			if(userGPS != null){
+				var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
+				
+				map.graphics.remove(userGraphic);
+	  			
+			    User = new esri.geometry.Point({
+						latitude: userGPS[0],
+						longitude: userGPS[1]
+				});
+				userGraphic = new Graphic(User, UserMarkerSymbol);
+				map.graphics.add(userGraphic);		
+			}	
 			
 			Ti.API.info("Hello this is userGPS : " + userGPS);
 			if(map.getLayer(shuttleLayer) != null){
@@ -273,31 +279,33 @@ function updateMap(shuttleData, userGPS){
 			var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('Shuttle/greentriangle.png', 20, 20); //*north central
 			var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('Shuttle/orangetriangle.png', 20, 20); //express
 			
-			for(var i = 0; i < shuttleData.length; i++){
-				var shuttleGraphic;
-				
-				//Check if route is enabled, if not, don't display shuttle graphic.
-				if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
-					continue;
+			if(shuttleData != null){
+				for(var i = 0; i < shuttleData.length; i++){
+					var shuttleGraphic;
+					
+					//Check if route is enabled, if not, don't display shuttle graphic.
+					if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
+						continue;
+					}
+					
+					//Assign graphic based on RouteID
+					switch(shuttleData[i][0]){
+						case 4: //Express
+							shuttleGraphic = ShuttleMarkerSymbol1;
+							break;
+						case 5:	//South-Central
+							shuttleGraphic = ShuttleMarkerSymbol2;
+					}
+					shuttleGraphic.setAngle(shuttleData[i][3]);
+					var newShuttle = new esri.geometry.Point({
+						latitude: shuttleData[i][1],
+						longitude: shuttleData[i][2],
+					});
+					var newGraphic = new Graphic(newShuttle, shuttleGraphic);
+					shuttleLayer.add(newGraphic);
 				}
-				
-				//Assign graphic based on RouteID
-				switch(shuttleData[i][0]){
-					case 4: //Express
-						shuttleGraphic = ShuttleMarkerSymbol1;
-						break;
-					case 5:	//South-Central
-						shuttleGraphic = ShuttleMarkerSymbol2;
-				}
-				shuttleGraphic.setAngle(shuttleData[i][3]);
-				var newShuttle = new esri.geometry.Point({
-					latitude: shuttleData[i][1],
-					longitude: shuttleData[i][2],
-				});
-				var newGraphic = new Graphic(newShuttle, shuttleGraphic);
-				shuttleLayer.add(newGraphic);
+				map.addLayer(shuttleLayer);
 			}
-			map.addLayer(shuttleLayer);
   		});
    }
        

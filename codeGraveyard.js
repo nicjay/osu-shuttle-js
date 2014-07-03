@@ -229,7 +229,13 @@ function adjustTable(e){
 	}
 	
 }*/
-
+map.graphics.on("click", myGraphicsClickHandler); 
+function myGraphicsClickHandler(evt) {
+	var obj = evt.graphic.attributes;
+	var str = JSON.stringify(obj);
+	Ti.API.info("Map Clicked! str : " + str);
+	//Ti.App.fireEvent("adjustTable", {data: [obj.StopId]});
+}  
 
 map.graphics.on("click", myGraphicsClickHandler);
 	        		function myGraphicsClickHandler(evt) {
