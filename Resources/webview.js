@@ -75,12 +75,16 @@ function createMap(userGPS, props){
     			displayGraphicsOnPan: true,
     			optimizePanAnimation: true,
     			showAttribution: false,
+    			autoResize: true,
    			});
    		
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
     		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/orangeDot.png', 15, 15);
     			
- 
+ 			dojo.connect(map, "onExtentChange", showExtent);
+ 			function showExtent(ext){
+ 				Ti.API.info("This is the extent. XMin: " + ext.xmin + ", YMin: " + ext.ymin + ", XMax: " + ext.xmax + ", YMax: " + ext.ymax);
+ 			}
     		//Hardcoded stops for one route
     		var StopPtsSouthCentral = [
 				[44.55832, -123.28162, 0],

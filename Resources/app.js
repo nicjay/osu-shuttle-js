@@ -29,7 +29,7 @@ initProperties();
 
 
 Titanium.UI.setBackgroundColor('#fff');
-//sTi.UI.Android.hideSoftKeyboard();
+Ti.UI.Android.hideSoftKeyboard();
 Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
 
 //url[0]:updateRouteEstimates , url[1]:setStops , url[2]:shuttleLocRequest
@@ -37,7 +37,7 @@ var url = ["http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimat
 	"http://www.osushuttles.com/Services/JSONPRelay.svc/GetRoutesForMapWithSchedule","http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapVehiclePoints"];
 
 //var userGPS = [44.565, -123.277];
-var userGPS = [];
+var userGPS = [], lastGPS = [];
 var deviceGPSOn = false, gpsOffPhrase = "GPS: Off", gpsOnPhrase = "GPS: On";
 
 var firstTime = true, firstIntervalUpdate = true, initialLaunch = true;
@@ -45,6 +45,8 @@ var fullMapViewOn = true;
 var baseTime;
 
 var settings;
+var fullMapViewBool = false;
+
 
 //Array of nearest stops
 var stopsArray = [], diffArray = [], shuttleLocs;
@@ -78,6 +80,11 @@ var selectedStopView = Ti.UI.createView({
 		//colors:[{color:'#3b3b3b', position:0.0},{color:'#1e1e1e', position: 1.0}]
 	},
 	height: '17%',
+	width: '100%',
+	opacity: .9,
+	top: 0,
+	//left: 5,
+	//right: 5,
 	layout: 'vertical',	
 });
 
@@ -172,7 +179,7 @@ for (var i=0;i<4;i++){
 
 
 var webviewContainer = Ti.UI.createView({
-	height: '55%',
+	height: '100%',
 });
 
 var localWebview = Titanium.UI.createWebView({
@@ -187,7 +194,14 @@ var localWebview = Titanium.UI.createWebView({
 
 var bottomMenu = Ti.UI.createView({
 	layout: 'vertical',
-	height: Ti.UI.FILL,
+	height: '25%',
+	width: '100%',
+	//left: 5,
+	bottom: 0,
+	//right: 5,
+	borderColor: '#000000',
+	borderWidth: '2px',
+	opacity: .9,
 	backgroundGradient: {
 		type:'linear',
 		colors:[{color:color[1][0], position:0.0},{color:color[1][1], position: 1.0}]
@@ -195,8 +209,10 @@ var bottomMenu = Ti.UI.createView({
 });
 
 var bottomMenuSlide = Ti.UI.createButton({
+	opacity: .9,
 	width: '100%',
-	height: Ti.UI.SIZE,
+	height: '5%',
+	bottom: '25%',
 	backgroundImage: 'GeneralUI/slideBar.png'
 });
 
@@ -216,24 +232,31 @@ bottomMenu.add(routeEstTable);
 var customFont = 'icomoon';
 
 var zoomButtonView = Ti.UI.createView({
-	layout: 'vertical', 
+	layout: 'vertical',
+	opacity: .9,
 	left: 5,
-	bottom: '2%',
-	width: '15%',
-	height: '30%',
+	bottom: '27%',
+	width: '13%',
+	height: '26%',
 	//height: '10%',
 	//top: '65%',
 });
 
 zoomButtonView.add(Ti.UI.createButton({
-	font:{fontSize: 25, fontFamily: customFont},
+	//color: '#d66518',
+	//color: '#1e1e1e',
+	//backgroundColor: 'transparent',
+	font:{fontSize: 30, fontFamily: customFont},
 	title: '+',
 	//width: '100%',
 	height: '50%'
 }));
 
 zoomButtonView.add(Ti.UI.createButton({
-	font:{fontSize: 25, fontFamily: customFont},
+	//color: '#d66518',
+	//color: '#1e1e1e',
+	//backgroundColor: 'transparent',
+	font:{fontSize: 30, fontFamily: customFont},
 	title: '-',
 	//font:{fontSize:25},
 	//width: '100%',
@@ -245,14 +268,19 @@ webviewContainer.add(bottomMenuSlide);
 webviewContainer.add(zoomButtonView);
 
 var locateUserView = Ti.UI.createView({
-	right: 5,
-	width: '15%',
-	height: '15%',
+	opacity: .9,
+	//right: 5,
+	width: '13%',
+	height: '13%',
 	//height: Ti.UI.SIZE,
-	bottom: '2%',
+	bottom: '27%',
+	right: 5,
 });
 
 var locateUserButton = Ti.UI.createButton({
+	//backgroundColor: 'transparent',
+	//color: '#1e1e1e',
+	//color: '#d66518',
 	font:{fontSize: 30, fontFamily: customFont},
 	title: '=',
 	height: '100%',
@@ -281,10 +309,12 @@ var loadBar = Ti.UI.createProgressBar({
 	style: 3
 });
 
-win.add(selectedStopView);
+webviewContainer.add(selectedStopView);
+webviewContainer.add(bottomMenu);
+//win.add(selectedStopView);
 win.add(webviewContainer);
 //win.add(localWebview);
-win.add(bottomMenu);
+//win.add(bottomMenu);
 win.open();
 
 //Hide elements temporarily for load indicator
@@ -341,6 +371,27 @@ Ti.App.addEventListener('settingsChanged', function(e){
 	}
 });
 
+//Ti.App.addEventListener('resume')
+
+bottomMenuSlide.addEventListener('click', function(e){
+	if(fullMapViewBool){
+		//selectedStopView.animate(selectedStopViewAnimation2);
+		//bottomMenu.animate(bottomMenuAnimation2);
+		selectedStopView.visible = bottomMenu.visible = true;
+		bottomMenuSlide.bottom = '25%',
+		zoomButtonView.bottom = locateUserView.bottom = '27%';
+
+		fullMapViewBool = false;
+	}else{
+		//selectedStopView.animate(selectedStopViewAnimation);
+		//bottomMenu.animate(bottomMenuAnimation);
+		selectedStopView.visible = bottomMenu.visible = false;
+		bottomMenuSlide.bottom = '0%',
+		zoomButtonView.bottom = locateUserView.bottom = '2%';
+		fullMapViewBool = true;
+	}
+});
+
 settingsButton.addEventListener('click', function(e){
 	if(settings == null){
 		settings = require('settings');
@@ -358,9 +409,28 @@ zoomButtonView.addEventListener('click', function(e){
 });
 
 
+var selectedStopViewHeight = selectedStopView.toImage().height;
+var selectedStopViewAnimation = Ti.UI.createAnimation({
+	top: -selectedStopViewHeight,
+	duration: 400,
+});
+var selectedStopViewAnimation2 = Ti.UI.createAnimation({
+	top: 0,
+	duration: 400,
+});
+var bottomMenuHeight = bottomMenu.toImage().height;
+var bottomMenuAnimation = Ti.UI.createAnimation({
+	bottom: -bottomMenuHeight,
+	duration: 400,
+});
+var bottomMenuAnimation2 = Ti.UI.createAnimation({
+	bottom: 0,
+	duration: 400,
+});
 
-//win.addEventListener('android:back',function(e) {
-//});
+
+win.addEventListener('android:back',function(e) {
+});
 
 function setWebViewListener(){
 	Ti.API.info("FUNC: setWebViewListener");
@@ -374,6 +444,9 @@ function setWebViewListener(){
 			var index = diffArray[0][1];
 			updateSelected(stopsArray[index]);
 			lastClickedStopName = stopsArray[index][0];
+		}else{
+			updateSelected(stopsArray[0]);
+			lastClickedStopName = stopsArray[0][0];
 		}	
 	}else {
 		Ti.App.fireEvent("updatemap", {id: 0, userGPS: userGPS, props: props});
@@ -389,33 +462,32 @@ function setWebViewListener(){
 
 function intervalUpdate(){
 	Ti.API.info("FUNC: intervalUpdate");
-	var lastGPS; 
 	var shuttleData = shuttleLocRequest();
 	updateRouteEstimates();
 	
 	//info("GPS COUNTER: " + gpsCounter);
 	if(gpsCounter >= getGPSInterval){ //if(gpsEnabled)
 		if(props[4]){
-			if(userGPS != null){
-				lastGPS = userGPS;
-				userGPS.length = 0;
-			}
 			getUserGPS();
-			if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
-				//Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
-				if(firstIntervalUpdate){
+			if(deviceGPSOn){
+				if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
+					//Ti.API.info("getUserGPS returned same data as last. Skipping findNearest");
+					if(firstIntervalUpdate){
+						updateTable(diffArray);
+						firstIntervalUpdate = false;
+					}
+				} else {
+					//Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
+					diffArray = findNearest(userGPS);
 					updateTable(diffArray);
-				}
-			} else {
-				//Ti.API.info("Got diff array: " + diffArray.toString() + "starting updateTable...");
-				diffArray = findNearest(userGPS);
-				updateTable(diffArray);
+				}	
+			}else{
+				updateTable(-1);
 			}
-			gpsCounter = 0;
 		} else {
 			updateTable(-1);
-			gpsCounter = 0;
 		}
+		gpsCounter = 0;
 	}else{
 		gpsCounter++;
 	}
@@ -881,6 +953,7 @@ function doneLoading(){
 	webviewContainer.remove(loadBar);
 	activityIndicator = loadBar = null;
 	
+	locateUserView.visible = true;
 	zoomButtonView.visible = true;
 	selectedStopView.visible = true;
 	bottomMenu.visible = true;
@@ -900,6 +973,7 @@ function getUserGPS(){
 				return;
 			}
 			else{
+				lastGPS = userGPS;
 				userGPS[0] = e.coords.latitude;
 				userGPS[1] = e.coords.longitude;
 				userGPS[2] = e.coords.timestamp;
