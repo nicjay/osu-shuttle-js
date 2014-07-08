@@ -13,23 +13,24 @@ var color5 = [['#1e1e1e','#5e2e0d'],['#5e2e0d','#1e1e1e']];
 
 var color6 = [['#3b3b3b','#1e1e1e'],['#3b3b3b','#1e1e1e']];//++
 
-var color7 = [['#1e1e1e','#0F0F0F'],['#3b3b3b','#1e1e1e']];
 var color = color6;
 //Ti.API.info("COLOR : " + color[0][0]);
 
 if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
    Titanium.API.info(' no connection ');
-   alert('no connection');
+   alert('No network connection.\nPlease close and restart App.');
 } else {
    Titanium.API.info(' connection present ');
-}
+}	
+
 
 var props = [];
 initProperties();
 
 
-Titanium.UI.setBackgroundColor('#fff');
+Titanium.UI.setBackgroundImage('#fff');
 Ti.UI.Android.hideSoftKeyboard();
+Ti.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS;
 Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
 
 //url[0]:updateRouteEstimates , url[1]:setStops , url[2]:shuttleLocRequest
@@ -51,7 +52,7 @@ var fullMapViewBool = false;
 //Array of nearest stops
 var stopsArray = [], diffArray = [], shuttleLocs;
 
-var lastClickedButton, lastClickedChildren, lastClickedStopName;
+var lastClickedChildren, lastClickedStopName;
 
 //Number of milliseconds between update calls
 var updateInterval = 4000;
@@ -61,10 +62,13 @@ var gpsCounter = getGPSInterval;
 
 //Create main window
 var win = Ti.UI.createWindow({
+    //backgroundImage: 'GeneralUI/blurBackground.9.png',
     backgroundColor:'#000000',
     navBarHidden:true,
     //windowSoftInputMode: Titanium.UI.Android.SOFT_INPUT_STATE_ALWAYS_HIDDEN,
     layout: 'vertical',
+    orientationModes: [Titanium.UI.PORTRAIT],
+    windowSoftInputMode: Titanium.UI.Android.SOFT_INPUT_STATE_ALWAYS_HIDDEN,
 });
 
 //===================================================================
@@ -148,7 +152,7 @@ for (var i=0; i<4; i++){
 	});
 
 	stopTimingLabels[i] = Ti.UI.createLabel({
-		font: { fontSize:30 },
+		font: { fontSize:'30sp' },
 		text: '---',//timeConversion(times[i]),
 		width: Ti.UI.SIZE,
 		height: Ti.UI.SIZE,
@@ -200,7 +204,7 @@ var bottomMenu = Ti.UI.createView({
 	bottom: 0,
 	//right: 5,
 	borderColor: '#000000',
-	borderWidth: '2px',
+	borderWidth: '2',
 	opacity: .9,
 	backgroundGradient: {
 		type:'linear',
@@ -236,8 +240,8 @@ var zoomButtonView = Ti.UI.createView({
 	opacity: .9,
 	left: 5,
 	bottom: '27%',
-	width: '13%',
-	height: '26%',
+	width: 60,//'13%',
+	height: 120,//'26%',
 	//height: '10%',
 	//top: '65%',
 });
@@ -246,7 +250,7 @@ zoomButtonView.add(Ti.UI.createButton({
 	//color: '#d66518',
 	//color: '#1e1e1e',
 	//backgroundColor: 'transparent',
-	font:{fontSize: 30, fontFamily: customFont},
+	font:{fontSize: '30sp', fontFamily: customFont},
 	title: '+',
 	//width: '100%',
 	height: '50%'
@@ -256,7 +260,7 @@ zoomButtonView.add(Ti.UI.createButton({
 	//color: '#d66518',
 	//color: '#1e1e1e',
 	//backgroundColor: 'transparent',
-	font:{fontSize: 30, fontFamily: customFont},
+	font:{fontSize: '30sp', fontFamily: customFont},
 	title: '-',
 	//font:{fontSize:25},
 	//width: '100%',
@@ -270,8 +274,8 @@ webviewContainer.add(zoomButtonView);
 var locateUserView = Ti.UI.createView({
 	opacity: .9,
 	//right: 5,
-	width: '13%',
-	height: '13%',
+	width: 60,
+	height: 60,
 	//height: Ti.UI.SIZE,
 	bottom: '27%',
 	right: 5,
@@ -281,7 +285,7 @@ var locateUserButton = Ti.UI.createButton({
 	//backgroundColor: 'transparent',
 	//color: '#1e1e1e',
 	//color: '#d66518',
-	font:{fontSize: 30, fontFamily: customFont},
+	font:{fontSize: '30sp', fontFamily: customFont},
 	title: '=',
 	height: '100%',
 });
@@ -291,7 +295,7 @@ webviewContainer.add(locateUserView);
 
 var activityIndicator = Ti.UI.createActivityIndicator({
 	color: '#FFFFFF',
-	font: {fontSize: 22},
+	font: {fontSize: '22sp'},
 	message: 'Retrieving shuttle data...',
 	top: '45%',
 	height: Ti.UI.SIZE,
@@ -317,6 +321,10 @@ win.add(webviewContainer);
 //win.add(bottomMenu);
 win.open();
 
+var activity = Titanium.Android.currentActivity;
+info("DIS IS ACTIVITY: " + activity);
+activity.finish();
+
 //Hide elements temporarily for load indicator
 zoomButtonView.visible = selectedStopView.visible = bottomMenu.visible = localWebview.visible = locateUserView.visible = false;
 
@@ -339,6 +347,7 @@ setStops();
 //===================================================================
 
 Ti.App.addEventListener('settingsChanged', function(e){
+	info("eventListener : settingsChanged");
 	var propsChanged = e.data;
 	for(var i = 0, len = propsChanged.length; i < len; i++){
 		if(propsChanged[i] != -1){
@@ -360,7 +369,15 @@ Ti.App.addEventListener('settingsChanged', function(e){
 					break;
 				case 4:
 					props[4] = propsChanged[4];
-					userGPS = null;
+					if(props[4] == true || props[4] == "true"){
+						getUserGPS();
+						diffArray = findNearest(userGPS);
+						Ti.API.info("This is diffArray: " + diffArray.toString());
+						updateTable(diffArray);
+					}else{
+						userGPS = [];
+						updateTable(-1);
+					}
 					break;
 				case 5:
 					props[5] = propsChanged[5];
@@ -371,20 +388,22 @@ Ti.App.addEventListener('settingsChanged', function(e){
 	}
 });
 
-//Ti.App.addEventListener('resume')
+locateUserView.addEventListener('click', function(e){
+	if(props[4] == true || props[4] == "true"){
+		Ti.App.fireEvent("updatemap", {id: 2, latitude: userGPS[0], longitude: userGPS[1], userBool: true});	
+	}else
+		alert("User GPS is currently disabeled.")
+	
+});
 
 bottomMenuSlide.addEventListener('click', function(e){
 	if(fullMapViewBool){
-		//selectedStopView.animate(selectedStopViewAnimation2);
-		//bottomMenu.animate(bottomMenuAnimation2);
 		selectedStopView.visible = bottomMenu.visible = true;
 		bottomMenuSlide.bottom = '25%',
 		zoomButtonView.bottom = locateUserView.bottom = '27%';
 
 		fullMapViewBool = false;
 	}else{
-		//selectedStopView.animate(selectedStopViewAnimation);
-		//bottomMenu.animate(bottomMenuAnimation);
 		selectedStopView.visible = bottomMenu.visible = false;
 		bottomMenuSlide.bottom = '0%',
 		zoomButtonView.bottom = locateUserView.bottom = '2%';
@@ -409,34 +428,15 @@ zoomButtonView.addEventListener('click', function(e){
 });
 
 
-var selectedStopViewHeight = selectedStopView.toImage().height;
-var selectedStopViewAnimation = Ti.UI.createAnimation({
-	top: -selectedStopViewHeight,
-	duration: 400,
-});
-var selectedStopViewAnimation2 = Ti.UI.createAnimation({
-	top: 0,
-	duration: 400,
-});
-var bottomMenuHeight = bottomMenu.toImage().height;
-var bottomMenuAnimation = Ti.UI.createAnimation({
-	bottom: -bottomMenuHeight,
-	duration: 400,
-});
-var bottomMenuAnimation2 = Ti.UI.createAnimation({
-	bottom: 0,
-	duration: 400,
-});
-
-
 win.addEventListener('android:back',function(e) {
 });
 
 function setWebViewListener(){
-	Ti.API.info("FUNC: setWebViewListener");
+	info("FUNC: setWebViewListener");
 	//localWebview.addEventListener('load',function(){
 	
-	if(props[4]){
+	if(props[4] == true || props[4] == "true"){
+		Ti.API.info("SHOULD NOT MAKE IT HERE");
 		getUserGPS();
 		Ti.App.fireEvent("updatemap", {id: 0, userGPS: userGPS, props: props});
 		if(deviceGPSOn){
@@ -461,13 +461,14 @@ function setWebViewListener(){
 }
 
 function intervalUpdate(){
-	Ti.API.info("FUNC: intervalUpdate");
+	info("FUNC: intervalUpdate");
 	var shuttleData = shuttleLocRequest();
 	updateRouteEstimates();
 	
 	//info("GPS COUNTER: " + gpsCounter);
 	if(gpsCounter >= getGPSInterval){ //if(gpsEnabled)
-		if(props[4]){
+		if(props[4] == true || props[4] == "true"){
+			Ti.API.info("XXXXXXXXXXXXXXX Props[4] : " + props[4]);
 			getUserGPS();
 			if(deviceGPSOn){
 				if(lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]){
@@ -502,16 +503,14 @@ function intervalUpdate(){
 }
 
 function setTableClickListener(){
-	info("setTableClickListener");
+	info("FUNC: setTableClickListener");
 	routeEstTable.addEventListener('click', function(e){
 		Ti.API.info("Clicked! Source : " + e.source);
 		
 		if(/*e.source == '[object Button]'*/1){
-			info("TableClicked, lastClickedButton: " + lastClickedButton + ", lastClickedStopName : " + lastClickedStopName);
-			if(lastClickedButton != null){
+			if(lastClickedStopName != null){
 				lastClickedChildren[0].color = '#FFEEDB';
 				lastClickedChildren[1].color = '#C0C0C0';
-				lastClickedButton.backgroundImage = 'GeneralUI/stopSelectButton.png';
 			}
 			var childViews = e.row.getChildren();
 			//var button = childViews[1].getChildren();
@@ -521,21 +520,20 @@ function setTableClickListener(){
 			
 			childViews[0].color = '#FFA94C';
 			childViews[1].color = '#FFA94C';
-			//button.backgroundImage = 'GeneralUI/stopSelectButtonBg2.png';
 			
 			var stopsRow = e.row.stopsArray, distance = e.row.distance;
 			updateSelected(stopsRow);
 
 			lastClickedChildren = childViews;
-			//lastClickedButton = button;
 			lastClickedStopName = stopsRow[0];
 
-			Ti.App.fireEvent("updatemap", {id: 2, latitude: stopsRow[1], longitude: stopsRow[2]});
+			Ti.App.fireEvent("updatemap", {id: 2, latitude: stopsRow[1], longitude: stopsRow[2], userBool: false});
 		}
 	});
 	Ti.API.info("setTableClick");
 	if(loadBar != null){
 		loadBar.setValue(loadBar.getValue()+1);
+		info("tableClick loadBar val: " + loadBar.getValue());
 		if (loadBar.getValue() == loadBar.getMax()){
 			Ti.App.fireevent("doneLoading");	
 		}
@@ -550,6 +548,7 @@ function setTableClickListener(){
 
 //Updates selected stop text
 function updateSelected(stop){	
+	info("FUNC: updateSelected");
 	UstopNameLabel.setText(stop[0]);
 	//distanceLabel.setText()
 	updateSelectedTimes(stop[3], stop[4], stop[5], stop[6]);
@@ -558,7 +557,7 @@ function updateSelected(stop){
 //Takes in 4 times, updates label
 //Should be called when selectedStop is changed, and when new data is pulled
 function updateSelectedTimes(t0, t1, t2, t3){
-	Ti.API.info("FUNC: updateSelectedTimes");
+	info("FUNC: updateSelectedTimes");
 	//Ti.API.info("TimeA:"+ t0);
 	var times = new Array(4);
 	times[0] = t0;
@@ -579,6 +578,7 @@ function updateSelectedTimes(t0, t1, t2, t3){
 
 //Converts seconds to a minute:second string
 function timeConversion(time){
+	info("FUNC: timeConversion");
 	var timeOutput;
 	var min = Math.floor(time / 60);
 	var sec = time%60;
@@ -598,7 +598,7 @@ function timeConversion(time){
 
 //Organize table based on proximity to user
 function findNearest(userLocation){
-	Ti.API.info("FUNC: findNearest");
+	info("FUNC: findNearest");
 	diffArray = [];
 	
 	//Calculate differences between stops and UserGPS
@@ -618,15 +618,10 @@ function findNearest(userLocation){
 }
 	
 function updateTable(diffArray){
-	Ti.API.info("FUNC: updateTable");
+	info("FUNC: updateTable");
 	var nearestArray = [];
-	/*if(loadBar != null){
-		loadBar.setValue(loadBar.getValue()+1);
-	}*/
-	
-		
-	var selectedRowScheme = ['#FFA94C', '#FFA94C', 'GeneralUI/stopSelectButtonBg2.png'];
-	var normalRowScheme = ['#FFEEDB', '#C0C0C0', 'GeneralUI/stopSelectButton.png'];
+	var selectedRowScheme = ['#FFA94C', '#FFA94C'];
+	var normalRowScheme = ['#FFEEDB', '#C0C0C0'];
 	var currentScheme;
 	
 	if(diffArray == -1){
@@ -644,48 +639,28 @@ function updateTable(diffArray){
 			tableRow.stopsArray = stopsArray[j];
 			tableRow.distance = -1;
 			
-			var rowViewSeg1 = Ti.UI.createView({
-				width: '80%',
-				//height: Ti.UI.SIZE,
-				//top: 0,
-			});
-			var rowViewSeg2 = Ti.UI.createView({
-				width: '20%',
-				//height: Ti.UI.SIZE,
-				//top: 0,
+			var rowView = Ti.UI.createView({
+				width: '100%',
 			});
 			
 		   	var stopNameLabel = Ti.UI.createLabel({
-				font: { fontSize:16 },
+				font: { fontSize:'20sp' },
 				text: stopsArray[j][0],
 				color: currentScheme[0],
-				//left: 15,
+				left: 15,
 				//top: 10,
 			});
-		    var distanceLabel = Ti.UI.createLabel({
-				//color: '#C0C0C0',
-				//right: 0,
+	   		
+			var distanceLabel = Ti.UI.createLabel({
 			});
 			
-			var selectButton = Ti.UI.createButton({
-	   			backgroundImage: currentScheme[2],
-	   			width: '50',
-	   			height:'50',
-	   			right: 0,
-	   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
-	   		});
-	   	
-	   		rowViewSeg1.add(stopNameLabel);
-	   		rowViewSeg1.add(distanceLabel);
-	   		rowViewSeg2.add(selectButton);
-	   	
+	   		rowView.add(stopNameLabel);
+	   		rowView.add(distanceLabel);
 	   		
-	   		tableRow.add(rowViewSeg1);
-	   		tableRow.add(rowViewSeg2);
+	   		tableRow.add(rowView);
 	   		nearestArray.push(tableRow);
 	   		
 	   		if(lastClickedStopName == stopsArray[j][0]){
-	   			lastClickedButton = selectButton;
 	   			var childViews = tableRow.getChildren();
 				childViews = childViews[0].getChildren();
 				lastClickedChildren = childViews;
@@ -697,7 +672,6 @@ function updateTable(diffArray){
 			var index = diffArray[j][1], distance = diffArray[j][0];
 			if(lastClickedStopName == stopsArray[j][0]){
 				currentScheme = selectedRowScheme;
-				//info("Table Update");
 			}else{
 				currentScheme = normalRowScheme;
 			}
@@ -709,15 +683,8 @@ function updateTable(diffArray){
 		   	tableRow.stopsArray = stopsArray[index];
 			tableRow.distance = distance;
 		 
-			var rowViewSeg1 = Ti.UI.createView({
+			var rowView = Ti.UI.createView({
 				width: '100%',
-				//height: Ti.UI.SIZE,
-				//top: 0,
-			});
-			var rowViewSeg2 = Ti.UI.createView({
-				width: '20%',
-				//height: Ti.UI.SIZE,
-				//top: 0,
 			});
 			
 		   	var stopNameLabel = Ti.UI.createLabel({
@@ -735,10 +702,6 @@ function updateTable(diffArray){
 					right: 10,
 					top: 10,
 				});
-				
-				//Ti.API.info("km set");
-				//distanceLabel.setText = distance.toFixed(2.2) + " km";
-				//distanceLabel.setText = "yoyo";
 			} else {
 				var distanceLabel = Ti.UI.createLabel({
 					font: { fontSize:'18sp' },
@@ -748,24 +711,14 @@ function updateTable(diffArray){
 					top: 10,
 				});
 			}
-			var selectButton = Ti.UI.createButton({
-	   			backgroundImage: currentScheme[2],
-	   			width: '60',
-	   			height:'60',
-	   			right: 10,
-	   			verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
-	   		});
 			
-	   		rowViewSeg1.add(stopNameLabel);
-	   		rowViewSeg1.add(distanceLabel);
-	   		//rowViewSeg2.add(selectButton);
+	   		rowView.add(stopNameLabel);
+	   		rowView.add(distanceLabel);
 	   		
-	   		tableRow.add(rowViewSeg1);
-	   		//tableRow.add(rowViewSeg2);
+	   		tableRow.add(rowView);
 	   		nearestArray.push(tableRow);
 	   		
 	   		if(lastClickedStopName == stopsArray[j][0]){
-	   			lastClickedButton = selectButton;
 	   			var childViews = tableRow.getChildren();
 				childViews = childViews[0].getChildren();
 				lastClickedChildren = childViews;
@@ -803,7 +756,11 @@ function updateTable(diffArray){
 
 //Set stopsArray
 function setStops(){
-	info("setStops");
+	info("FUNC: setStops");
+	if(loadBar != null){
+		loadBar.setValue(loadBar.getValue()+1);
+		info("4 loadBar val: " + loadBar.getValue());
+	}
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
 			var routeNames = new Array(3);
@@ -858,11 +815,7 @@ function setStops(){
 			 * 		Example
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,1,0,1]		*/
 			
-	
-			if(loadBar != null){
-				loadBar.setValue(loadBar.getValue()+1);
-				info("4 loadBar val: " + loadBar.getValue());
-			}
+
 							
 
 			//Ti.API.info("Load setStops: " + loadBar.getValue());
@@ -885,7 +838,7 @@ function setStops(){
 	
 }
 function updateRouteEstimates(){
-	//info("updateRouteEstimates");
+	info("FUNC: updateRouteEstimates");
 	//Ti.API.info("FUNC: updateRouteEstimates");
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
@@ -918,7 +871,7 @@ function updateRouteEstimates(){
 	xhr.send();
 }
 function shuttleLocRequest(){
-	//info("shuttleLocRequest");
+	info("FUNC: shuttleLocRequest");
 	var shuttleData = [];
 	var xhr = Ti.Network.createHTTPClient({
 		onload: function() {
@@ -943,7 +896,7 @@ function shuttleLocRequest(){
 	xhr.send();
 }
 function doneLoading(){
-	info("doneLoading");
+	info("FUNC: doneLoading");
 	initialLaunch = false;
 	Ti.App.removeEventListener('doneLoading', doneLoading);
 	
@@ -969,7 +922,7 @@ function getUserGPS(){
 			{
 				Ti.API.info("Failed to get UserGPS, error: " + e);
 				deviceGPSOn = false;
-				userGPS = null;
+				userGPS = [];
 				return;
 			}
 			else{
@@ -985,7 +938,7 @@ function getUserGPS(){
 
 
 function initProperties(){
-	Ti.API.info("FUNC: initProperties");
+	info("FUNC: initProperties");
 	var tmp = Ti.App.Properties.getString('showExpress', true);
 	props.push(tmp);
 	tmp = Ti.App.Properties.getString('showSouthCentral', true);

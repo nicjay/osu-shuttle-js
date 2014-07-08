@@ -33,7 +33,7 @@ Ti.App.addEventListener('updatemap', function(event){
 			break;
 		case 2:
 			Ti.API.info("------------------EVENT: centerMap");
-			centerMap(event.latitude, event.longitude);
+			centerMap(event.latitude, event.longitude, event.userBool);
 			break;
 		case 3:
 			Ti.API.info("------------------EVENT: zoomMap");
@@ -272,7 +272,6 @@ function updateMap(shuttleData, userGPS){
 				map.graphics.add(userGraphic);		
 			}	
 			
-			Ti.API.info("Hello this is userGPS : " + userGPS);
 			if(map.getLayer(shuttleLayer) != null){
 				map.removeLayer(shuttleLayer);
 			}
@@ -376,7 +375,7 @@ function showSouth(enableSouth){
 	  		}	
        });
 }
-function centerMap(lat, lon){
+function centerMap(lat, lon, userBool){
 	require(["esri/map", "esri/geometry/Point", "esri/graphic", "esri/symbols/PictureMarkerSymbol"], 
 		function(Map, Point, Graphic, PictureMarkerSymbol) {
 			
@@ -386,10 +385,12 @@ function centerMap(lat, lon){
 			});
 			
 			map.centerAt(centerPoint);
-			map.graphics.remove(selectStop);
-			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangeDotSelected2.png', 45, 45);
-			selectStop = new Graphic(centerPoint, selectStopSymbol);
-			map.graphics.add(selectStop);
+			if(userBool == false){
+				map.graphics.remove(selectStop);
+				var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangeDotSelected2.png', 45, 45);
+				selectStop = new Graphic(centerPoint, selectStopSymbol);
+				map.graphics.add(selectStop);	
+			}
     	});
 }   
 function zoomMap(zoom){
