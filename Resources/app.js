@@ -275,7 +275,7 @@ var zoomButtonView = Ti.UI.createView({
 	layout : 'vertical',
 	opacity : opacityArray[1],
 	left : 5,
-	bottom : '29%',
+	bottom : '28%',
 	//bottom: '54%',
 	//top: 0,
 	width : 60,
@@ -322,7 +322,7 @@ var locateUserView = Ti.UI.createView({
 	width : 60,
 	height : 60,
 	//height: Ti.UI.SIZE,
-	bottom : '29%',
+	bottom : '28%',
 	//bottom: '54%',
 	//top: 0,
 	right : 5,
@@ -492,11 +492,11 @@ locateUserView.addEventListener('click', function(e) {
 bottomMenuSlide.addEventListener('click', function(e) {
 	if (fullMapViewBool) {
 		bottomMenu.visible = true;
-		bottomMenuSlide.bottom = '27%', zoomButtonView.bottom = locateUserView.bottom = '29%';
+		bottomMenuSlide.bottom = '27%', zoomButtonView.bottom = locateUserView.bottom = '28%';
 		fullMapViewBool = false;
 	} else {
 		bottomMenu.visible = false;
-		bottomMenuSlide.bottom = '0%', zoomButtonView.bottom = locateUserView.bottom = '2%';
+		bottomMenuSlide.bottom = '0%', zoomButtonView.bottom = locateUserView.bottom = '1%';
 		fullMapViewBool = true;
 	}
 });
@@ -576,8 +576,6 @@ Ti.App.addEventListener('adjustTable', function(e){
 function setWebViewListener() {
 	info("FUNC: setWebViewListener");
 	//localWebview.addEventListener('load',function(){
-	
-	setBottomContainer();
 	
 	if (props[4] == true || props[4] == "true") {
 		getUserGPS();
@@ -981,12 +979,6 @@ function updateRouteEstimates() {
 			}
 			incrementLoadBar("updateRouteEstimates");
 			info("Loop Counter: " + loopCounter);
-
-			// if (firstUpdateRouteEstimates) {
-				// setBottomContainer();
-				// firstUpdateRouteEstimates = false;
-			// }
-
 		},
 		onerror : function(e) {
 			Ti.API.info("ERROR: updateRouteEstimates() : " + e.toString());
@@ -995,20 +987,6 @@ function updateRouteEstimates() {
 	});
 	xhr.open("GET", url[0]);
 	xhr.send();
-}
-
-function setBottomContainer(){
-	var height = bottomMenu.toImage().height;
-	info("setBottomContainer: height: " + height);
-	
-	info("PRE zoomHeight : " + zoomButtonView.bottom);
-	info("PRE locateUserView : " + locateUserView.bottom);
-	
-	//zoomButtonView.bottom = height + 10;
-	//locateUserView.bottom = height + 10;
-	
-	info("POST zoomHeight : " + zoomButtonView.bottom);
-	info("POST locateUserView : " + locateUserView.bottom);
 }
 
 function incrementLoadBar(callingFunction) {
@@ -1050,17 +1028,14 @@ function shuttleLocRequest() {
 
 function doneLoading() {
 	info("FUNC: doneLoading");
+	webviewContainer.opacity = 0;
 	localWebview.visible = true;
-	//win.remove(loadingContainer);
+	locateUserView.visible = zoomButtonView.visible = selectedStopView.visible = bottomMenu.visible = bottomMenuSlide.visible = true;
+
 	webviewContainer.remove(activityIndicator);
 	webviewContainer.remove(loadBar);
 	activityIndicator = loadBar = null;
-	//win.add(webviewContainer);
 	
-	//webviewContainer.visible = true;
-	
-	locateUserView.visible = zoomButtonView.visible = selectedStopView.visible = bottomMenu.visible = bottomMenuSlide.visible = true;
-	webviewContainer.opacity = 0;
 	webviewContainer.animate(containerFadeIn);
 }
 

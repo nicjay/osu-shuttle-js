@@ -25,7 +25,7 @@ exports.createSettingsWin = function(props){
 
 function createWindow(props){
 	mainSettingsWin = Ti.UI.createWindow({
-		layout: 'horizontal',
+		layout: 'vertical',
 		width: '100%',
 		height: '100%',
 		navBarHidden:true,
@@ -38,12 +38,12 @@ function createWindow(props){
 	});
 	
 	mainScrollView = Ti.UI.createScrollView({
-		height: '100%',
+		height: Ti.UI.FILL,
 		width: '100%',
 		layout: 'vertical',
 		showVerticalScrollIndicator: true,
 		scrollType: 'vertical',
-		//contentHeight: 'auto',
+		contentHeight: 'auto',
 		
 	});
 	
@@ -54,13 +54,12 @@ function createWindow(props){
 	});
 	
 	view0 = Ti.UI.createView({
-		height: 56,
+		height: Ti.UI.SIZE,
 		backgroundGradient: {
 			type:'linear',
 			//colors:[{color:'#2370a1', position:0.0},{color:'#09557c', position: 1.0}]
 			colors:[{color:'#36588D', position:0.0},{color:'#1F4F9B', position: 1.0}]
 		},
-		//bottom: 10,
 	});
 	
 	view0.add(Ti.UI.createLabel({
@@ -68,6 +67,8 @@ function createWindow(props){
 		color: '#FFEEDB',
 		text: 'Settings',
 		left: 10,
+		top: 15,
+		bottom: 15,
 	}));
 	
 	/*settingsLabel = Ti.UI.createLabel({
@@ -274,11 +275,11 @@ function createWindow(props){
 	view5 = Ti.UI.createView({
 		width: '100%',
 		height: Ti.UI.SIZE,
+		top: 10,
+		bottom: 10,
 	});
 	
 	pickerBaseMap = Ti.UI.createPicker({
-		top: 10,
-		bottom: 10,
 	});
 	
 	var pickerData = [];
@@ -301,8 +302,8 @@ function createWindow(props){
 		width: '100%',
 		height: Ti.UI.SIZE,
 		layout: 'vertical',
-		//top: 10,
-		//bottom: 10,
+		top: 10,
+		bottom: 10,
 	});
 	
 	innerView6B = Ti.UI.createView({
