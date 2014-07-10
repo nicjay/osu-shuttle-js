@@ -76,6 +76,8 @@ function createMap(userGPS, props, baseMap){
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol"], 
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol) {
   			Ti.API.info("YAHHHHH : " + userGPS + ", " + props);
+  			var initExtent = new Extent({"xmin":-13725118.790539471,"ymin":5551902.297951984,"xmax":-13722132.969122004,"ymax":5554238.404629012,"spatialReference":{"wkid":102100}});
+	  		var maxExtent = initExtent;
   			map = new Map("mapDiv", {
     			center: [-123.280, 44.562],
     			zoom: 15,
@@ -88,6 +90,7 @@ function createMap(userGPS, props, baseMap){
     			optimizePanAnimation: true,
     			showAttribution: false,
     			autoResize: true,
+    			extent: initExtent,
    			});
    			
 
@@ -139,9 +142,9 @@ function createMap(userGPS, props, baseMap){
     
    
     		//When the map loads, load in user and stops graphics
-    		map.on("load", loadUserAndStops);
+    		map.on("load", mapOnLoadHandler);
     		
-    		function loadUserAndStops(){
+    		function mapOnLoadHandler(){
     			var ExpressRoute = [
 	        		[-123.279941,44.567899],
         			[-123.279925,44.568082],
@@ -306,6 +309,29 @@ function createMap(userGPS, props, baseMap){
       			
       				
       		}	
+			
+			var previousExtent, timer;
+        	dojo.connect(map, "onExtentChange", constrainExtent);
+
+ 			function constrainExtent(extent, delta, levelChange, lod){
+ 				if (extent.intersects(maxExtent)){
+ 					previousExtent = extent;
+ 				}
+ 				else{
+ 					clearTimeout(timer);
+ 					timer = setTimeout(function(){ 
+ 						if (previousExtent != null){ 
+ 							map.setExtent(previousExtent); 
+ 						} 
+ 					}, 100);
+ 				}
+     	
+      			return true;
+      		}
+			
+			
+			
+			
 			
 		}
     		
