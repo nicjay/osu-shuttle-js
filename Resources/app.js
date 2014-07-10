@@ -562,13 +562,6 @@ Ti.App.addEventListener('adjustTable', function(e){
 
 			break;
 		}
-		//info("XXX: stopName = " + stopName + ", length :" + dataToChange.length);
-		// if(stopName == chosenStop){
-		// var row = dataToChange[i];
-		// row.backgroundColor = '#000000';
-		// routeEstTable.scrollToTop(i);
-		// break;
-		// }
 	}
 
 });

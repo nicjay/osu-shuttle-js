@@ -60,7 +60,7 @@ function createWindow(props){
 			//colors:[{color:'#2370a1', position:0.0},{color:'#09557c', position: 1.0}]
 			colors:[{color:'#36588D', position:0.0},{color:'#1F4F9B', position: 1.0}]
 		},
-	});
+	}); 
 	
 	view0.add(Ti.UI.createLabel({
 		font:{fontSize:22},
