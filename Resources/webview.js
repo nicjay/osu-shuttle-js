@@ -6,12 +6,14 @@ var map, pt, symbol;
 var selectStop;
 var GS1, GS2, GS3;
 var heading = new Array(3);
+var lastGraphicClicked;
 
 var ExprRouteGraphic;
 var NorthRouteGraphic;
 var SouthRouteGraphic;
 var userGraphic;
 
+var allStopGraphics = [];
 var ExprStopGraphics = [];
 var NorthStopGraphics = [];
 var SouthStopGraphics = [];
@@ -25,7 +27,7 @@ Ti.App.addEventListener('updatemap', function(event){
 	switch(event.id){
 		case 0:		//createMap(userGPS, props)
 			Ti.API.info("------------------EVENT: createMap");
-			createMap(event.userGPS, event.props);
+			createMap(event.userGPS, event.props, event.baseMap);
 			break;
 		case 1:		//updateMap(shuttleData)
 			Ti.API.info("------------------EVENT: updateMap");
@@ -33,7 +35,7 @@ Ti.App.addEventListener('updatemap', function(event){
 			break;
 		case 2:
 			Ti.API.info("------------------EVENT: centerMap");
-			centerMap(event.latitude, event.longitude, event.userBool);
+			centerMap(event.latitude, event.longitude, event.landmarkId, event.userBool);
 			break;
 		case 3:
 			Ti.API.info("------------------EVENT: zoomMap");
@@ -50,6 +52,9 @@ Ti.App.addEventListener('updatemap', function(event){
 			break;
 		case 7: //TODO: add in 4th route
 			break;
+		case 8:
+			changeBasemap(event.basemap);
+			break;
 	}
 	
 });
@@ -58,7 +63,14 @@ Ti.App.addEventListener('updatemap', function(event){
 
 //===================================================================
 
-function createMap(userGPS, props){
+function changeBasemap(newBaseMap){
+	require(["esri/map"],
+		function(Map) {
+			map.setBasemap(newBaseMap);
+		});
+}
+
+function createMap(userGPS, props, baseMap){
 	require([
 		"esri/map", "esri/graphic", "dojo/_base/array", 
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol"], 
@@ -67,7 +79,7 @@ function createMap(userGPS, props){
   			map = new Map("mapDiv", {
     			center: [-123.280, 44.562],
     			zoom: 15,
-    			basemap: "osm",
+    			basemap: baseMap,
     			minZoom: 12,
     			slider: false,
     			showAttribution:false,
@@ -77,41 +89,53 @@ function createMap(userGPS, props){
     			showAttribution: false,
     			autoResize: true,
    			});
-   		
+   			
+
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
-    		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/orangeDot.png', 15, 15);
+    		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/redPin.png', 40, 40);
+    		StopMarkerSymbol.yoffset = StopMarkerSymbol.height/2;
     			
- 			dojo.connect(map, "onExtentChange", showExtent);
- 			function showExtent(ext){
- 				Ti.API.info("This is the extent. XMin: " + ext.xmin + ", YMin: " + ext.ymin + ", XMax: " + ext.xmax + ", YMax: " + ext.ymax);
- 			}
     		//Hardcoded stops for one route
+    		var allStopPts = [
+    			[44.55832, -123.28162, 22],
+				[44.560524, -123.282411, 10],
+				[44.56344, -123.27964, 24],
+				[44.564578, -123.279934, 7],
+				[44.56675, -123.27719, 25],
+				[44.56673, -123.273, 27],
+				[44.55901, -123.27962, 21],
+				[44.56458, -123.28654, 28],
+				[44.56785, -123.28934, 29],
+				[44.56792, -123.28146, 30],
+				[44.562588, -123.274155, 31],
+				[44.568107, -123.279461, 20]];
+    		
     		var StopPtsSouthCentral = [
-				[44.55832, -123.28162, 0],
-				[44.560524, -123.282411, 1],
-				[44.56344, -123.27964, 2],
-				[44.564578, -123.279934, 3],
-				[44.56675, -123.27719, 4 ],
-				[44.56673, -123.273, 5],
-				[44.55901, -123.27962, 6]];
+				[44.55832, -123.28162, 22],
+				[44.560524, -123.282411, 10],
+				[44.56344, -123.27964, 24],
+				[44.564578, -123.279934, 7],
+				[44.56675, -123.27719, 25],
+				[44.56673, -123.273, 27],
+				[44.55901, -123.27962, 21]];
 				
     		var StopPtsNorthCentral = [
-                [44.564578, -123.279934, 3],
-                [44.56344, -123.27964, 2],
-                [44.56458, -123.28654, 7],
-                [44.56785, -123.28934, 8],
-                [44.56792, -123.28146, 9],
-                [44.56675, -123.27719, 4],
-                [44.56673, -123.273, 5],
-                [44.562588, -123.274155, 10]];
+                [44.564578, -123.279934, 7],
+                [44.56344, -123.27964, 24],
+                [44.56458, -123.28654, 28],
+                [44.56785, -123.28934, 29],
+                [44.56792, -123.28146, 30],
+                [44.56675, -123.27719, 25],
+                [44.56673, -123.273, 27],
+                [44.562588, -123.274155, 31]];
                 
     		var StopPtsExpress = [
-                [44.564578,-123.279934, 3],
-                [44.568107, -123.279461, 11],
-                [44.55901, -123.27962, 6],
-                [44.55832, -123.28162, 0],
-                [44.560524, -123.282411, 1],
-                [44.56344, -123.27964, 2]];
+                [44.564578,-123.279934, 7],
+                [44.568107, -123.279461, 20],
+                [44.55901, -123.27962, 21],
+                [44.55832, -123.28162, 22],
+                [44.560524, -123.282411, 10],
+                [44.56344, -123.27964, 24]];
     
    
     		//When the map loads, load in user and stops graphics
@@ -206,23 +230,32 @@ function createMap(userGPS, props){
 					map.graphics.add(userGraphic);		
     			}
     			
+    			arrayUtils.forEach(allStopPts, function(stopPt){
+    				var tempStop = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), StopMarkerSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
+    				allStopGraphics.push(tempStop);
+    				map.graphics.add(tempStop);
+    			});
+    			
+    			/*
     			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
-    			  	var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+    			  	var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"landmarkId":StopPt[2]} , null);
     				SouthStopGraphics.push(tempStop);
     			    map.graphics.add(tempStop);
     			});
     			
     			arrayUtils.forEach(StopPtsNorthCentral, function(StopPt) {
-    			    var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+    			    var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"landmarkId":StopPt[2]} , null);
     				NorthStopGraphics.push(tempStop);
     			    map.graphics.add(tempStop);
     			});
     			
     			arrayUtils.forEach(StopPtsExpress, function(StopPt) {
-    				var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"StopId":StopPt[2]} , null);
+    				var tempStop = new Graphic(new esri.geometry.Point({latitude: StopPt[0], longitude: StopPt[1]}), StopMarkerSymbol, {"landmarkId":StopPt[2]} , null);
     				ExprStopGraphics.push(tempStop);
     			    map.graphics.add(tempStop);
-      			});
+      			}); */
+      			
+      			map.graphics.on("click", myGraphicsClickHandler);
       			
       			for(var i = 0; i < 4; i++){
       				if(props[i] == 'false' || props[i] == false){
@@ -244,6 +277,32 @@ function createMap(userGPS, props){
       			
       			
 
+				function myGraphicsClickHandler(evt) {
+					if(lastGraphicClicked != null){
+						lastGraphicClicked.setSymbol(StopMarkerSymbol);
+					}
+					var obj = evt.graphic;
+					var attr = obj.attributes;
+					if(attr != null){
+						lastGraphicClicked = obj;
+						//var str = JSON.stringify(obj);
+						var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangePin.png', 65, 65);
+						selectStopSymbol.yoffset = selectStopSymbol.height/2;
+						obj.setSymbol(selectStopSymbol);
+						Ti.API.info("Map Clicked! str : " + attr.landmarkId);
+						Ti.App.fireEvent('adjustTable', {
+							data : [attr.landmarkId]
+						});
+		
+						var centerPoint = new esri.geometry.Point({
+							latitude : attr.lat,
+							longitude : attr.lon
+						});
+		
+						map.centerAt(centerPoint); 
+					}
+				}   
+
       			
       				
       		}	
@@ -252,17 +311,20 @@ function createMap(userGPS, props){
     		
 	);
 }
-    
+ 
+
+  
 //===================================================================
 
 function updateMap(shuttleData, userGPS){
 	require(["esri/map", "esri/geometry/Point","esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
 		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
 			
-			if(userGPS != null){
+			if(userGPS != null && map.graphics != null){
 				var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
-				
-				map.graphics.remove(userGraphic);
+				if(userGraphic != null){
+					map.graphics.remove(userGraphic);
+				}
 	  			
 			    User = new esri.geometry.Point({
 						latitude: userGPS[0],
@@ -375,22 +437,60 @@ function showSouth(enableSouth){
 	  		}	
        });
 }
-function centerMap(lat, lon, userBool){
+function centerMap(lat, lon, landmarkId, userBool){
 	require(["esri/map", "esri/geometry/Point", "esri/graphic", "esri/symbols/PictureMarkerSymbol"], 
 		function(Map, Point, Graphic, PictureMarkerSymbol) {
+			
 			
 			var centerPoint = new esri.geometry.Point({
 				latitude: lat,
 				longitude: lon
 			});
-			
+		
 			map.centerAt(centerPoint);
 			if(userBool == false){
-				map.graphics.remove(selectStop);
-				var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangeDotSelected2.png', 45, 45);
-				selectStop = new Graphic(centerPoint, selectStopSymbol);
-				map.graphics.add(selectStop);	
+				var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/redPin.png', 40, 40);
+				StopMarkerSymbol.yoffset = StopMarkerSymbol.height / 2;
+				var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangePin.png', 65, 65);
+				selectStopSymbol.yoffset = selectStopSymbol.height / 2; 
+
+				if(lastGraphicClicked != null){
+					lastGraphicClicked.setSymbol(StopMarkerSymbol);
+				}
+				
+				for(var i = 0, len = allStopGraphics.length; i < len; i++){
+					
+					var tmp = allStopGraphics[i];
+					
+					if(tmp.attributes.landmarkId == landmarkId){
+					
+						tmp.setSymbol(selectStopSymbol);
+						lastGraphicClicked = tmp;
+						break;
+					}
+				}
+			}else {
+				Ti.API.info("made it here");
+				var normalMarker = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
+				var bigMarker = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 32, 32);
+				if (userGraphic != null) {
+					map.graphics.remove(userGraphic);
+				}
+				User = new esri.geometry.Point({
+					latitude : lat,
+					longitude : lon
+				});
+				userGraphic = new Graphic(User, bigMarker);
+				map.graphics.add(userGraphic);
+				setTimeout(function(){
+					map.graphics.remove(userGraphic);
+					userGraphic = new Graphic(User, bigMarker);
+					map.graphics.add(userGraphic);
+				}, 500);	
+
 			}
+			
+			
     	});
 }   
 function zoomMap(zoom){
