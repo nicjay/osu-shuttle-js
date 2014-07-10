@@ -72,9 +72,9 @@ function changeBasemap(newBaseMap){
 
 function createMap(userGPS, props, baseMap){
 	require([
-		"esri/map", "esri/graphic", "dojo/_base/array", 
+		"esri/map", "esri/graphic", "dojo/_base/array", "esri/geometry/Extent", 
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol"], 
-		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol) {
+		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
   			Ti.API.info("YAHHHHH : " + userGPS + ", " + props);
   			var initExtent = new Extent({"xmin":-13725118.790539471,"ymin":5551902.297951984,"xmax":-13722132.969122004,"ymax":5554238.404629012,"spatialReference":{"wkid":102100}});
 	  		var maxExtent = initExtent;
