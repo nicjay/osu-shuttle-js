@@ -72,8 +72,13 @@ function changeBasemap(newBaseMap){
 
 function createMap(userGPS, props, baseMap){
 	require([
+<<<<<<< HEAD
 		"esri/map", "esri/graphic", "dojo/_base/array", "esri/geometry/Extent", 
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol"], 
+=======
+		"esri/map", "esri/graphic", "dojo/_base/array", 
+		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/geometry/Extent"], 
+>>>>>>> FETCH_HEAD
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
   			Ti.API.info("YAHHHHH : " + userGPS + ", " + props);
   			var initExtent = new Extent({"xmin":-13725118.790539471,"ymin":5551902.297951984,"xmax":-13722132.969122004,"ymax":5554238.404629012,"spatialReference":{"wkid":102100}});
@@ -305,34 +310,32 @@ function createMap(userGPS, props, baseMap){
 						map.centerAt(centerPoint); 
 					}
 				}   
+				
+				
+	
+				Ti.API.info("XXX:");
+				var previousExtent, timer;
+				dojo.connect(map, "onExtentChange", constrainExtent);
+	
+				function constrainExtent(extent, delta, levelChange, lod) {
+					Ti.API.info("XXX: extent : " + extent);
+					if (extent.intersects(maxExtent)) {
+						previousExtent = extent;
+					} else {
+						clearTimeout(timer);
+						timer = setTimeout(function() {
+							if (previousExtent != null) {
+								map.setExtent(previousExtent);
+							}
+						}, 100);
+					}
+	
+					return true;
+				}
 
       			
       				
-      		}	
-			
-			var previousExtent, timer;
-        	dojo.connect(map, "onExtentChange", constrainExtent);
-
- 			function constrainExtent(extent, delta, levelChange, lod){
- 				if (extent.intersects(maxExtent)){
- 					previousExtent = extent;
- 				}
- 				else{
- 					clearTimeout(timer);
- 					timer = setTimeout(function(){ 
- 						if (previousExtent != null){ 
- 							map.setExtent(previousExtent); 
- 						} 
- 					}, 100);
- 				}
-     	
-      			return true;
-      		}
-			
-			
-			
-			
-			
+      		}		
 		}
     		
 	);
