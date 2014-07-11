@@ -938,12 +938,21 @@ function setStops() {
 			*/
 			
 			updateRouteEstimates();
-
-			localWebview.addEventListener('load', function(e) {
+			
+			if(localWebview.loading){
+				localWebview.addEventListener('load', function(e) {
+					info("localWebview.addEvent(load)");
+					setWebViewListener();
+					setTableClickListener();
+				});
+			}
+			else{
 				info("localWebview.addEvent(load)");
 				setWebViewListener();
 				setTableClickListener();
-			});
+			}
+	
+	
 
 		}
 	});
