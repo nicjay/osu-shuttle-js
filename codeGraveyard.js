@@ -252,3 +252,157 @@ map.graphics.on("click", myGraphicsClickHandler);
 	    				}
 	  				}
 
+
+//Removed Friday, July 11th
+
+
+//Init everything for selectedStopView
+var selectedStopView = Ti.UI.createView({
+	backgroundGradient : {
+		type : 'linear',
+		colors : [{
+			color : color[0][0],
+			position : 0.0
+		}, {
+			color : color[0][1],
+			position : 1.0
+		}]
+
+		//colors:[{color:'#3b3b3b', position:0.0},{color:'#1e1e1e', position: 1.0}]
+	},
+	height: '20%',//height : '17%',
+	width : '100%',
+	opacity : opacityArray[0],
+	top : 0,
+	//left: 5,
+	//right: 5,
+	layout : 'vertical',
+});
+
+var UstopNameLabel = Ti.UI.createLabel({
+	minimumFontSize : '12sp',
+	font : {
+		fontSize : '22sp', fontFamily : boldFont
+	},
+	text : '',
+	color : '#E0E0E0',
+	left : 10,
+});
+
+var distanceLabel = Ti.UI.createLabel({
+	color : '#C0C0C0',
+	textAlign : Ti.UI.TEXT_ALIGNMENT_RIGHT,
+	top : 9,
+	width : Ti.UI.FILL,
+});
+
+var settingsButton = Ti.UI.createButton({
+	height : 36,
+	width : 36,
+	backgroundImage : 'GeneralUI/settingsGear.png',
+	backgroundSelectedImage : 'GeneralUI/settingsGearPressed.png',
+
+});
+
+var viewTopSection = Ti.UI.createView({
+	height : '50%',
+	width : '100%',
+	layout : 'horizontal',
+	top: -5,
+	backgroundGradient : { type : 'linear',
+		colors :[{
+			color : '#2D2D2D',
+			position : 0.0
+		}, {
+			color : '#2D2D2D',
+			position : 1.0
+		}]
+
+		//colors:[{color:'#3b3b3b', position:0.0},{color:'#1e1e1e', position: 1.0}]
+	},
+	viewShadowColor: '#000',
+
+});
+
+var viewTopSegs = new Array(3);
+
+viewTopSeg1 = Ti.UI.createView({
+	width : '85%',
+});
+
+viewTopSeg2 = Ti.UI.createView({
+	width : '15%',
+});
+
+viewTopSeg1.add(UstopNameLabel);
+viewTopSeg2.add(settingsButton);
+viewTopSection.add(viewTopSeg1);
+viewTopSection.add(viewTopSeg2);
+
+var viewBottomSection = Ti.UI.createView({
+	height : '50%',
+	width : '100%',
+	layout : 'horizontal',
+	top: -10,
+});
+
+var viewBottomSegs = new Array(4);
+var stopTimingLabels = new Array(4);
+var minuteLabel = [];
+var rando = [];
+
+// for(var z = 0; z < 4; z++){
+	// rando[z] = Math.floor(Math.random()*15);
+// }
+// info("this is rand : " + rando[0] + rando[1] + rando[2] + rando[3]);
+
+for (var i = 0; i < 4; i++) {
+	viewBottomSegs[i] = Ti.UI.createView({
+		width : '25%',
+		layout: 'vertical',
+	});
+	
+	rando[i] = Math.floor(Math.random()*15);
+	//info("random : " + i + " : " + rando[i]);
+	stopTimingLabels[i] = Ti.UI.createLabel({
+		font : {
+			fontSize : '35sp'
+		},
+		text : rando[i], //timeConversion(times[i]),
+		width : Ti.UI.SIZE,
+		height : Ti.UI.SIZE,
+		textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+	});
+
+	minuteLabel[i] = Ti.UI.createLabel({
+		font : {
+			fontSize : '15sp'
+		},
+		text : 'mins', //timeConversion(times[i]),
+		width : Ti.UI.SIZE,
+		height : Ti.UI.SIZE,
+		textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
+		top: -5,
+	}); 
+
+
+	viewBottomSegs[i].add(stopTimingLabels[i]);
+	viewBottomSegs[i].add(minuteLabel[i]);
+	viewBottomSection.add(viewBottomSegs[i]);
+}
+
+selectedStopView.add(viewTopSection);
+selectedStopView.add(viewBottomSection);
+
+stopTimingLabels[0].setColor('#7084ff');
+//stopTimingLabels[0].text(rand[0]);
+stopTimingLabels[1].setColor('#36c636');
+//stopTimingLabels[1].text(rand[1]);
+stopTimingLabels[2].setColor('#ff6600');
+//stopTimingLabels[2].text(rand[2]);
+stopTimingLabels[3].setColor('#ffd119');
+//stopTimingLabels[3].text(rand[3]);
+
+// for (var i = 0; i < 4; i++) {
+	// selectedStopView.add(stopTimingLabels[i]);
+// }

@@ -5,25 +5,18 @@
 //-------------------------------------------------------------------
 //===================================================================
 // Gradients : [TopMenu, BottomMenu]
-var color1 = [['#113a7c', '#082b62'], ['#006151', '#00463B']];
-var color2 = [['#011431', '#000917'], ['#002f27', '#001612']];
-var color3 = [['#3b3b3b', '#1e1e1e'], ['#1e1e1e', '#5e2e0d']];
-var color4 = [['#1e1e1e', '#5e2e0d'], ['#3b3b3b', '#1e1e1e']];
-var color5 = [['#1e1e1e', '#5e2e0d'], ['#5e2e0d', '#1e1e1e']];
+//var color8 = [['#1e1e1e', '#3b3b3b'], ['#3b3b3b', '#3b3b3b']];
+var color0 = [['#2D2D2D', '#3b3b3b'], ['#474F57', '#343c45']];
 
-var color6 = [['#3b3b3b', '#1e1e1e'], ['#3b3b3b', '#1e1e1e']];
-var color7 = [['#3b3b3b', '#3b3b3b'], ['#3b3b3b', '#3b3b3b']];
-var color8 = [['#1e1e1e', '#3b3b3b'], ['#3b3b3b', '#3b3b3b']];
-var color8 = [['#2D2D2D', '#3b3b3b'], ['#2D2D2D', '#2D2D2D']];
-//++
+var color7 = [['#2D2D2D', '#3b3b3b'], ['#2D2D2D', '#3b3b3b']];
+var color8 = [['#2D2D2D', '#3b3b3b'], ['#3E464E', '#343c45']];
+
 
 var color = color8;
-//Ti.API.info("COLOR : " + color[0][0]);
-
-// Opacity for [topMenu, zoom, locateUser, slideTab, bottomMenu]
-var opacityArray = [.95, .95, .95, .95, .85];
 
 
+// Opacity for [zoom, locateUser, slideTab, bottomMenu]
+var opacityArray = [.95, .95, .95, .95];
 
 if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
 	Titanium.API.info(' no connection ');
@@ -35,15 +28,9 @@ if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
 var props = [];
 initProperties();
 
-var customFont = 'icomoon';
+var iconFont = 'icomoon';
 var normalFont = 'OpenSans-Regular';
 var boldFont = 'OpenSans-Semibold';
-//var normalFont = 'Roboto-Regular';
-//var normalFont = 'Cantarell-Regular';
-
-//Choices: streets | satellite | hybrid | topo | gray | oceans | national-geographic | osm
-var chosenBaseMap = props[7];
-
 
 Titanium.UI.setBackgroundImage('#fff');
 Ti.UI.Android.hideSoftKeyboard();
@@ -56,15 +43,12 @@ var url = ["http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimat
 //var userGPS = [44.565, -123.277];
 var userGPS = [], lastGPS = [];
 
-var firstTime = true;
+var firstTime = true, baseTime;
 var fullMapViewOn = true;
-var baseTime;
-
-var settings;
 var fullMapViewBool = false;
 
 //Array of nearest stops
-var stopsArray = [], diffArray = [], shuttleLocs;
+var stopsArray = [], diffArray = [];
 
 var lastClickedChildren, lastClickedStopName;
 
@@ -76,10 +60,8 @@ var gpsCounter = getGPSInterval;
 
 //Create main window
 var win = Ti.UI.createWindow({
-	//backgroundImage: 'GeneralUI/blurBackground.9.png',
 	backgroundColor : '#000000',
 	navBarHidden : true,
-	//windowSoftInputMode: Titanium.UI.Android.SOFT_INPUT_STATE_ALWAYS_HIDDEN,
 	layout : 'vertical',
 	orientationModes : [Titanium.UI.PORTRAIT],
 	windowSoftInputMode : Titanium.UI.Android.SOFT_INPUT_STATE_ALWAYS_HIDDEN,
@@ -89,118 +71,10 @@ var win = Ti.UI.createWindow({
 //-------------------------------------------------------------------
 //===================================================================
 
-//Init everything for selectedStopView
-var selectedStopView = Ti.UI.createView({
-	backgroundGradient : {
-		type : 'linear',
-		colors : [{
-			color : color[0][0],
-			position : 0.0
-		}, {
-			color : color[0][1],
-			position : 1.0
-		}]
+var stopView = require('ui/stopView');
+var selectedStopView = stopView.createStopView();
 
-		//colors:[{color:'#3b3b3b', position:0.0},{color:'#1e1e1e', position: 1.0}]
-	},
-	height : '17%',
-	width : '100%',
-	opacity : opacityArray[0],
-	top : 0,
-	//left: 5,
-	//right: 5,
-	layout : 'vertical',
-});
-
-var UstopNameLabel = Ti.UI.createLabel({
-	minimumFontSize : '12sp',
-	font : {
-		fontSize : '22sp', fontFamily : boldFont
-	},
-	text : '',
-	color : '#E0E0E0',
-	left : 10,
-});
-
-var distanceLabel = Ti.UI.createLabel({
-	color : '#C0C0C0',
-	textAlign : Ti.UI.TEXT_ALIGNMENT_RIGHT,
-	top : 9,
-	width : Ti.UI.FILL,
-});
-
-var settingsButton = Ti.UI.createButton({
-	height : 36,
-	width : 36,
-	backgroundImage : 'GeneralUI/settingsGear.png',
-	backgroundSelectedImage : 'GeneralUI/settingsGearPressed.png',
-
-});
-
-var viewTopSection = Ti.UI.createView({
-	height : '50%',
-	width : '100%',
-	layout : 'horizontal',
-});
-
-var viewTopSegs = new Array(3);
-
-viewTopSeg1 = Ti.UI.createView({
-	width : '85%',
-});
-
-viewTopSeg2 = Ti.UI.createView({
-	width : '15%',
-});
-
-viewTopSeg1.add(UstopNameLabel);
-viewTopSeg2.add(settingsButton);
-viewTopSection.add(viewTopSeg1);
-viewTopSection.add(viewTopSeg2);
-
-var viewBottomSection = Ti.UI.createView({
-	height : '50%',
-	width : '100%',
-	layout : 'horizontal',
-});
-
-var viewBottomSegs = new Array(4);
-var stopTimingLabels = new Array(4);
-
-for (var i = 0; i < 4; i++) {
-	viewBottomSegs[i] = Ti.UI.createView({
-		width : '25%'
-	});
-
-	stopTimingLabels[i] = Ti.UI.createLabel({
-		font : {
-			fontSize : '30sp'
-		},
-		text : '---', //timeConversion(times[i]),
-		width : Ti.UI.SIZE,
-		height : Ti.UI.SIZE,
-		textAlign : Ti.UI.TEXT_ALIGNMENT_LEFT,
-	});
-
-	viewBottomSegs[i].add(stopTimingLabels[i]);
-	viewBottomSection.add(viewBottomSegs[i]);
-}
-
-selectedStopView.add(viewTopSection);
-selectedStopView.add(viewBottomSection);
-
-stopTimingLabels[0].setColor('#7084ff');
-stopTimingLabels[1].setColor('#36c636');
-stopTimingLabels[2].setColor('#ff6600');
-stopTimingLabels[3].setColor('#ffd119');
-
-for (var i = 0; i < 4; i++) {
-	selectedStopView.add(stopTimingLabels[i]);
-}
-
-//===================================================================
-//-------------------------------------------------------------------
-//===================================================================
+stopView.setStopView("test", [0, 1, 2, 3]);
 
 var webviewContainer = Ti.UI.createView({
 	opacity: 1,
@@ -222,13 +96,6 @@ var localWebview = Titanium.UI.createWebView({
 	//contentHeight: Ti.UI.FILL,
 });
 
-var bottomContainer = Ti.UI.createView({
-	//backgroundColor: '#000',
-	//opacity: .5,
-	height : '50%',
-	bottom: 0,
-});
-
 var bottomMenu = Ti.UI.createView({
 	layout : 'vertical',
 	height : '27%',
@@ -238,21 +105,21 @@ var bottomMenu = Ti.UI.createView({
 	//right: 5,
 	//borderColor : '#000000',
 	//borderWidth : '1px',
-	opacity : opacityArray[4],
-	backgroundGradient : {
-		type : 'linear',
-		colors : [{
-			color : color[1][0],
-			position : 0.0
-		}, {
-			color : color[1][1],
-			position : 1.0
-		}]
-	},
+	opacity : opacityArray[3],
+	// backgroundGradient : {
+		// type : 'linear',
+		// colors : [{
+			// color : color[1][0],
+			// position : 0.0
+		// }, {
+			// color : color[1][1],
+			// position : 1.0
+		// }]
+	// },
 });
 
 var bottomMenuSlide = Ti.UI.createButton({
-	opacity : opacityArray[3],
+	opacity : opacityArray[2],
 	width : '100%',
 	height : '5%',
 	bottom : '27%',
@@ -273,7 +140,7 @@ bottomMenu.add(routeEstTable);
 
 var zoomButtonView = Ti.UI.createView({
 	layout : 'vertical',
-	opacity : opacityArray[1],
+	opacity : opacityArray[0],
 	left : 5,
 	bottom : '28%',
 	//bottom: '54%',
@@ -283,70 +150,71 @@ var zoomButtonView = Ti.UI.createView({
 });
 
 zoomButtonView.add(Ti.UI.createButton({
+	backgroundColor: '#40342f',//'#44494B',
+	backgroundSelectedColor: '#2c2f30',
 	color: '#E0E0E0',
 	font : {
 		fontSize : '25sp',
-		fontFamily : customFont
+		fontFamily : iconFont
 	},
 	title : '+',
-	height : '50%',
-	//borderColor: '#000000',
-	//borderWidth: 0,
-	//borderRadius: 10,
+	height : '45%',
+	width: '90%',
+	borderColor: '#000000',
+	borderWidth: 0,
+	borderRadius: 5,
 }));
 
 zoomButtonView.add(Ti.UI.createButton({
+	top: '10%',
+	backgroundColor: '#40342f',//'#44494B',
+	backgroundSelectedColor: '#2c2f30',
 	color: '#E0E0E0',
 	font : {
 		fontSize : '25sp',
-		fontFamily : customFont
+		fontFamily : iconFont
 	},
 	title : '-',
-	height : '50%',
-	// borderColor: '#000000',
-	// borderWidth: 0,
-	// borderRadius: 10,
+	height : '45%',
+	width: '90%',
+	borderColor: '#000000',
+	borderWidth: 0,
+	borderRadius: 5,
 }));
 
-webviewContainer.add(localWebview);
-
-//**
-webviewContainer.add(bottomMenuSlide);
-webviewContainer.add(zoomButtonView);
-//bottomContainer.add(bottomMenuSlide);
-//bottomContainer.add(zoomButtonView);
-//**
-
 var locateUserView = Ti.UI.createView({
-	opacity : opacityArray[2],
+	opacity : opacityArray[1],
 	width : 60,
 	height : 60,
-	//height: Ti.UI.SIZE,
 	bottom : '28%',
-	//bottom: '54%',
-	//top: 0,
 	right : 5,
 });
 
-var locateUserButton = Ti.UI.createButton({
+locateUserView.add(Ti.UI.createButton({
+	backgroundColor: '#40342f',//'#44494B',
+	backgroundSelectedColor: '#2c2f30',
 	color: '#E0E0E0',
 	font : {
 		fontSize : '25sp',
-		fontFamily : customFont
+		fontFamily : iconFont
 	},
 	title : '=',
-	height : '100%',
+	height : '90%',
+	width: '90%',
+	borderColor: '#000000',
+	borderWidth: 0,
+	borderRadius: 5,
 	// borderColor: '#000000',
 	// borderWidth: 0,
 	// borderRadius: 30,
+}));
+
+var loadView = Ti.UI.createView({
+	height: Ti.UI.SIZE,
+	width: Ti.UI.SIZE,
+	bottom: '50%',
+	layout: 'vertical',
 });
-
-locateUserView.add(locateUserButton);
-
-//**
-//bottomContainer.add(locateUserView);
-webviewContainer.add(locateUserView);
-//**
 
 var activityIndicator = Ti.UI.createActivityIndicator({
 	color : '#FFFFFF',
@@ -354,56 +222,46 @@ var activityIndicator = Ti.UI.createActivityIndicator({
 		fontSize : '22sp'
 	},
 	message : 'Retrieving shuttle data...',
-	top : '45%',
+	//top : '45%',
 	height : Ti.UI.SIZE,
-	weight : Ti.UI.SIZE,
+	width : '100%',
 	visible : true
 });
 
 var loadBar = Ti.UI.createProgressBar({
-	top : '60%',
+	//top : '60%',
 	min : 0,
 	max : 4,
 	value : 0,
-	height : '10%',
+	//height : '10%',
 	width : '80%',
 	style : 3
 });
 
-webviewContainer.add(activityIndicator);
-webviewContainer.add(loadBar);
-// win.add(loadingContainer);
-
+webviewContainer.add(localWebview);
+webviewContainer.add(bottomMenuSlide);
+webviewContainer.add(zoomButtonView);
+webviewContainer.add(locateUserView);
 webviewContainer.add(selectedStopView);
-
-//**
 webviewContainer.add(bottomMenu);
-//bottomContainer.add(bottomMenu);
-//**
 
+loadView.add(activityIndicator);
+loadView.add(loadBar);
+webviewContainer.add(loadView);
 
-//webviewContainer.add(bottomContainer);
-//win.add(selectedStopView);
 win.add(webviewContainer);
-//win.add(localWebview);
-//win.add(bottomMenu);
-
 
 //Hide elements temporarily for load indicator
 zoomButtonView.visible = selectedStopView.visible = bottomMenu.visible = localWebview.visible = locateUserView.visible = bottomMenuSlide.visible = false;
-//webviewContainer.visible = false;
-
-
-// setInterval(function(){
-	// var bottomMenuHeight3 = bottomMenu.toImage().height;
-	// info("bottomMenuHeight3: " + bottomMenuHeight3);
-// }, 200);
 
 win.open();
 
-loadBar.show();
 
-setStops();
+setTimeout(function(){
+	info("timeout function done");
+	setStops();
+}, 5000);
+
 
 //===================================================================
 //-------------------------------------------------------------------
@@ -455,15 +313,16 @@ Ti.App.addEventListener('settingsChanged', function(e) {
 					break;
 				case 5:
 					props[5] = propsChanged[5];
-					diffArray = findNearest(userGPS);
-					updateTable(diffArray);
+					if(props[4] == true || props[4] == "true"){
+						diffArray = findNearest(userGPS);
+						updateTable(diffArray);
+					}
 					break;
 				case 6:
 					
 					break;
 				case 7:
 					props[7] = propsChanged[7];
-					Ti.API.info("YOYO map changed!");
 					Ti.App.fireEvent('updatemap', {
 						id: 8,
 						basemap: props[7],
@@ -501,12 +360,6 @@ bottomMenuSlide.addEventListener('click', function(e) {
 	}
 });
 
-settingsButton.addEventListener('click', function(e) {
-	if (settings == null) {
-		settings = require('settings');
-	}
-	settings.createSettingsWin(props);
-});
 
 zoomButtonView.addEventListener('click', function(e) {
 	var children = zoomButtonView.getChildren();
@@ -526,13 +379,15 @@ zoomButtonView.addEventListener('click', function(e) {
 win.addEventListener('android:back', function(e) {
 });
 
+function checkMemory(msg){
+	
+	info(Titanium.Platform.getAvailableMemory()/100000 + " --- " + msg);
+}
+
 Ti.App.addEventListener('adjustTable', function(e){
 	var dataToChange = routeEstTable.getData();
-	info("DataToChange Pre: " + dataToChange.toString());
 	dataToChange = dataToChange[0].getRows();
-	info("DataToChange Pre: " + dataToChange.toString());
 	var landmarkId = e.data[0];
-	info("landmarkId = " + landmarkId);
 	var id, j;
 	for ( i = 0; i < dataToChange.length; i++) {
 		id = dataToChange[i].landmarkId;
@@ -549,17 +404,8 @@ Ti.App.addEventListener('adjustTable', function(e){
 
 			lastClickedChildren = children;
 			lastClickedStopName = stopInfo[0];
-			// Ti.App.fireEvent("updatemap", {
-				// id : 2,
-				// latitude : stopInfo[1],
-				// longitude : stopInfo[2],
-				// landmarkId : stopsRow[7],
-				// userBool : false
-			// }); 
 
 			updateSelected(stopInfo);
-			info("These are the children... " + children.toString());
-
 			break;
 		}
 	}
@@ -569,14 +415,13 @@ Ti.App.addEventListener('adjustTable', function(e){
 function setWebViewListener() {
 	info("FUNC: setWebViewListener");
 	//localWebview.addEventListener('load',function(){
-	
 	if (props[4] == true || props[4] == "true") {
 		getUserGPS();
 		Ti.App.fireEvent("updatemap", {
 			id : 0,
 			userGPS : userGPS,
 			props : props,
-			baseMap : chosenBaseMap,
+			baseMap : props[7],
 		});
 
 		if (userGPS.length != 0) {
@@ -593,7 +438,7 @@ function setWebViewListener() {
 			id : 0,
 			userGPS : userGPS,
 			props : props,
-			baseMap : chosenBaseMap,
+			baseMap : props[7],
 		});
 		updateSelected(stopsArray[0]);
 		lastClickedStopName = stopsArray[0][0];
@@ -631,18 +476,13 @@ function intervalUpdate() {
 	} else {
 		gpsCounter++;
 	}
-
 	Ti.App.fireEvent("updatemap", {
 		id : 1,
 		shuttleData : shuttleData,
 		userGPS : userGPS
 	});
-
-	for (var i = 0, len = stopsArray.length; i < len; i++) {
-		if (stopsArray[i] == UstopNameLabel.getText()) {
-			updateSelectedTimes(stopsArray[i][3], stopsArray[i][4], stopsArray[i][5], stopsArray[i][6]);
-		}
-	}
+		
+	//TODO: updateSelectedTimes()
 }
 
 
@@ -675,35 +515,6 @@ function setTableClickListener() {
 	incrementLoadBar("setTableClickListener");
 }
 
-function adjustTable(e){
-	var landmarkId = e.data[0];
-	info("landmarkId = " + landmarkId);
-	var dataToChange = routeEstTable.getData();
-	dataToChange = dataToChange[0].getRows();
-	
-	//Find name of chosenStop using stopId passed in
-	var chosenStop, i;
-	for(i = 0; i < stopsArray.length; i++){
-		if(stopsArray[i][6] == stopId){
-			chosenStop = stopsArray[i][0];
-			break;
-		}
-	}
-	
-	//Find row with the same name, scroll to it.
-	var stopName, j;
-	for(i = 0; i < dataToChange.length; i++){
-		stopName = dataToChange[i].children[0].text;
-		info("XXX: stopName = " + stopName);
-		// if(stopName == chosenStop){
-			// var row = dataToChange[i];
-			// row.backgroundColor = '#000000';
-			// routeEstTable.scrollToTop(i);
-			// break;
-		// }	
-	}
-	
-}
 //===================================================================
 //-------------------------------------------------------------------
 //===================================================================
@@ -711,46 +522,13 @@ function adjustTable(e){
 //Updates selected stop text
 function updateSelected(stop) {
 	info("FUNC: updateSelected");
-	UstopNameLabel.setText(stop[0]);
-	//distanceLabel.setText()
-	updateSelectedTimes(stop[3], stop[4], stop[5], stop[6]);
-	
+	stopView.setStopView(stop[0], [stop[3], stop[4], stop[5], stop[6]]);
 }
 
 //Takes in 4 times, updates label
-//Should be called when selectedStop is changed, and when new data is pulled
 function updateSelectedTimes(t0, t1, t2, t3) {
 	info("FUNC: updateSelectedTimes");
-	//Ti.API.info("TimeA:"+ t0);
-	var times = new Array(4);
-	times[0] = t0;
-	times[1] = t1;
-	times[2] = t2;
-	times[3] = t3;
-
-	//change this back to 4 iterations after stopsArray modified to include 4th ETA
-	for (var i = 0; i < 3; i++) {
-		if (times[i] > 0 && times[i] != null) {
-			stopTimingLabels[i].setText(timeConversion(times[i]));
-		} else
-			stopTimingLabels[i].setText('---');
-	}
-
-}
-
-//Converts seconds to a minute:second string
-function timeConversion(time) {
-	info("FUNC: timeConversion");
-	var timeOutput;
-	var min = Math.floor(time / 60);
-	var sec = time % 60;
-
-	if (sec < 10)
-		timeOutput = min + ':0' + sec;
-	else
-		timeOutput = min + ':' + sec;
-
-	return timeOutput;
+	stopView.setStopViewTimes([t0, t1, t2, t3]);
 }
 
 //===================================================================
@@ -780,7 +558,9 @@ function findNearest(userLocation) {
 
 function updateTable(diffArray) {
 	info("FUNC: updateTable");
+	checkMemory("PRE");
 	var nearestArray = [];
+	checkMemory("POST");
 	var selectedRowScheme = ['#FFA94C', '#FFA94C'];
 	var normalRowScheme = ['#FFEEDB', '#C0C0C0'];
 	var currentScheme;
@@ -798,6 +578,17 @@ function updateTable(diffArray) {
 			var tableRow = Ti.UI.createTableViewRow({
 				className : 'Stops',
 				layout : 'horizontal',
+				landmarkId: stopsArray[j][7],
+				backgroundGradient : { type : 'linear',
+					colors :[{
+						color : color[1][0],
+						position : 0.0
+					}, {
+						color : color[1][1],
+						position : 1.0
+					}]
+				},
+
 			});
 			var rowView = Ti.UI.createView({});
 			
@@ -835,8 +626,31 @@ function updateTable(diffArray) {
 				className : 'Stops',
 				layout : 'horizontal',
 				landmarkId: stopsArray[index][7],
+				backgroundGradient : { type : 'linear',
+					colors :[{
+						color : color[1][0],
+						position : 0.0
+					}, {
+						color : color[1][1],
+						position : 1.0
+					}]
+				},
+
+
 			});
-			var rowView = Ti.UI.createView({});
+			var rowView = Ti.UI.createView({
+
+				backgroundGradient : { type : 'linear',
+					colors :[{
+						color : color[1][0],
+						position : 0.0
+					}, {
+						color : color[1][1],
+						position : 1.0
+					}]
+				},
+
+			});
 			
 			rowView.add(Ti.UI.createLabel({
 				left : 15,
@@ -881,11 +695,9 @@ function updateTable(diffArray) {
 //====================================================================================================================================
 //------------------------------------------------------------------------------------------------------------------------------------
 //====================================================================================================================================
-
+var localWebviewSet = false;
 function setStops() {
 	info("FUNC: setStops");
-		var bottomMenuHeight2 = bottomMenu.toImage().height;
-	info("bottomMenuHeight2: " + bottomMenuHeight2);
 	incrementLoadBar("setStops");
 	var xhr = Ti.Network.createHTTPClient({
 		onload : function() {
@@ -937,19 +749,45 @@ function setStops() {
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,-1,-1,-1,-1,21]
 			*/
 			
-			updateRouteEstimates();
-
+			
+			
+			info("OGG Setting localWebViewListen");
 			localWebview.addEventListener('load', function(e) {
 				info("localWebview.addEvent(load)");
 				setWebViewListener();
 				setTableClickListener();
 			});
+			localWebviewSet = true;
+			localWebview.fireEvent('lateLoad');
+			
+			updateRouteEstimates();
 
-		}
+		},
+		onerror : function(e) {
+			info("why...");
+			Ti.API.info("ERROR: setStops() : " + e.toString());
+		},
+		timeout : 5000 
 	});
 	xhr.open("GET", url[1]);
 	xhr.send();
 }
+
+
+localWebview.addEventListener('beforeload', function(e){
+	info("localWebview : beforeload");
+});
+
+localWebview.addEventListener('load', function(e){
+	if(!localWebviewSet){
+		info("It froze... didn't it? NEVER SHOULD HAPPEN");
+		localWebview.addEventListener('lateLoad', function(e){
+			info("LATE: localWebview.addEvent(load)");
+			setWebViewListener();
+			setTableClickListener();
+		});
+	}
+});
 
 var firstUpdateRouteEstimates = true;
 function updateRouteEstimates() {
@@ -971,7 +809,6 @@ function updateRouteEstimates() {
 				}
 			}
 			incrementLoadBar("updateRouteEstimates");
-			info("Loop Counter: " + loopCounter);
 		},
 		onerror : function(e) {
 			Ti.API.info("ERROR: updateRouteEstimates() : " + e.toString());
@@ -998,7 +835,7 @@ function shuttleLocRequest() {
 	var shuttleData = [];
 	var xhr = Ti.Network.createHTTPClient({
 		onload : function() {
-			shuttleLocs = JSON.parse(this.responseText);
+			var shuttleLocs = JSON.parse(this.responseText);
 
 			if (shuttleLocs.length == 0) {
 				//Ti.API.info("No shuttles active...");
@@ -1025,9 +862,8 @@ function doneLoading() {
 	localWebview.visible = true;
 	locateUserView.visible = zoomButtonView.visible = selectedStopView.visible = bottomMenu.visible = bottomMenuSlide.visible = true;
 
-	webviewContainer.remove(activityIndicator);
-	webviewContainer.remove(loadBar);
-	activityIndicator = loadBar = null;
+	webviewContainer.remove(loadView);
+	activityIndicator = loadBar = loadView = null;
 	
 	webviewContainer.animate(containerFadeIn);
 }

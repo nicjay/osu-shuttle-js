@@ -2,6 +2,7 @@
 //===================================================================
 //Set up variables and event listeners
  
+var exString = "Can't believe I can reach this";
 var map, pt, symbol;
 var selectStop;
 var GS1, GS2, GS3;
@@ -95,7 +96,7 @@ function createMap(userGPS, props, baseMap){
    			
 
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
-    		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/redPin.png', 40, 40);
+    		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/greenPin.png', 40, 40);
     		StopMarkerSymbol.yoffset = StopMarkerSymbol.height/2;
     			
     		//Hardcoded stops for one route
@@ -473,7 +474,7 @@ function centerMap(lat, lon, landmarkId, userBool){
 		
 			map.centerAt(centerPoint);
 			if(userBool == false){
-				var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/redPin.png', 40, 40);
+				var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/greenPin.png', 40, 40);
 				StopMarkerSymbol.yoffset = StopMarkerSymbol.height / 2;
 				var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangePin.png', 65, 65);
 				selectStopSymbol.yoffset = selectStopSymbol.height / 2; 
