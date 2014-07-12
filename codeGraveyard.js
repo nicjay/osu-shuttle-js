@@ -406,3 +406,19 @@ stopTimingLabels[3].setColor('#ffd119');
 // for (var i = 0; i < 4; i++) {
 	// selectedStopView.add(stopTimingLabels[i]);
 // }
+
+
+localWebview.addEventListener('beforeload', function(e){
+	info("localWebview : beforeload");
+});
+
+localWebview.addEventListener('load', function(e){
+	if(!localWebviewSet){
+		info("It froze... didn't it? NEVER SHOULD HAPPEN");
+		localWebview.addEventListener('lateLoad', function(e){
+			info("LATE: localWebview.addEvent(load)");
+			setWebViewListener();
+			setTableClickListener();
+		});
+	}
+});

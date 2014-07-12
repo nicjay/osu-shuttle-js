@@ -73,6 +73,7 @@ function changeBasemap(newBaseMap){
 
 function createMap(userGPS, props, baseMap){
 	require([
+
 		"esri/map", "esri/graphic", "dojo/_base/array", 
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/geometry/Extent"], 
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {

@@ -749,22 +749,23 @@ function setStops() {
 			 * 			[LaSells Stewart Center,44.55901,-123.27962,-1,-1,-1,-1,21]
 			*/
 			
+			updateRouteEstimates();
+
 			
-			
-			info("OGG Setting localWebViewListen");
-			localWebview.addEventListener('load', function(e) {
+			if(localWebview.loading){
+				localWebview.addEventListener('load', function(e) {
+					info("localWebview.addEvent(load)");
+					setWebViewListener();
+					setTableClickListener();
+				});
+			}
+			else{
 				info("localWebview.addEvent(load)");
 				setWebViewListener();
 				setTableClickListener();
-			});
-			localWebviewSet = true;
-			localWebview.fireEvent('lateLoad');
-			
-			updateRouteEstimates();
-
+			}
 		},
 		onerror : function(e) {
-			info("why...");
 			Ti.API.info("ERROR: setStops() : " + e.toString());
 		},
 		timeout : 5000 
@@ -774,20 +775,7 @@ function setStops() {
 }
 
 
-localWebview.addEventListener('beforeload', function(e){
-	info("localWebview : beforeload");
-});
 
-localWebview.addEventListener('load', function(e){
-	if(!localWebviewSet){
-		info("It froze... didn't it? NEVER SHOULD HAPPEN");
-		localWebview.addEventListener('lateLoad', function(e){
-			info("LATE: localWebview.addEvent(load)");
-			setWebViewListener();
-			setTableClickListener();
-		});
-	}
-});
 
 var firstUpdateRouteEstimates = true;
 function updateRouteEstimates() {
