@@ -216,6 +216,7 @@ var localWebview = Titanium.UI.createWebView({
 	url : 'map.html',
 	backgroundColor : '#373737',
 	touchEnabled : true,
+	cacheMode: Ti.UI.Android.WEBVIEW_LOAD_CACHE_ELSE_NETWORK,
 	//height: '100%',
 	//width: '20%',
 	//contentWidth: '20%',
@@ -280,6 +281,7 @@ var zoomButtonView = Ti.UI.createView({
 	//top: 0,
 	width : 60,
 	height : 120,
+	
 });
 
 zoomButtonView.add(Ti.UI.createButton({
