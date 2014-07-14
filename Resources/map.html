@@ -25,12 +25,14 @@
 	<div id="mapDiv"></div>
 </body>
 	<script>
-		var maxHeight = window.outerHeight;
-		var maxWidth = window.outerWidth;
-		var minHeight = window.innerHeight;
-		var minWidth = window.innerWidth;
-		Ti.API.info("VVV THIS IS A TEST: " + maxHeight + ", " + minHeight + ", " + maxWidth + ", " + minWidth);
-		var cssString = "height: " + maxHeight + "; width: " + maxWidth + ";";
-		document.getElementById("mapDiv").style.cssText = cssString;
+		setTimeout(function(){
+			var maxHeight = window.outerHeight;
+			var maxWidth = window.outerWidth;
+			var minHeight = window.innerHeight;
+			var minWidth = window.innerWidth;
+			Ti.API.info("VVV THIS IS A TEST: " + maxHeight + ", " + minHeight + ", " + maxWidth + ", " + minWidth);
+			var cssString = "height: " + maxHeight + "; width: " + maxWidth + ";";
+			document.getElementById("mapDiv").style.cssText = cssString;
+		}, 300);
 	</script>
 </html>
