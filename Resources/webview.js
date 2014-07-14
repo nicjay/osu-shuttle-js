@@ -73,9 +73,11 @@ function changeBasemap(newBaseMap){
 
 function createMap(userGPS, props, baseMap, landmarkId){
 	require([
-		"esri/map", "esri/graphic", "dojo/_base/array", 
+		"esri/map", "esri/graphic", "dojo/_base/array", "esri/config",
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/geometry/Extent"], 
-		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
+		function(Map, Graphic, arrayUtils, esriConfig, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
+  			esriConfig.defaults.map.zoomDuration = 100; //default is 250
+  			esriConfig.defaults.map.zoomRate = 10; //default is 25
   			
   			var initExtent = new Extent({"xmin":-13725004.134997085,"ymin":5552112.499779742,"xmax":-13722324.061692765,"ymax":5553794.11440206,"spatialReference":{"wkid":102100}});
 	  		var maxExtent = initExtent;
