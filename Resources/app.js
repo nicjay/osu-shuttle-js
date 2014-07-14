@@ -581,6 +581,10 @@ function updateTable(diffArray) {
 				className : 'Stops',
 				layout : 'horizontal',
 				landmarkId: stopsArray[j][7],
+				
+
+			});
+			var rowView = Ti.UI.createView({
 				backgroundGradient : { type : 'linear',
 					colors :[{
 						color : color[1][0],
@@ -590,9 +594,9 @@ function updateTable(diffArray) {
 						position : 1.0
 					}]
 				},
-
+				
+				
 			});
-			var rowView = Ti.UI.createView({});
 			
 			rowView.add(Ti.UI.createLabel({
 				left : 15,
