@@ -78,6 +78,8 @@ function createMap(userGPS, props, baseMap, landmarkId){
 		function(Map, Graphic, arrayUtils, esriConfig, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
   			esriConfig.defaults.map.zoomDuration = 100; //default is 250
   			esriConfig.defaults.map.zoomRate = 10; //default is 25
+  			esriConfig.defaults.map.panDuration = 100; 
+  			esriConfig.defaults.map.panRate = 10; 
   			
   			var initExtent = new Extent({"xmin":-13725004.134997085,"ymin":5552112.499779742,"xmax":-13722324.061692765,"ymax":5553794.11440206,"spatialReference":{"wkid":102100}});
 	  		var maxExtent = initExtent;
