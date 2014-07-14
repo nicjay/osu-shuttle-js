@@ -76,7 +76,6 @@ function createMap(userGPS, props, baseMap, landmarkId){
 		"esri/map", "esri/graphic", "dojo/_base/array", 
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/geometry/Extent"], 
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
-  			Ti.API.info("YAHHHHH : " + userGPS + ", " + props);
   			
   			var initExtent = new Extent({"xmin":-13725004.134997085,"ymin":5552112.499779742,"xmax":-13722324.061692765,"ymax":5553794.11440206,"spatialReference":{"wkid":102100}});
 	  		var maxExtent = initExtent;
@@ -299,7 +298,6 @@ function createMap(userGPS, props, baseMap, landmarkId){
 						lastGraphicClicked = obj;
 						//var str = JSON.stringify(obj);
 						obj.setSymbol(selectStopSymbol);
-						Ti.API.info("Map Clicked! str : " + attr.landmarkId);
 						Ti.App.fireEvent('adjustTable', {
 							data : [attr.landmarkId]
 						});
@@ -315,7 +313,6 @@ function createMap(userGPS, props, baseMap, landmarkId){
 				
 				
 	
-				Ti.API.info("XXX:");
 				var timer;
 				var shiftExtent = initExtent;
 				
@@ -323,14 +320,10 @@ function createMap(userGPS, props, baseMap, landmarkId){
 				
 				
 				function constrainExtent(extent, delta, levelChange, lod) {
-					Ti.API.info("New Extent: xmax: " + extent.xmax + ", xmin: " + extent.xmin+ ", ymax: " +extent.ymax+ ", ymin: " +extent.ymin );
 					if (extent.intersects(maxExtent)){
-						Ti.API.info("Shift");
 						shiftExtent = extent;
 					} else {
-						Ti.API.info("NoShift");
 						map.setExtent(shiftExtent);
-						
 					}
 				
 				}
@@ -505,7 +498,6 @@ function centerMap(lat, lon, landmarkId, userBool){
 					}
 				}
 			}else {
-				Ti.API.info("made it here");
 				var normalMarker = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
 				var bigMarker = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 32, 32);
 				if (userGraphic != null) {

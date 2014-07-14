@@ -13,10 +13,10 @@
       		height: 100%;
       		width: 100%;
     	}
-    	#mapDiv{
+    	/*#mapDiv{
     		width: 100vw;
     		height: 100vh;
-    	}
+    	}*/
 	 </style>
   	<script src="arcInit.js"></script>
   	<script src="webview.js"></script>
@@ -25,12 +25,14 @@
 	<div id="mapDiv"></div>
 </body>
 	<script>
-		var maxHeight = window.outerHeight;
-		var maxWidth = window.outerWidth;
-		var minHeight = window.innerHeight;
-		var minWidth = window.innerWidth;
-		Ti.API.info("VVV THIS IS A TEST: " + maxHeight + ", " + minHeight + ", " + maxWidth + ", " + minWidth);
-		var cssString = "height: " + maxHeight + "; width: " + maxWidth + ";";
-		document.getElementById("mapDiv").style.cssText = cssString;
+		setTimeout(function(){
+			var maxHeight = window.outerHeight;
+			var maxWidth = window.outerWidth;
+			var minHeight = window.innerHeight;
+			var minWidth = window.innerWidth;
+			Ti.API.info("VVV THIS IS A TEST: " + maxHeight + ", " + minHeight + ", " + maxWidth + ", " + minWidth);
+			var cssString = "height: " + minHeight + "; width: " + minWidth + ";";
+			document.getElementById("mapDiv").style.cssText = cssString;
+		},300);
 	</script>
 </html>

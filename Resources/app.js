@@ -164,7 +164,7 @@ zoomButtonView.add(Ti.UI.createButton({
 	width: '90%',
 	borderColor: '#23292f',
 	borderWidth: 1,
-	borderRadius: 5,
+	//borderRadius: 5,
 }));
 
 zoomButtonView.add(Ti.UI.createButton({
@@ -181,7 +181,7 @@ zoomButtonView.add(Ti.UI.createButton({
 	width: '90%',
 	borderColor: '#23292f',
 	borderWidth: 1,
-	borderRadius: 5,
+	//borderRadius: 5,
 }));
 
 var locateUserView = Ti.UI.createView({
@@ -205,7 +205,7 @@ locateUserView.add(Ti.UI.createButton({
 	width: '90%',
 	borderColor: '#23292f',
 	borderWidth: 1,
-	borderRadius: 5,
+	//borderRadius: 5,
 }));
 
 var loadView = Ti.UI.createView({
