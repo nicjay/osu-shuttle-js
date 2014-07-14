@@ -422,3 +422,66 @@ localWebview.addEventListener('load', function(e){
 		});
 	}
 });
+
+
+//////////////////////////////////Extent handler xy
+	
+
+/*
+				function constrainExtent(extent, delta, levelChange, lod) {
+			
+					//Whole view within bounds
+					if (extent.contains(maxExtent))
+						return;
+					//BOTH X bounds extend - this is ok
+					//if ((maxExtent.xmax < extent.xmax) && (maxExtent.xmin > extent.xmin))
+					//	return;
+					//BOTH Y bounds extend - this is ok
+					//if ((maxExtent.ymax < extent.ymax) && (maxExtent.ymin > extent.ymin))
+					//	return;
+						
+					var dx, dy;
+					
+					//Right too far
+					if (maxExtent.xmax < extent.xmax){
+						dx = extent.xmax - maxExtent.xmax;
+					}
+					//Left too far
+					else if (maxExtent.xmin > extent.xmin){
+						dx = extent.xmin - maxExtent.xmin;
+					}	
+					else 
+						dx = 0;
+					//Up too far
+					if (maxExtent.ymax < extent.ymax){
+						dy = extent.ymax - maxExtent.ymax;
+					}
+					//Down too far
+					else if (maxExtent.ymin > extent.ymin){
+						dy = extent.ymin - maxExtent.ymin;
+					}
+					else 
+						dy = 0;
+					
+					if ((dx != 0) || (dy != 0)){	
+						shiftExtent = new Extent({"xmin":extent.xmin-dx,"ymin":extent.ymin-dy,"xmax":extent.xmax-dx,"ymax":extent.ymax-dy,"spatialReference":{"wkid":102100}});
+						clearTimeout(timer);
+						timer = setTimeout(function() {
+							if (shiftExtent != null) {
+								map.setExtent(shiftExtent);
+								
+							}
+						}, 100);
+					}
+					
+				return true;
+				}
+      			*/
+      				
+
+
+
+
+
+
+

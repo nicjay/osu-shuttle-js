@@ -78,7 +78,8 @@ function createMap(userGPS, props, baseMap){
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/geometry/Extent"], 
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
   			Ti.API.info("YAHHHHH : " + userGPS + ", " + props);
-  			var initExtent = new Extent({"xmin":-13725847.330965368,"ymin":5551137.927669094,"xmax":-13721614.630524082,"ymax":5555169.980911131,"spatialReference":{"wkid":102100}});
+  			
+  			var initExtent = new Extent({"xmin":-13725004.134997085,"ymin":5552112.499779742,"xmax":-13722324.061692765,"ymax":5553794.11440206,"spatialReference":{"wkid":102100}});
 	  		var maxExtent = initExtent;
   			map = new Map("mapDiv", {
     			//center: [-123.280, 44.562],
@@ -313,57 +314,18 @@ function createMap(userGPS, props, baseMap){
 				var shiftExtent;
 				
 				dojo.connect(map, "onExtentChange", constrainExtent);
-
+				
+				
 				function constrainExtent(extent, delta, levelChange, lod) {
-			
-					//Whole view within bounds
-					if (extent.contains(maxExtent))
-						return;
-					//BOTH X bounds extend - this is ok
-					if ((maxExtent.xmax < extent.xmax) && (maxExtent.xmin > extent.xmin))
-						return;
-					//BOTH Y bounds extend - this is ok
-					if ((maxExtent.ymax < extent.ymax) && (maxExtent.ymin > extent.ymin))
-						return;
+					if (extent.intersects(maxExtent)){
+						shiftExtent = extent;
+					} else {
+						map.setExtent(shiftExtent);
 						
-					var dx, dy;
-					
-					//Right too far
-					if (maxExtent.xmax < extent.xmax){
-						dx = extent.xmax - maxExtent.xmax;
 					}
-					//Left too far
-					else if (maxExtent.xmin > extent.xmin){
-						dx = extent.xmin - maxExtent.xmin;
-					}	
-					else 
-						dx = 0;
-					//Up too far
-					if (maxExtent.ymax < extent.ymax){
-						dy = extent.ymax - maxExtent.ymax;
-					}
-					//Down too far
-					else if (maxExtent.ymin > extent.ymin){
-						dy = extent.ymin - maxExtent.ymin;
-					}
-					else 
-						dy = 0;
-					
-					if ((dx != 0) || (dy != 0)){	
-						shiftExtent = new Extent({"xmin":extent.xmin-dx,"ymin":extent.ymin-dy,"xmax":extent.xmax-dx,"ymax":extent.ymax-dy,"spatialReference":{"wkid":102100}});
-						clearTimeout(timer);
-						timer = setTimeout(function() {
-							if (shiftExtent != null) {
-								map.setExtent(shiftExtent);
-								
-							}
-						}, 100);
-					}
-					
-				return true;
+				
 				}
-      			
-      				
+			
       		}		
 		}
     		
