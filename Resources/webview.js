@@ -73,7 +73,6 @@ function changeBasemap(newBaseMap){
 
 function createMap(userGPS, props, baseMap, landmarkId){
 	require([
-
 		"esri/map", "esri/graphic", "dojo/_base/array", 
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/geometry/Extent"], 
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
@@ -82,7 +81,7 @@ function createMap(userGPS, props, baseMap, landmarkId){
   			var initExtent = new Extent({"xmin":-13725004.134997085,"ymin":5552112.499779742,"xmax":-13722324.061692765,"ymax":5553794.11440206,"spatialReference":{"wkid":102100}});
 	  		var maxExtent = initExtent;
   			map = new Map("mapDiv", {
-    			//center: [-123.280, 44.562],
+    			center: [-123.280, 44.562],
     			zoom: 15,
     			basemap: baseMap,
     			minZoom: 14,
@@ -92,7 +91,7 @@ function createMap(userGPS, props, baseMap, landmarkId){
     			displayGraphicsOnPan: true,
     			optimizePanAnimation: true,
     			autoResize: true,
-    			extent: initExtent,
+    			//extent: initExtent,
    			});
 
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
@@ -318,15 +317,18 @@ function createMap(userGPS, props, baseMap, landmarkId){
 	
 				Ti.API.info("XXX:");
 				var timer;
-				var shiftExtent;
+				var shiftExtent = initExtent;
 				
 				dojo.connect(map, "onExtentChange", constrainExtent);
 				
 				
 				function constrainExtent(extent, delta, levelChange, lod) {
+					Ti.API.info("New Extent: xmax: " + extent.xmax + ", xmin: " + extent.xmin+ ", ymax: " +extent.ymax+ ", ymin: " +extent.ymin );
 					if (extent.intersects(maxExtent)){
+						Ti.API.info("Shift");
 						shiftExtent = extent;
 					} else {
+						Ti.API.info("NoShift");
 						map.setExtent(shiftExtent);
 						
 					}
@@ -465,14 +467,20 @@ function showSouth(enableSouth){
        });
 }
 function centerMap(lat, lon, landmarkId, userBool){
-	require(["esri/map", "esri/geometry/Point", "esri/graphic", "esri/symbols/PictureMarkerSymbol"], 
+	require(["esri/map", "esri/geometry/Point", "esri/graphic", "esri/symbols/PictureMarkerSymbol", "esri/SpatialReference"], 
 		function(Map, Point, Graphic, PictureMarkerSymbol) {
 			
 			
 			var centerPoint = new esri.geometry.Point({
 				latitude: lat,
-				longitude: lon
+				longitude: lon,
 			});
+			
+// 
+		// var sr = new SpatialReference(102100);
+// 
+		// var centerPoint = new esri.geometry.Point(lat, lon, sr); 
+
 		
 			map.centerAt(centerPoint);
 			if(userBool == false){

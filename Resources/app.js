@@ -421,18 +421,26 @@ function setWebViewListener() {
 			var index = diffArray[0][1];
 			updateSelected(stopsArray[index]);
 			lastClickedStopName = stopsArray[index][0];
+			Ti.App.fireEvent("updatemap", {
+				id : 0,
+				userGPS : userGPS,
+				props : props,
+				baseMap : props[7],
+				landmarkId : stopsArray[index][7],
+			}); 
 		} else {
 			updateSelected(stopsArray[0]);
 			lastClickedStopName = stopsArray[0][0];
-		}
-		Ti.App.fireEvent("updatemap", {
-			id : 0,
-			userGPS : userGPS,
-			props : props,
-			baseMap : props[7],
-			landmarkId: stopsArray[index][7],
-		}); 
 
+			Ti.App.fireEvent("updatemap", {
+				id : 0,
+				userGPS : userGPS,
+				props : props,
+				baseMap : props[7],
+				landmarkId : stopsArray[0][7],
+			}); 
+
+		} 
 	} else {
 		Ti.App.fireEvent("updatemap", {
 			id : 0,
