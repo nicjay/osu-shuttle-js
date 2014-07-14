@@ -28,7 +28,7 @@ Ti.App.addEventListener('updatemap', function(event){
 	switch(event.id){
 		case 0:		//createMap(userGPS, props)
 			Ti.API.info("------------------EVENT: createMap");
-			createMap(event.userGPS, event.props, event.baseMap);
+			createMap(event.userGPS, event.props, event.baseMap, event.landmarkId);
 			break;
 		case 1:		//updateMap(shuttleData)
 			Ti.API.info("------------------EVENT: updateMap");
@@ -71,7 +71,7 @@ function changeBasemap(newBaseMap){
 		});
 }
 
-function createMap(userGPS, props, baseMap){
+function createMap(userGPS, props, baseMap, landmarkId){
 	require([
 
 		"esri/map", "esri/graphic", "dojo/_base/array", 
@@ -98,6 +98,8 @@ function createMap(userGPS, props, baseMap){
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
     		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/greenPin.png', 40, 40);
     		StopMarkerSymbol.yoffset = StopMarkerSymbol.height/2;
+			var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangePin.png', 65, 65);
+			selectStopSymbol.yoffset = selectStopSymbol.height/2;
     			
     		//Hardcoded stops for one route
     		var allStopPts = [
@@ -235,9 +237,16 @@ function createMap(userGPS, props, baseMap){
     			}
     			
     			arrayUtils.forEach(allStopPts, function(stopPt){
-    				var tempStop = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), StopMarkerSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
-    				allStopGraphics.push(tempStop);
-    				map.graphics.add(tempStop);
+    				if(landmarkId == stopPt[2]){
+    					lastGraphicClicked = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), selectStopSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
+    					allStopGraphics.push(lastGraphicClicked);
+    					map.graphics.add(lastGraphicClicked);
+    				}
+    				else{
+    					var tempStop = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), StopMarkerSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
+	    				allStopGraphics.push(tempStop);
+						map.graphics.add(tempStop);
+    				}
     			});
     			
     			/*
@@ -290,8 +299,6 @@ function createMap(userGPS, props, baseMap){
 					if(attr != null){
 						lastGraphicClicked = obj;
 						//var str = JSON.stringify(obj);
-						var selectStopSymbol = new PictureMarkerSymbol('GeneralUI/orangePin.png', 65, 65);
-						selectStopSymbol.yoffset = selectStopSymbol.height/2;
 						obj.setSymbol(selectStopSymbol);
 						Ti.API.info("Map Clicked! str : " + attr.landmarkId);
 						Ti.App.fireEvent('adjustTable', {

@@ -59,12 +59,24 @@ function createWindow(props){
 	}));
 	
 	var closeSettingsButton = Ti.UI.createButton({
-		backgroundImage: '../GeneralUI/settingsGoBack.png',
-		backgroundSelectedImage: '../GeneralUI/settingsGoBackPressed.png',
-		width: 42,
-		height: 42,
-		right: 10,
-		title: '',
+		//backgroundImage: '../GeneralUI/settingsGoBack.png',
+		//backgroundSelectedImage: '../GeneralUI/settingsGoBackPressed.png',
+		width: 60,//42,
+		height: 60,//42,
+		right: 0,
+		title: '4',
+		color: '#f47320',//'#E0E0E0',
+		//backgroundColor: '#343c45',
+		//backgroundSelectedColor: '#4d5967',
+		backgroundColor: 'transparent',
+		backgroundSelectedColor: '#3465b2',
+		font : {
+			fontSize : '30sp',
+			fontFamily : iconFont
+		},
+		borderColor: '#000',
+		//borderWidth: 1,
+		//borderRadius: 5,
 	});
 	
 	closeSettingsButton.addEventListener('click', function(e){

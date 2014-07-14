@@ -166,6 +166,8 @@ function createWindow(){
 	var color = [['#2D2D2D', '#3b3b3b'], ['#3b3b3b', '#3b3b3b']];
 	//			stopNameLabel , "min" labels
 	var fontColors = ['#dfe3e7', '#b3bbc5'];
+	var fontColorsAlt = ['#ffffff', '#b3bbc5'];
+	
 	
 	var opacity = .95;
 	
@@ -177,6 +179,8 @@ function createWindow(){
 		layout : 'vertical',
 		//backgroundGradient: defaultColor2,
 		backgroundColor: '#343c45',
+		borderColor: '#23292f',
+		borderWidth: 1,
 	}); 
 	
 
@@ -187,15 +191,26 @@ function createWindow(){
 			fontFamily : boldFont
 		},
 		text : '',
-		color : fontColors[0],//color : '#E0E0E0',
+		color : fontColorsAlt[0],//color : '#E0E0E0',
 		left : 10,
 	}); 
 
 	var buttonSettings = Ti.UI.createButton({
-		height : 36,
-		width : 36,
-		backgroundImage : '../GeneralUI/settingsGear.png',
-		backgroundSelectedImage : '../GeneralUI/settingsGearPressed.png',
+		height : 60,//36,
+		width : 60,//36,
+		color: '#f47320',//'#E0E0E0',
+		font : {
+			fontSize : '25sp',
+			fontFamily : iconFont
+		},
+		title: '1',
+		//backgroundImage : '../GeneralUI/settingsGear.png',
+		//backgroundSelectedImage : '../GeneralUI/settingsGearPressed.png',
+		borderColor: '#000',
+		borderWidth: 0,
+		borderRadius: 5,
+		backgroundColor: '#343c45',
+		backgroundSelectedColor: '#4d5967',
 	}); 
 	
 

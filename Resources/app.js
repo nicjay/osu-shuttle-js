@@ -124,7 +124,7 @@ var bottomMenuSlide = Ti.UI.createButton({
 	width : '100%',
 	height : '5%',
 	bottom : '27%',
-	backgroundImage : 'GeneralUI/slideBar.png'
+	backgroundImage : 'GeneralUI/slideBarDarkBlue.png', //'GeneralUI/slideBar.png'
 });
 
 var routeEstTable = Ti.UI.createTableView({
@@ -152,8 +152,8 @@ var zoomButtonView = Ti.UI.createView({
 });
 
 zoomButtonView.add(Ti.UI.createButton({
-	backgroundColor: '#40342f',//'#44494B',
-	backgroundSelectedColor: '#2c2f30',
+	backgroundColor: '#454f5b',//backgroundColor: '#40342f',//'#44494B',
+	backgroundSelectedColor: '#5e6d7d',
 	color: '#E0E0E0',
 	font : {
 		fontSize : '25sp',
@@ -162,15 +162,15 @@ zoomButtonView.add(Ti.UI.createButton({
 	title : '+',
 	height : '45%',
 	width: '90%',
-	borderColor: '#000000',
-	borderWidth: 0,
+	borderColor: '#23292f',
+	borderWidth: 1,
 	borderRadius: 5,
 }));
 
 zoomButtonView.add(Ti.UI.createButton({
 	top: '10%',
-	backgroundColor: '#40342f',//'#44494B',
-	backgroundSelectedColor: '#2c2f30',
+	backgroundColor: '#454f5b',//backgroundColor: '#40342f',//'#44494B',
+	backgroundSelectedColor: '#5e6d7d',
 	color: '#E0E0E0',
 	font : {
 		fontSize : '25sp',
@@ -179,8 +179,8 @@ zoomButtonView.add(Ti.UI.createButton({
 	title : '-',
 	height : '45%',
 	width: '90%',
-	borderColor: '#000000',
-	borderWidth: 0,
+	borderColor: '#23292f',
+	borderWidth: 1,
 	borderRadius: 5,
 }));
 
@@ -193,8 +193,8 @@ var locateUserView = Ti.UI.createView({
 });
 
 locateUserView.add(Ti.UI.createButton({
-	backgroundColor: '#40342f',//'#44494B',
-	backgroundSelectedColor: '#2c2f30',
+	backgroundColor: '#454f5b',//backgroundColor: '#40342f',//'#44494B',
+	backgroundSelectedColor: '#5e6d7d',
 	color: '#E0E0E0',
 	font : {
 		fontSize : '25sp',
@@ -203,12 +203,9 @@ locateUserView.add(Ti.UI.createButton({
 	title : '=',
 	height : '90%',
 	width: '90%',
-	borderColor: '#000000',
-	borderWidth: 0,
+	borderColor: '#23292f',
+	borderWidth: 1,
 	borderRadius: 5,
-	// borderColor: '#000000',
-	// borderWidth: 0,
-	// borderRadius: 30,
 }));
 
 var loadView = Ti.UI.createView({
@@ -419,13 +416,6 @@ function setWebViewListener() {
 	//localWebview.addEventListener('load',function(){
 	if (props[4] == true || props[4] == "true") {
 		getUserGPS();
-		Ti.App.fireEvent("updatemap", {
-			id : 0,
-			userGPS : userGPS,
-			props : props,
-			baseMap : props[7],
-		});
-
 		if (userGPS.length != 0) {
 			diffArray = findNearest(userGPS);
 			var index = diffArray[0][1];
@@ -435,12 +425,21 @@ function setWebViewListener() {
 			updateSelected(stopsArray[0]);
 			lastClickedStopName = stopsArray[0][0];
 		}
+		Ti.App.fireEvent("updatemap", {
+			id : 0,
+			userGPS : userGPS,
+			props : props,
+			baseMap : props[7],
+			landmarkId: stopsArray[index][7],
+		}); 
+
 	} else {
 		Ti.App.fireEvent("updatemap", {
 			id : 0,
 			userGPS : userGPS,
 			props : props,
 			baseMap : props[7],
+			landmarkId: stopsArray[0][7],
 		});
 		updateSelected(stopsArray[0]);
 		lastClickedStopName = stopsArray[0][0];
