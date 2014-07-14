@@ -77,22 +77,28 @@ function createMap(userGPS, props, baseMap, landmarkId){
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/geometry/Extent"], 
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
   			Ti.API.info("YAHHHHH : " + userGPS + ", " + props);
+<<<<<<< HEAD
   			
   			var initExtent = new Extent({"xmin":-13725004.134997085,"ymin":5552112.499779742,"xmax":-13722324.061692765,"ymax":5553794.11440206,"spatialReference":{"wkid":102100}});
+=======
+  			var initExtent = new Extent({"xmin":-13725118.790539471,"ymin":5551902.297951984,"xmax":-13722132.969122004,"ymax":5554238.404629012,"spatialReference":{"wkid":102100}});
+>>>>>>> parent of 4ffc0c9... Revamped extent checker, adjusted default zoom
 	  		var maxExtent = initExtent;
   			map = new Map("mapDiv", {
     			center: [-123.280, 44.562],
     			zoom: 15,
     			basemap: baseMap,
-    			minZoom: 14,
+    			minZoom: 12,
     			slider: false,
     			showAttribution:false,
     			logo: false,
     			displayGraphicsOnPan: true,
     			optimizePanAnimation: true,
+    			showAttribution: false,
     			autoResize: true,
     			//extent: initExtent,
    			});
+   			
 
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
     		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/greenPin.png', 40, 40);
@@ -316,6 +322,7 @@ function createMap(userGPS, props, baseMap, landmarkId){
 				
 	
 				Ti.API.info("XXX:");
+<<<<<<< HEAD
 				var timer;
 				var shiftExtent = initExtent;
 				
@@ -335,6 +342,29 @@ function createMap(userGPS, props, baseMap, landmarkId){
 				
 				}
 			
+=======
+				var previousExtent, timer;
+				dojo.connect(map, "onExtentChange", constrainExtent);
+	
+				function constrainExtent(extent, delta, levelChange, lod) {
+					Ti.API.info("XXX: extent : " + extent);
+					if (extent.intersects(maxExtent)) {
+						previousExtent = extent;
+					} else {
+						clearTimeout(timer);
+						timer = setTimeout(function() {
+							if (previousExtent != null) {
+								map.setExtent(previousExtent);
+							}
+						}, 100);
+					}
+	
+					return true;
+				}
+
+      			
+      				
+>>>>>>> parent of 4ffc0c9... Revamped extent checker, adjusted default zoom
       		}		
 		}
     		
