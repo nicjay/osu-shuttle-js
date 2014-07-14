@@ -77,12 +77,7 @@ function createMap(userGPS, props, baseMap, landmarkId){
 		"esri/geometry/Point", "esri/symbols/PictureMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/geometry/Extent"], 
 		function(Map, Graphic, arrayUtils, Point, PictureMarkerSymbol, SimpleLineSymbol, Extent) {
   			Ti.API.info("YAHHHHH : " + userGPS + ", " + props);
-<<<<<<< HEAD
-  			
   			var initExtent = new Extent({"xmin":-13725004.134997085,"ymin":5552112.499779742,"xmax":-13722324.061692765,"ymax":5553794.11440206,"spatialReference":{"wkid":102100}});
-=======
-  			var initExtent = new Extent({"xmin":-13725118.790539471,"ymin":5551902.297951984,"xmax":-13722132.969122004,"ymax":5554238.404629012,"spatialReference":{"wkid":102100}});
->>>>>>> parent of 4ffc0c9... Revamped extent checker, adjusted default zoom
 	  		var maxExtent = initExtent;
   			map = new Map("mapDiv", {
     			center: [-123.280, 44.562],
@@ -318,53 +313,6 @@ function createMap(userGPS, props, baseMap, landmarkId){
 						map.centerAt(centerPoint); 
 					}
 				}   
-				
-				
-	
-				Ti.API.info("XXX:");
-<<<<<<< HEAD
-				var timer;
-				var shiftExtent = initExtent;
-				
-				dojo.connect(map, "onExtentChange", constrainExtent);
-				
-				
-				function constrainExtent(extent, delta, levelChange, lod) {
-					Ti.API.info("New Extent: xmax: " + extent.xmax + ", xmin: " + extent.xmin+ ", ymax: " +extent.ymax+ ", ymin: " +extent.ymin );
-					if (extent.intersects(maxExtent)){
-						Ti.API.info("Shift");
-						shiftExtent = extent;
-					} else {
-						Ti.API.info("NoShift");
-						map.setExtent(shiftExtent);
-						
-					}
-				
-				}
-			
-=======
-				var previousExtent, timer;
-				dojo.connect(map, "onExtentChange", constrainExtent);
-	
-				function constrainExtent(extent, delta, levelChange, lod) {
-					Ti.API.info("XXX: extent : " + extent);
-					if (extent.intersects(maxExtent)) {
-						previousExtent = extent;
-					} else {
-						clearTimeout(timer);
-						timer = setTimeout(function() {
-							if (previousExtent != null) {
-								map.setExtent(previousExtent);
-							}
-						}, 100);
-					}
-	
-					return true;
-				}
-
-      			
-      				
->>>>>>> parent of 4ffc0c9... Revamped extent checker, adjusted default zoom
       		}		
 		}
     		
