@@ -44,6 +44,7 @@ var url = ["http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimat
 var userGPS = [], lastGPS = [];
 
 var firstTime = true, baseTime;
+var initialUpdate = true;
 var fullMapViewOn = true;
 var fullMapViewBool = false;
 
@@ -461,7 +462,7 @@ function setWebViewListener() {
 
 function intervalUpdate() {
 	info("FUNC: intervalUpdate");
-	var shuttleData = shuttleLocRequest();
+	shuttleLocRequest();
 	updateRouteEstimates();
 
 	//info("GPS COUNTER: " + gpsCounter);
@@ -485,12 +486,7 @@ function intervalUpdate() {
 	} else {
 		gpsCounter++;
 	}
-	Ti.App.fireEvent("updatemap", {
-		id : 1,
-		shuttleData : shuttleData,
-		userGPS : userGPS
-	});
-		
+	
 	//TODO: updateSelectedTimes()
 }
 
@@ -836,25 +832,47 @@ function shuttleLocRequest() {
 	var shuttleData = [];
 	var xhr = Ti.Network.createHTTPClient({
 		onload : function() {
+			
 			var shuttleLocs = JSON.parse(this.responseText);
-
 			if (shuttleLocs.length == 0) {
-				//Ti.API.info("No shuttles active...");
+				Ti.API.info("No shuttles active...");
 			} else {
 				for (var x = 0, len = shuttleLocs.length, loc; x < len; x++) {
 					loc = shuttleLocs[x];
 					shuttleData.push([loc.RouteID, loc.Latitude, loc.Longitude, loc.Heading]);
 				}
 			}
-			return shuttleData;
+
+			Ti.App.fireEvent("updatemap", {
+				id : 1,
+				shuttleData : shuttleData,
+				userGPS : userGPS,
+				initialUpdate : initialUpdate,
+			});
+			
+			initialUpdate = false;
+			
 		},
 		onerror : function(e) {
 			Ti.API.info("ERROR: shuttleLocRequest() function failed. error: " + e);
-			return shuttleData;
+			
+			Ti.App.fireEvent("updatemap", {
+				id : 1,
+				shuttleData : shuttleData,
+				userGPS : userGPS,
+				initialUpdate : initialUpdate,
+			});
+			
+			initialUpdate = false;
+
 		}
 	});
-	xhr.open("GET", url[2]);
+	//TODO use actual link data here
+	//xhr.open("GET", url[2]);
+	xhr.open("GET", "http://portal.campusops.oregonstate.edu/files/shuttle/GetMapVehiclePoints.txt");
 	xhr.send();
+
+
 }
 
 function doneLoading() {
