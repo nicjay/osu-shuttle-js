@@ -45,6 +45,7 @@ var gpsDeviceOn;
 var userGPS = [], lastGPS = [];
 
 var firstTime = true, baseTime;
+var initialUpdate = true;
 var fullMapViewOn = true;
 var fullMapViewBool = false;
 
@@ -466,8 +467,7 @@ function setWebViewListener() {
 
 function intervalUpdate() {
 	info("FUNC: intervalUpdate");
-	var shuttleData = shuttleLocRequest();
-	info("shuttleData = " + shuttleData);
+	shuttleLocRequest();
 	updateRouteEstimates();
 
 	//info("GPS COUNTER: " + gpsCounter);
@@ -491,12 +491,7 @@ function intervalUpdate() {
 	} else {
 		gpsCounter++;
 	}
-	Ti.App.fireEvent("updatemap", {
-		id : 1,
-		shuttleData : shuttleData,
-		userGPS : userGPS
-	});
-		
+	
 	//TODO: updateSelectedTimes()
 }
 
@@ -850,10 +845,10 @@ function shuttleLocRequest() {
 				incrementLoadBar("shuttleLocRequest");
 				firstShuttleLoc = false;
 			}
+			
 			var shuttleLocs = JSON.parse(this.responseText);
-
 			if (shuttleLocs.length == 0) {
-				//Ti.API.info("No shuttles active...");
+				Ti.API.info("No shuttles active...");
 			} else {
 				for (var x = 0, len = shuttleLocs.length, loc; x < len; x++) {
 					loc = shuttleLocs[x];
@@ -861,21 +856,38 @@ function shuttleLocRequest() {
 					shuttleData.push([loc.RouteID, loc.Latitude, loc.Longitude, loc.Heading]);
 				}
 			}
-			info("shuttleData[0] = " + shuttleData[0]);
-			info("shuttleData[1] = " + shuttleData[1]);
-			info(shuttleData);
-			return shuttleData;
+
+			Ti.App.fireEvent("updatemap", {
+				id : 1,
+				shuttleData : shuttleData,
+				userGPS : userGPS,
+				initialUpdate : initialUpdate,
+			});
+			
+			initialUpdate = false;
+			
 		},
 		onerror : function(e) {
 			//incrementLoadBar("shuttleLocRequest");
 			Ti.API.info("ERROR: shuttleLocRequest() function failed. error: " + e);
-			setTimeout(function(){ shuttleLocRequest(); }, 5000);
-			activityIndicator.message = "No response from server. Retrying...";
+			
+			Ti.App.fireEvent("updatemap", {
+				id : 1,
+				shuttleData : shuttleData,
+				userGPS : userGPS,
+				initialUpdate : initialUpdate,
+			});
+			
+			initialUpdate = false;
+
 		}
 	});
-	var tmpUrl = "http://portal.campusops.oregonstate.edu/files/shuttle/GetMapVehiclePoints.txt";
-	xhr.open("GET", tmpUrl);//xhr.open("GET", url[2]);
+	//TODO use actual link data here
+	//xhr.open("GET", url[2]);
+	xhr.open("GET", "http://portal.campusops.oregonstate.edu/files/shuttle/GetMapVehiclePoints.txt");
 	xhr.send();
+
+
 }
 
 function doneLoading() {

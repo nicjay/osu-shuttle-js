@@ -20,6 +20,10 @@ var ExprStopGraphics = [];
 var NorthStopGraphics = [];
 var SouthStopGraphics = [];
 
+var ShuttleMarkerSymbols = []; //preset symbols
+var ShuttlePoints = []; //coordinates
+var ShuttleGraphics = []; //specific symbol
+
 
 //TODO: expand to set this array
 var enabledRouteIDs = [4, 5];
@@ -31,8 +35,9 @@ Ti.App.addEventListener('updatemap', function(event){
 			createMap(event.userGPS, event.props, event.baseMap, event.landmarkId);
 			break;
 		case 1:		//updateMap(shuttleData)
-			Ti.API.info("------------------EVENT: updateMap" + event.shuttleData[0]);
-			updateMap(event.shuttleData, event.userGPS);
+			Ti.API.info("------------------EVENT: updateMap");
+			Ti.API.info("updateMap received: "+event.shuttleData);
+			updateMap(event.shuttleData, event.userGPS, event.initialUpdate);
 			break;
 		case 2:
 			Ti.API.info("------------------EVENT: centerMap");
@@ -127,6 +132,16 @@ function createMap(userGPS, props, baseMap, landmarkId){
     			autoResize: true,
     			//extent: initExtent,
    			});
+   			
+   			//Setting up a new graphics layer for shuttle graphics
+   			var shuttleLayer = new esri.layers.GraphicsLayer();
+   			shuttleLayer.id = "shuttleLayer";
+   			map.addLayer(shuttleLayer);
+   			ShuttleMarkerSymbols.push(new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20)); //south central
+			ShuttleMarkerSymbols.push(new PictureMarkerSymbol('Shuttle/greentriangle.png', 20, 20)); //*north central
+			ShuttleMarkerSymbols.push(new PictureMarkerSymbol('Shuttle/orangetriangle.png', 20, 20)); //express
+   			
+   			
 
 			var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
     		var StopMarkerSymbol = new PictureMarkerSymbol('GeneralUI/greenPin.png', 40, 40);
@@ -389,10 +404,10 @@ function createMap(userGPS, props, baseMap, landmarkId){
   
 //===================================================================
 
-function updateMap(shuttleData, userGPS){
+function updateMap(shuttleData, userGPS, initialUpdate){
 	require(["esri/map", "esri/geometry/Point","esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
 		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
-			Ti.API.info("YOYOYO" + shuttleData);
+			var shuttleLayer = map.getLayer("shuttleLayer");
 			if(userGPS != null && map.graphics != null){
 				var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
 				if(userGraphic != null){
@@ -405,23 +420,58 @@ function updateMap(shuttleData, userGPS){
 				});
 				userGraphic = new Graphic(User, UserMarkerSymbol);
 				map.graphics.add(userGraphic);		
-			}	
-			
-			if(map.getLayer(shuttleLayer) != null){
-				map.removeLayer(shuttleLayer);
 			}
-			//map.graphics.remove(GS3);
-			var shuttleLayer = new esri.layers.GraphicsLayer();
-			
-			var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20); //south central
-			var ShuttleMarkerSymbol2 = new PictureMarkerSymbol('Shuttle/greentriangle.png', 20, 20); //*north central
-			var ShuttleMarkerSymbol3 = new PictureMarkerSymbol('Shuttle/orangetriangle.png', 20, 20); //express
-			
+			if (initialUpdate){
+				Ti.API.info("updateMap INITIAL: ");
+				//Set up the first grab of data
+				for (var i = 0; i < shuttleData.length; i++){
+					Ti.API.info("iteration: "+i);
+					ShuttlePoints[i] = new esri.geometry.Point({
+						latitude: shuttleData[i][1],
+						longitude: shuttleData[i][2],
+					});
+					
+				//Assign specifc symbols depending on Route ID
+				switch(shuttleData[i][0]){
+					case 1: 
+						ShuttleGraphics[i] = ShuttleMarkerSymbols[0];
+						break;
+					case 2:	
+						ShuttleGraphics[i] = ShuttleMarkerSymbols[1];
+						break;
+					case 3:	
+						ShuttleGraphics[i] = ShuttleMarkerSymbols[2];
+						break;
+					default: 
+						ShuttleGraphics[i] = ShuttleMarkerSymbols[0];
+				}
+				
+				ShuttleGraphics[i].setAngle(shuttleData[i][3]);
+					
+				shuttleLayer.add(new Graphic(ShuttlePoints[i], ShuttleGraphics[i]));
+	
+				}
+	
+			}
+			else{
+				Ti.API.info("updateMap UPDATE");
+				//Update with new data
+				for (var i = 0; i < shuttleData.length; i++){				
+						ShuttlePoints[i].setLatitude(shuttleData[i][1]);
+						ShuttlePoints[i].setLongitude(shuttleData[i][2]);
+						ShuttleGraphics[i].setAngle(shuttleData[i][3]);					
+				}
+
+				//Refresh all graphics on this layer
+				shuttleLayer.redraw();	
+			}
+		
+			/*
 			if(shuttleData != null){
-				for(var i = 0; i < shuttleData.length; i++){
-					var shuttleGraphic;
+				
 					
 					//Check if route is enabled, if not, don't display shuttle graphic.
+<<<<<<< HEAD
 					// if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
 						// continue;
 					// }
@@ -444,6 +494,13 @@ function updateMap(shuttleData, userGPS){
 				}
 				map.addLayer(shuttleLayer);
 			}
+=======
+					if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
+						continue;
+					}
+					
+					
+			*/
   		});
    }
        
