@@ -14,7 +14,6 @@ var color8 = [['#2D2D2D', '#3b3b3b'], ['#3E464E', '#343c45']];
 
 var color = color8;
 
-
 // Opacity for [zoom, locateUser, slideTab, bottomMenu]
 var opacityArray = [.95, .95, .95, .95];
 
@@ -27,6 +26,7 @@ if (Titanium.Network.networkType === Titanium.Network.NETWORK_NONE) {
 
 var props = [];
 initProperties();
+//props[7] = "false";
 
 var iconFont = 'icomoon';
 var normalFont = 'OpenSans-Regular';
@@ -41,6 +41,7 @@ Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
 var url = ["http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapStopEstimates", "http://www.osushuttles.com/Services/JSONPRelay.svc/GetRoutesForMapWithSchedule", "http://www.osushuttles.com/Services/JSONPRelay.svc/GetMapVehiclePoints"];
 
 //var userGPS = [44.565, -123.277];
+var gpsDeviceOn;
 var userGPS = [], lastGPS = [];
 
 var firstTime = true, baseTime;
@@ -294,11 +295,8 @@ Ti.App.addEventListener('settingsChanged', function(e) {
 					});
 					break;
 				case 3:
-
-					break;
-				case 4:
-					props[4] = propsChanged[4];
-					if (props[4] == true || props[4] == "true") {
+					props[3] = propsChanged[3];
+					if (props[3] == true || props[3] == "true") {
 						getUserGPS();
 						diffArray = findNearest(userGPS);
 						Ti.API.info("This is diffArray: " + diffArray.toString());
@@ -310,23 +308,28 @@ Ti.App.addEventListener('settingsChanged', function(e) {
 						gpsCounter = 0;
 					}
 					break;
-				case 5:
-					props[5] = propsChanged[5];
-					if(props[4] == true || props[4] == "true"){
+				case 4:
+					props[4] = propsChanged[4];
+					if((props[3] == true || props[3] == "true") && gpsDeviceOn){
 						diffArray = findNearest(userGPS);
 						updateTable(diffArray);
 					}
 					break;
+				case 5:
+					props[5] = propsChanged[5];
+					break;
 				case 6:
-					
+					props[6] = propsChanged[6];
+					Ti.App.fireEvent('updatemap', {
+						id: 8,
+						basemap: props[6],
+					});
 					break;
 				case 7:
 					props[7] = propsChanged[7];
 					Ti.App.fireEvent('updatemap', {
-						id: 8,
-						basemap: props[7],
+						id: 9
 					});
-					break;
 			
 			}
 		}
@@ -335,7 +338,7 @@ Ti.App.addEventListener('settingsChanged', function(e) {
 
 locateUserView.addEventListener('click', function(e) {
 
-	if (props[4] == true || props[4] == "true" && userGPS.length != 0) {
+	if (props[3] == true || props[3] == "true" && userGPS.length != 0) {
 		Ti.App.fireEvent("updatemap", {
 			id : 2,
 			latitude : userGPS[0],
@@ -348,6 +351,10 @@ locateUserView.addEventListener('click', function(e) {
 });
 
 bottomMenuSlide.addEventListener('click', function(e) {
+	toggleBottomMenu();
+});
+
+function toggleBottomMenu(){
 	if (fullMapViewBool) {
 		bottomMenu.visible = true;
 		bottomMenuSlide.bottom = '27%', zoomButtonView.bottom = locateUserView.bottom = '28%';
@@ -356,10 +363,8 @@ bottomMenuSlide.addEventListener('click', function(e) {
 		bottomMenu.visible = false;
 		bottomMenuSlide.bottom = '0%', zoomButtonView.bottom = locateUserView.bottom = '1%';
 		fullMapViewBool = true;
-	}
-});
-
-
+	}	
+}
 zoomButtonView.addEventListener('click', function(e) {
 	var children = zoomButtonView.getChildren();
 	if (e.source == children[0]) {
@@ -413,8 +418,8 @@ Ti.App.addEventListener('adjustTable', function(e){
 
 function setWebViewListener() {
 	info("FUNC: setWebViewListener");
-	//localWebview.addEventListener('load',function(){
-	if (props[4] == true || props[4] == "true") {
+
+	if (props[3] == true || props[3] == "true") {
 		getUserGPS();
 		if (userGPS.length != 0) {
 			diffArray = findNearest(userGPS);
@@ -425,7 +430,7 @@ function setWebViewListener() {
 				id : 0,
 				userGPS : userGPS,
 				props : props,
-				baseMap : props[7],
+				baseMap : props[6],
 				landmarkId : stopsArray[index][7],
 			}); 
 		} else {
@@ -436,7 +441,7 @@ function setWebViewListener() {
 				id : 0,
 				userGPS : userGPS,
 				props : props,
-				baseMap : props[7],
+				baseMap : props[6],
 				landmarkId : stopsArray[0][7],
 			}); 
 
@@ -446,7 +451,7 @@ function setWebViewListener() {
 			id : 0,
 			userGPS : userGPS,
 			props : props,
-			baseMap : props[7],
+			baseMap : props[6],
 			landmarkId: stopsArray[0][7],
 		});
 		updateSelected(stopsArray[0]);
@@ -462,11 +467,12 @@ function setWebViewListener() {
 function intervalUpdate() {
 	info("FUNC: intervalUpdate");
 	var shuttleData = shuttleLocRequest();
+	info("shuttleData = " + shuttleData);
 	updateRouteEstimates();
 
 	//info("GPS COUNTER: " + gpsCounter);
 	if (gpsCounter >= getGPSInterval) {//if(gpsEnabled)
-		if (props[4] == true || props[4] == "true") {
+		if (props[3] == true || props[3] == "true") {
 			getUserGPS();
 			if (userGPS.length != 0) {
 				if (lastGPS[0] == userGPS[0] && lastGPS[1] == userGPS[1]) {
@@ -672,7 +678,7 @@ function updateTable(diffArray) {
 				text : stopsArray[index][0],
 			})); 
 
-			if (props[5] == 'false' || !props[5]) {
+			if (props[4] == 'false' || !props[4]) {
 				rowView.add(Ti.UI.createLabel({
 					right : 10,
 					font : {fontSize : '18sp', fontFamily : normalFont},
@@ -702,7 +708,6 @@ function updateTable(diffArray) {
 		}
 	}
 	routeEstTable.setData(nearestArray);
-	incrementLoadBar("updateTable");
 }
 
 //====================================================================================================================================
@@ -711,9 +716,10 @@ function updateTable(diffArray) {
 var localWebviewSet = false;
 function setStops() {
 	info("FUNC: setStops");
-	incrementLoadBar("setStops");
+	shuttleLocRequest();
 	var xhr = Ti.Network.createHTTPClient({
 		onload : function() {
+			incrementLoadBar("setStops");
 			var routeNames = new Array(3);
 			var id = 0;
 
@@ -779,7 +785,10 @@ function setStops() {
 			}
 		},
 		onerror : function(e) {
+			//incrementLoadBar("setStops");
 			Ti.API.info("ERROR: setStops() : " + e.toString());
+			activityIndicator.message = "No response from server. Retrying...";
+			setTimeout(function(){ setStops(); }, 5000);
 		},
 		timeout : 5000 
 	});
@@ -787,11 +796,8 @@ function setStops() {
 	xhr.send();
 }
 
-
-
-
-var firstUpdateRouteEstimates = true;
 function updateRouteEstimates() {
+	
 	info("FUNC: updateRouteEstimates");
 	var loopCounter = 0;
 	var xhr = Ti.Network.createHTTPClient({
@@ -813,6 +819,9 @@ function updateRouteEstimates() {
 		},
 		onerror : function(e) {
 			Ti.API.info("ERROR: updateRouteEstimates() : " + e.toString());
+			//incrementLoadBar("updateRouteEstimates");
+			activityIndicator.message = "No response from server. Retrying...";
+			setTimeout(function(){ updateRouteEstimates(); }, 5000);
 		},
 		timeout : 5000
 	});
@@ -825,17 +834,22 @@ function incrementLoadBar(callingFunction) {
 		var value = loadBar.getValue();
 		loadBar.setValue(++value);
 		info("FUNC: incrementLoadBar. newValue --> " + value + ", by " + callingFunction);
-		if (value >= 4) {
+		if (value >= 5) {
 			doneLoading();
 		}
 	}
 }
 
+var firstShuttleLoc = true;
 function shuttleLocRequest() {
 	info("FUNC: shuttleLocRequest");
 	var shuttleData = [];
 	var xhr = Ti.Network.createHTTPClient({
 		onload : function() {
+			if(firstShuttleLoc){
+				incrementLoadBar("shuttleLocRequest");
+				firstShuttleLoc = false;
+			}
 			var shuttleLocs = JSON.parse(this.responseText);
 
 			if (shuttleLocs.length == 0) {
@@ -843,25 +857,34 @@ function shuttleLocRequest() {
 			} else {
 				for (var x = 0, len = shuttleLocs.length, loc; x < len; x++) {
 					loc = shuttleLocs[x];
+					info(loc.Latitude + " , " + loc.Longitude);
 					shuttleData.push([loc.RouteID, loc.Latitude, loc.Longitude, loc.Heading]);
 				}
 			}
+			info("shuttleData[0] = " + shuttleData[0]);
+			info("shuttleData[1] = " + shuttleData[1]);
+			info(shuttleData);
 			return shuttleData;
 		},
 		onerror : function(e) {
+			//incrementLoadBar("shuttleLocRequest");
 			Ti.API.info("ERROR: shuttleLocRequest() function failed. error: " + e);
-			return shuttleData;
+			setTimeout(function(){ shuttleLocRequest(); }, 5000);
+			activityIndicator.message = "No response from server. Retrying...";
 		}
 	});
-	xhr.open("GET", url[2]);
+	var tmpUrl = "http://portal.campusops.oregonstate.edu/files/shuttle/GetMapVehiclePoints.txt";
+	xhr.open("GET", tmpUrl);//xhr.open("GET", url[2]);
 	xhr.send();
 }
 
 function doneLoading() {
-	info("FUNC: doneLoading");
 	webviewContainer.opacity = 0;
 	localWebview.visible = true;
 	locateUserView.visible = zoomButtonView.visible = selectedStopView.visible = bottomMenu.visible = bottomMenuSlide.visible = true;
+	if(props[5] == false || props[5] == "false"){
+		toggleBottomMenu();
+	}
 
 	webviewContainer.remove(loadView);
 	activityIndicator = loadBar = loadView = null;
@@ -875,12 +898,14 @@ function getUserGPS() {
 		if (!e.success || e.error) {
 			Ti.API.info("ERROR: failed to get UserGPS, error: " + e);
 			userGPS = [];
+			gpsDeviceOn = false;
 			return;
 		} else {
 			lastGPS = userGPS;
 			userGPS[0] = e.coords.latitude;
 			userGPS[1] = e.coords.longitude;
 			userGPS[2] = e.coords.timestamp;
+			gpsDeviceOn = true;
 			//Ti.API.info("Got userGPS. Lat: " + e.coords.latitude + ", Long: " + e.coords.longitude + ", at " + e.coords.timestamp);
 		}
 	});
@@ -891,10 +916,10 @@ function initProperties() {
 
 	var defValue = 'osm';
 	props = [Ti.App.Properties.getString('showExpress', true), Ti.App.Properties.getString('showSouthCentral', true), Ti.App.Properties.getString('showNorthCentral', true), 
-		Ti.App.Properties.getString('showCentralCampus', true), Ti.App.Properties.getString('gpsEnabled', true), Ti.App.Properties.getString('unitMi', true), Ti.App.Properties.getString('showTable', true), 
-		Ti.App.Properties.getString('basemap', defValue)];
+				Ti.App.Properties.getString('gpsEnabled', true), Ti.App.Properties.getString('unitMi', true), Ti.App.Properties.getString('showTable', true), 
+				Ti.App.Properties.getString('basemap', defValue), Ti.App.Properties.getString('stopsVisible', true)];
 		
-	Ti.API.info("props[7] : " + props[7]);
+	Ti.API.info("props[6] : " + props[6]);
 }
 
 function getDistanceFromLatLon(lat1, lon1, lat2, lon2) {
@@ -906,7 +931,7 @@ function getDistanceFromLatLon(lat1, lon1, lat2, lon2) {
 	var dLon = deg2rad(lon2 - lon1);
 	var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
 	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	if (props[5] == 'true' || props[5]) {
+	if (props[4] == 'true' || props[4]) {
 		var d = R * c * miConversion;
 		// Distance in km
 	} else {

@@ -16,6 +16,7 @@ function createWindow(props){
 		width: '100%',
 		height: '100%',
 		navBarHidden:true,
+		orientationModes : [Titanium.UI.PORTRAIT],
 		//backgroundColor: '#FFFFFF',
 		backgroundGradient: {
 			type:'linear',
@@ -80,8 +81,8 @@ function createWindow(props){
 	});
 	
 	closeSettingsButton.addEventListener('click', function(e){
-		var propsNew = [routeToggleA.getValue(), routeToggleB.getValue(), routeToggleC.getValue(), routeToggleD.getValue(), 
-						  gpsToggleButton.getValue(), unitToggle.getValue(), checkboxShowTable.getValue(), pickerBasemap.getSelectedRow(0).title];
+		var propsNew = [routeToggleA.getValue(), routeToggleB.getValue(), routeToggleC.getValue(), 
+						  gpsToggleButton.getValue(), unitToggle.getValue(), checkboxShowTable.getValue(), pickerBasemap.getSelectedRow(0).title, checkboxShowStops.getValue()];
 		destroyWindow(mainSettingsWin, propsNew, props);
 	});
 	
@@ -147,25 +148,14 @@ function createWindow(props){
 	  borderRadius: 5,
 	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
 	});
-	
-	var routeToggleD = Ti.UI.createSwitch({
-	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
-	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value: props[3],
-	  width: '50%',
-	  //height: '100%',
-	  titleOff: 'Central Campus',
-	  titleOn: 'Central Campus',
-	  borderRadius: 5,
-	  verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
-	});
+
 	
 	innerView1.add(routeToggleLabel);
 	view1.add(innerView1);
 	view1.add(routeToggleA);
 	view1.add(routeToggleB);
 	view1.add(routeToggleC);
-	view1.add(routeToggleD);
+	//view1.add(routeToggleD);
 	
 	//===========================================================================================
 	
@@ -199,7 +189,7 @@ function createWindow(props){
 	var gpsToggleButton = Ti.UI.createSwitch({
 		style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 		font: {fontsize: 16},
-		value: props[4],
+		value: props[3],
 		width: '80%',
 		titleOff: "Off",
 		titleOn: "On",
@@ -239,7 +229,7 @@ function createWindow(props){
 	var unitToggle = Ti.UI.createSwitch({
 	  style: Ti.UI.Android.SWITCH_STYLE_TOGGLEBUTTON,
 	  font:{fontSize:16,fontFamily:'Helvetica Neue'},
-	  value: props[5],
+	  value: props[4],
   	  width: '80%',
 	  titleOff: 'Km',
 	  titleOn: 'Mi',
@@ -268,10 +258,28 @@ function createWindow(props){
 		color: '#FFEEDB',
 		style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
 		title: 'Show table on startup',
-		value: props[6],
+		value: props[5],
 	});
 	
 	view4.add(checkboxShowTable);
+
+//===========================================================================================
+	var view7 = Ti.UI.createView({
+		width: '100%',
+		height: Ti.UI.SIZE,
+		top: 10,
+		bottom: 10,
+		
+	});
+	var checkboxShowStops = Ti.UI.createSwitch({
+		font: {fontSize: 20},
+		color: '#FFEEDB',
+		style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
+		title: 'Show stops',
+		value: props[7],
+	});
+	
+	view7.add(checkboxShowStops);
 
 //===========================================================================================
 
@@ -298,13 +306,9 @@ function createWindow(props){
 	
 	var pickerData = [];
 	pickerData[0] = Ti.UI.createPickerRow({title:'osm'});
-	pickerData[1] = Ti.UI.createPickerRow({title:'streets'});
-	pickerData[2] = Ti.UI.createPickerRow({title:'satellite'});
-	pickerData[3] = Ti.UI.createPickerRow({title:'hybrid'});
-	pickerData[4] = Ti.UI.createPickerRow({title:'topo'});
-	pickerData[5] = Ti.UI.createPickerRow({title:'gray'});
-	pickerData[6] = Ti.UI.createPickerRow({title:'oceans'});
-	pickerData[7] = Ti.UI.createPickerRow({title:'national-geographic'});
+	pickerData[1] = Ti.UI.createPickerRow({title:'satellite'});
+	pickerData[2] = Ti.UI.createPickerRow({title:'natural'});
+	pickerData[3] = Ti.UI.createPickerRow({title:'gray'});
 	
 	pickerBasemap.add(pickerData);
 	
@@ -364,36 +368,25 @@ function createWindow(props){
 	mainScrollView.add(view1);
 	mainScrollView.add(view23);
 	mainScrollView.add(view4);
+	mainScrollView.add(view7);
 	mainScrollView.add(view5);
 	mainScrollView.add(view6);
 
 	mainSettingsWin.add(mainScrollView);
 	mainSettingsWin.open();
 	
-	switch(props[7]){
+	switch(props[6]){
 		case 'osm':
 			pickerBasemap.setSelectedRow(0, 0, false);
 			break;
-		case 'streets':
+		case 'satellite':
 			pickerBasemap.setSelectedRow(0, 1, false);
 			break;
-		case 'satellite':
-			pickerBasemap.setSelectedRow(0, 2, false);
-			break;
-		case 'hybrid':
-			pickerBasemap.setSelectedRow(0, 3, false);
-			break;
-		case 'topo':
-			pickerBasemap.setSelectedRow(0, 4, false);
+		case 'natural':
+			pickerBasemap.setSelectedRow(0, 2, false);			
 			break;
 		case 'gray':
-			pickerBasemap.setSelectedRow(0, 5, false);
-			break;
-		case 'oceans':
-			pickerBasemap.setSelectedRow(0, 6, false);
-			break;
-		case 'national-geographic':
-			pickerBasemap.setSelectedRow(0, 7, false);			
+			pickerBasemap.setSelectedRow(0, 3, false);
 			break;
 
 	}
@@ -409,12 +402,11 @@ function setProperties(propsArray, oldProps){
 	Ti.App.Properties.setString('showExpress', propsArray[0]);
 	Ti.App.Properties.setString('showSouthCentral', propsArray[1]);
 	Ti.App.Properties.setString('showNorthCentral', propsArray[2]);
-	Ti.App.Properties.setString('showCentralCampus', propsArray[3]);
-	Ti.App.Properties.setString('gpsEnabled', propsArray[4]);
-	Ti.App.Properties.setString('unitMi', propsArray[5]);
-	Ti.App.Properties.setString('showTable', propsArray[6]);
-	Ti.App.Properties.setString('basemap', propsArray[7]);
-	
+	Ti.App.Properties.setString('gpsEnabled', propsArray[3]);
+	Ti.App.Properties.setString('unitMi', propsArray[4]);
+	Ti.App.Properties.setString('showTable', propsArray[5]);
+	Ti.App.Properties.setString('basemap', propsArray[6]);
+	Ti.App.Properties.setString('stopsVisible', propsArray[7]);
 
 	for(var i = 0, len = oldProps.length; i < len; i++){
 		if(oldProps[i] == propsArray[i])

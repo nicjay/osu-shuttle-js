@@ -15,6 +15,7 @@ var SouthRouteGraphic;
 var userGraphic;
 
 var allStopGraphics = [];
+var allStopGraphicsVisible;
 var ExprStopGraphics = [];
 var NorthStopGraphics = [];
 var SouthStopGraphics = [];
@@ -23,7 +24,6 @@ var SouthStopGraphics = [];
 //TODO: expand to set this array
 var enabledRouteIDs = [4, 5];
 
-
 Ti.App.addEventListener('updatemap', function(event){
 	switch(event.id){
 		case 0:		//createMap(userGPS, props)
@@ -31,7 +31,7 @@ Ti.App.addEventListener('updatemap', function(event){
 			createMap(event.userGPS, event.props, event.baseMap, event.landmarkId);
 			break;
 		case 1:		//updateMap(shuttleData)
-			Ti.API.info("------------------EVENT: updateMap");
+			Ti.API.info("------------------EVENT: updateMap" + event.shuttleData[0]);
 			updateMap(event.shuttleData, event.userGPS);
 			break;
 		case 2:
@@ -56,6 +56,9 @@ Ti.App.addEventListener('updatemap', function(event){
 		case 8:
 			changeBasemap(event.basemap);
 			break;
+		case 9:
+			toggleStopVisibility();
+			break;
 	}
 	
 });
@@ -67,8 +70,31 @@ Ti.App.addEventListener('updatemap', function(event){
 function changeBasemap(newBaseMap){
 	require(["esri/map"],
 		function(Map) {
+			if (newBaseMap == "natural") {
+				newBaseMap = "national-geographic";
+			}
 			map.setBasemap(newBaseMap);
 		});
+}
+
+function toggleStopVisibility(){
+ 	require([
+ 		"esri/map", "esri/graphic", "dojo/_base/array"
+ 	],
+ 	function(Map, Graphic, arrayUtils){
+ 		if(allStopGraphicsVisible == true || allStopGraphicsVisible == "true"){
+	 		arrayUtils.forEach(allStopGraphics, function(stopGraphic){
+ 				map.graphics.remove(stopGraphic);
+ 			});
+ 			allStopGraphicsVisible = false;
+ 		}else{
+	 		arrayUtils.forEach(allStopGraphics, function(stopGraphic){
+ 				map.graphics.add(stopGraphic);
+ 			});
+ 			allStopGraphicsVisible = true;
+ 		}
+
+ 	});
 }
 
 function createMap(userGPS, props, baseMap, landmarkId){
@@ -83,6 +109,11 @@ function createMap(userGPS, props, baseMap, landmarkId){
   			
   			var initExtent = new Extent({"xmin":-13725004.134997085,"ymin":5552112.499779742,"xmax":-13722324.061692765,"ymax":5553794.11440206,"spatialReference":{"wkid":102100}});
 	  		var maxExtent = initExtent;
+  			
+  			if(baseMap == "natural"){
+  				baseMap = "national-geographic";
+  			}
+  			
   			map = new Map("mapDiv", {
     			center: [-123.280, 44.562],
     			zoom: 15,
@@ -149,58 +180,6 @@ function createMap(userGPS, props, baseMap, landmarkId){
     		map.on("load", mapOnLoadHandler);
     		
     		function mapOnLoadHandler(){
-    			// var ExpressRoute = [
-	        		// [-123.279941,44.567899],
-        			// [-123.279925,44.568082],
-        			// [-123.278972,44.568080],
-        			// [-123.278948,44.567910],
-        			// [-123.278970,44.567910],
-        			// [-123.279941,44.567899],
-        			// [-123.279925,44.566813],
-        			// [-123.279927,44.564193],
-        			// [-123.279619,44.563330],
-        			// [-123.279600,44.562070],
-        			// [-123.279630,44.561896],
-        			// [-123.279624,44.560423],
-        			// [-123.279691,44.560283],
-        			// [-123.279697,44.558999],
-        			// [-123.280711,44.558405],
-        			// [-123.281620,44.558320],
-        			// [-123.282811,44.558928],
-        			// [-123.283133,44.559555],
-        			// [-123.282934,44.560071],
-        			// [-123.282411,44.560524],
-        			// [-123.281993,44.560645],
-        			// [-123.279631,44.560708]
-        		// ];
-        		// var ExpressRoute = [
-        		// [-123.279570, 44.558994],
-        		// [-123.279822, 44.558987],
-        		// [-123.279918, 44.558926],
-        		// [-123.280214, 44.558620],
-        		// [-123.280702, 44.558394],
-        		// [-123.281244, 44.558314],
-        		// [-123.281727, 44.558348],
-        		// [-123.282032, 44.558406],
-        		// ];
-        		
-//         			
-	        	// var NorthRoute = [
-        			// [-123.279962,44.567940],
-					// [-123.279919,44.566794],
-					// [-123.272396,44.566737],
-					// [-123.274016,44.564612],
-					// [-123.275786,44.564558],
-					// [-123.275850,44.561952],
-					// [-123.279601,44.561970],
-					// [-123.279612,44.563323],
-					// [-123.279955,44.564179],
-					// [-123.279955,44.564561],
-					// [-123.289707,44.564592],
-					// [-123.289718,44.567855],
-					// [-123.279962,44.567940]
-        		// ];
-        		
         		var NorthRoute = [
         		[-123.289718, 44.566792],
         		[-123.284842, 44.566783],
@@ -218,8 +197,7 @@ function createMap(userGPS, props, baseMap, landmarkId){
         		[-123.279935, 44.564635], //26TH and Jefferson
         		[-123.284575, 44.564650], //30th
         		[-123.289720, 44.564590],
-        		[-123.289718, 44.566792]
-        		];
+        		[-123.289718, 44.566792]];
         		
         		var SouthRoute = [
         		[-123.274058, 44.564507], //14th and jefferson
@@ -235,11 +213,6 @@ function createMap(userGPS, props, baseMap, landmarkId){
         		[-123.282356, 44.560538],
         		[-123.282962, 44.559992],
         		[-123.283010, 44.559296],
-        		//[-123.282114, 44.558639],
-        		//[-123.281964, 44.558489],
-        		
-        		//[-123.281487, 44.558348],
-        		//[-123.279700, 44.558993],
         		[-123.281948, 44.558409],
         		[-123.280609, 44.558455],
         		[-123.279740, 44.559033],
@@ -248,54 +221,27 @@ function createMap(userGPS, props, baseMap, landmarkId){
         		[-123.273996, 44.559873],
         		[-123.274318, 44.561578],
         		[-123.274114, 44.562113],
-        		[-123.274058, 44.564507]
-        		];
+        		[-123.274058, 44.564507]];
         		
         		var ExpressRoute = [
         		[-123.279550, 44.558993],
         		[-123.279550, 44.561972],
-        		[-123.279536, 44.563371],
-        		[-123.279550, 44.563401],
-        		[-123.279767, 44.563829],
-        		[-123.279866, 44.564158],
-        		[-123.279901, 44.564495], //26th and Jefferson
+        		[-123.279526, 44.563391],//--
+        		[-123.279520, 44.563401],
+        		[-123.279737, 44.563829],
+        		[-123.279826, 44.564158], //--
+        		[-123.279901, 44.564495], //26th and Jefferson  --
         		[-123.284775, 44.564500],
         		[-123.284775, 44.562234],
         		[-123.284625, 44.561965],
         		[-123.284625, 44.560529],
-        		[-123.282506, 44.560538],
-        		[-123.283112, 44.559992],
+        		[-123.282576, 44.560538], // --
+        		[-123.283142, 44.560012],
         		[-123.283160, 44.559246],
-        		//[-123.282114, 44.558489],
-        		//[-123.281487, 44.558198],
-        		//[-123.279550, 44.558993],
         		[-123.281967, 44.558254],
         		[-123.280559, 44.558305],
-        		[-123.279550, 44.558993],
-        		
-        		
-        		];
-        		// var SouthRoute = [
-        			// [-123.279565,44.560802],
-					// [-123.281916,44.560664],
-					// [-123.282957,44.560014],
-					// [-123.283054,44.559303],
-					// [-123.282260,44.558722],
-					// [-123.282013,44.558478],
-					// [-123.280511,44.558478],
-					// [-123.279663,44.559013],
-					// [-123.279631,44.561420],
-					// [-123.279556,44.563347],
-					// [-123.279867,44.564020],
-					// [-123.279899,44.564547],
-					// [-123.279889,44.566741],
-					// [-123.272507,44.566718],
-					// [-123.274095,44.564669],
-					// [-123.274068,44.564511],
-					// [-123.275731,44.564511],
-					// [-123.275844,44.561887],
-					// [-123.279567,44.561956]
-        		// ];
+        		[-123.279550, 44.558993]];
+
       			
       			var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("#e04726"), 3); 
       			var runningRoute = new esri.geometry.Polyline(ExpressRoute);
@@ -322,18 +268,37 @@ function createMap(userGPS, props, baseMap, landmarkId){
 					map.graphics.add(userGraphic);		
     			}
     			
-    			arrayUtils.forEach(allStopPts, function(stopPt){
-    				if(landmarkId == stopPt[2]){
-    					lastGraphicClicked = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), selectStopSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
-    					allStopGraphics.push(lastGraphicClicked);
-    					map.graphics.add(lastGraphicClicked);
-    				}
-    				else{
-    					var tempStop = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), StopMarkerSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
-	    				allStopGraphics.push(tempStop);
-						map.graphics.add(tempStop);
-    				}
-    			});
+    			
+    			Ti.API.info("props[7] : " + props[7]);
+    			if(props[7] == true || props[7] == "true"){
+    				allStopGraphicsVisible = true;
+	       			arrayUtils.forEach(allStopPts, function(stopPt){
+	    				if(landmarkId == stopPt[2]){
+	    					lastGraphicClicked = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), selectStopSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
+	    					allStopGraphics.push(lastGraphicClicked);
+	    					map.graphics.add(lastGraphicClicked);
+	    				}
+	    				else{
+	    					var tempStop = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), StopMarkerSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
+		    				allStopGraphics.push(tempStop);
+							map.graphics.add(tempStop);
+	    				}
+	    			});
+    			}else{
+    				allStopGraphicsVisible = false;
+	       			arrayUtils.forEach(allStopPts, function(stopPt){
+	    				if(landmarkId == stopPt[2]){
+	    					lastGraphicClicked = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), selectStopSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
+	    					allStopGraphics.push(lastGraphicClicked);
+	    				}
+	    				else{
+	    					var tempStop = new Graphic(new esri.geometry.Point({latitude: stopPt[0], longitude: stopPt[1]}), StopMarkerSymbol, {"landmarkId":stopPt[2], "lat":stopPt[0], "lon":stopPt[1]} , null);
+		    				allStopGraphics.push(tempStop);
+	    				}
+	    			});
+    			}
+    			Ti.API.info("allStopGraphicsVisible : " + allStopGraphicsVisible);
+    			
     			
     			/*
     			arrayUtils.forEach(StopPtsSouthCentral, function(StopPt) {
@@ -356,20 +321,18 @@ function createMap(userGPS, props, baseMap, landmarkId){
       			
       			map.graphics.on("click", myGraphicsClickHandler);
       			
-      			for(var i = 0; i < 4; i++){
+      			for(var i = 0; i < 3; i++){
       				if(props[i] == 'false' || props[i] == false){
       					switch(i){
       						case 0:
-      							showNorth(false);
+      							showExpress(false);
       							break;
       						case 1:
       							showSouth(false);
       							break;
       						case 2:
-      							showExpress(false);
+      							showNorth(false);
       							break;
-      						case 3:
-      							
       					}
       				}
       			}
@@ -395,7 +358,7 @@ function createMap(userGPS, props, baseMap, landmarkId){
 							longitude : attr.lon
 						});
 		
-						map.centerAt(centerPoint); 
+						//map.centerAt(centerPoint); 
 					}
 				}   
 				
@@ -429,7 +392,7 @@ function createMap(userGPS, props, baseMap, landmarkId){
 function updateMap(shuttleData, userGPS){
 	require(["esri/map", "esri/geometry/Point","esri/symbols/SimpleMarkerSymbol", "esri/symbols/PictureMarkerSymbol", "esri/graphic"], 
 		function(Map, Point, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic) {
-			
+			Ti.API.info("YOYOYO" + shuttleData);
 			if(userGPS != null && map.graphics != null){
 				var UserMarkerSymbol = new PictureMarkerSymbol('GeneralUI/userMarker2.png', 22, 22);
 				if(userGraphic != null){
@@ -447,7 +410,7 @@ function updateMap(shuttleData, userGPS){
 			if(map.getLayer(shuttleLayer) != null){
 				map.removeLayer(shuttleLayer);
 			}
-			map.graphics.remove(GS3);
+			//map.graphics.remove(GS3);
 			var shuttleLayer = new esri.layers.GraphicsLayer();
 			
 			var ShuttleMarkerSymbol1 = new PictureMarkerSymbol('Shuttle/bluetriangle.png', 20, 20); //south central
@@ -459,10 +422,10 @@ function updateMap(shuttleData, userGPS){
 					var shuttleGraphic;
 					
 					//Check if route is enabled, if not, don't display shuttle graphic.
-					if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
-						continue;
-					}
-					
+					// if(enabledRouteIDs.indexOf(shuttleData[i][0]) == -1){
+						// continue;
+					// }
+					Ti.API.info("shuttleData[i][0] = " + shuttleData[i][0]);
 					//Assign graphic based on RouteID
 					switch(shuttleData[i][0]){
 						case 4: //Express
